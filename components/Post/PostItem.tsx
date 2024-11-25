@@ -1,6 +1,7 @@
 import Image from 'next/image';
 import { FaHeart } from 'react-icons/fa';
 import { IoChatbubblesOutline } from 'react-icons/io5';
+import profile from '../../public/default_profile.png';
 
 interface PostType {
   authorNickName: string;
@@ -24,7 +25,7 @@ export default function PostItem({
   let postStatusKo = postStatus === 'PENDING' && '판매중';
 
   return (
-    <div className=" w-80 h-48 rounded-lg border border-[#ccc] shadow">
+    <div className=" w-80 h-48 rounded-lg border border-[#ccc] shadow cursor-pointer">
       <div>
         <div className=" flex justify-between m-2">
           <p className=" text-gray-500 text-sm font-bold">{postStatusKo}</p>
@@ -41,7 +42,10 @@ export default function PostItem({
 
           <div className=" flex flex-col justify-between items-end">
             <p>{title}</p>
-            <p className=" text-gray-500 text-sm font-bold">{authorNickName}</p>
+            <p className=" flex gap-2 items-center text-gray-500 text-sm font-bold">
+              <Image src={profile} alt="profile" width={24} />
+              {authorNickName}
+            </p>
           </div>
         </div>
       </div>

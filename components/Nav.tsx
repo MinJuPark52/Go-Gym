@@ -8,13 +8,15 @@ export default function Nav() {
   return (
     <div className=" flex justify-center border-b border-[#ccc] h-18">
       <div className=" flex justify-between items-center  w-[80%]">
-        <Image
-          src={logo}
-          alt="Go GYM Logo"
-          width={120}
-          height={60}
-          className="m-2 ml-8 cursor-pointer"
-        />
+        <Link href={'/'}>
+          <Image
+            src={logo}
+            alt="Go GYM Logo"
+            width={120}
+            height={60}
+            className="m-2 ml-8 cursor-pointer"
+          />
+        </Link>
         <div className=" flex gap-4 items-center mr-8">
           <Link href={'/'} className="font-semibold">
             양도 게시판
