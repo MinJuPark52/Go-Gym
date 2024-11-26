@@ -38,12 +38,13 @@ export default function PostItem({
             width={200}
             height={64}
             className=" rounded-md"
+            priority
           />
 
           <div className=" flex flex-col justify-between items-end">
             <p>{title}</p>
             <p className=" flex gap-2 items-center text-gray-500 text-sm font-bold">
-              <Image src={profile} alt="profile" width={24} />
+              <Image src={profile} alt="profile" width={24} priority />
               {authorNickName}
             </p>
           </div>

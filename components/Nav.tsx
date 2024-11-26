@@ -13,8 +13,8 @@ export default function Nav() {
             src={logo}
             alt="Go GYM Logo"
             width={120}
-            height={60}
             className="m-2 ml-8 cursor-pointer"
+            priority
           />
         </Link>
         <div className=" flex gap-4 items-center mr-8">
@@ -35,12 +35,14 @@ export default function Nav() {
             alt="alarm"
             width={40}
             className=" cursor-pointer"
+            priority
           />
           <Image
             src={profile}
             alt="profile"
             width={40}
             className=" cursor-pointer"
+            priority
           />
         </div>
       </div>

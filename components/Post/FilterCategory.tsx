@@ -1,4 +1,4 @@
-import { FILTER_CATEGORY_TYPE, categoryPropsType } from '@/constants/category';
+import { categoryPropsType } from '@/constants/category';
 
 export function FilterCategory({
   label,
@@ -17,7 +17,9 @@ export function FilterCategory({
         id={label}
         onChange={onSelect}
       >
-        <option defaultValue={'null'}>선택 하기</option>
+        <option defaultValue={'default'} value={'default'}>
+          선택 하기
+        </option>
         {options.map((option) => (
           <option key={option.value} value={option.value}>
             {option.optionName}

@@ -6,7 +6,8 @@ import {
   SECOND_FILTER_CATEGORY,
 } from '@/constants/category';
 import { FilterCategory } from './FilterCategory';
-import { useState } from 'react';
+import { act, useState } from 'react';
+import ActiveFilter from './ActiveFilter';
 
 interface categoryStateType {
   postType: 'default' | 'sell' | 'buy';
@@ -24,9 +25,47 @@ export default function Filter() {
     membershipDuration: 'months_0_3',
     PTCount: 'PT_0_10',
   });
+  const [activeFilters, setActiveFilters] = useState({
+    postType: {
+      id: 1,
+      filterValue: '',
+    },
+    postStatus: {
+      id: 2,
+      filterValue: '',
+    },
+    membershipType: {
+      id: 3,
+      filterValue: '',
+    },
+    membershipDuration: {
+      id: 4,
+      filterValue: '',
+    },
+    PTCount: {
+      id: 5,
+      filterValue: '',
+    },
+  });
 
   const handleSelectOptions = (e: React.ChangeEvent<HTMLSelectElement>) => {
     setCategoryValue({ ...categoryValue, [e.target.name]: e.target.value });
+
+    e.target.value !== 'default'
+      ? setActiveFilters({
+          ...activeFilters,
+          [e.target.name]: {
+            id: e.target.name,
+            filterValue: e.target.options[e.target.selectedIndex].text,
+          },
+        })
+      : setActiveFilters({
+          ...activeFilters,
+          [e.target.name]: {
+            id: e.target.name,
+            filterValue: '',
+          },
+        });
   };
 
   return (
@@ -49,7 +88,11 @@ export default function Filter() {
           />
         ))}
       </div>
-      <div className=" mt-8 w-[100%] h-16 rounded-lg bg-gray-300"></div>
+      <div className=" flex items-center gap-4 pl-4 mt-8 w-[100%] h-16 rounded-lg bg-blue-300">
+        {Object.values(activeFilters).map((value) => (
+          <ActiveFilter key={value.id} filterValue={value.filterValue} />
+        ))}
+      </div>
     </div>
   );
 }

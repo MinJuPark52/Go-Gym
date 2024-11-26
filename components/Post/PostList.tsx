@@ -23,10 +23,8 @@ export default function PostList() {
     staleTime: 1000 * 10,
   });
 
-  console.log(data);
-
   return (
-    <div className=" flex flex-wrap justify-start gap-8 mb-12 w-full ">
+    <div className=" flex flex-wrap justify-center gap-8 mb-12 w-full ">
       {data &&
         data.map((post: PostType) => <PostItem key={post.id} {...post} />)}
     </div>
