@@ -6,7 +6,7 @@ import Link from 'next/link';
 
 export default function Nav() {
   return (
-    <div className=" flex justify-center border-b border-[#ccc] h-18">
+    <div className=" flex justify-center border-b border-[#ccc] h-18 shadow-md">
       <div className=" flex justify-between items-center  w-[80%]">
         <Link href={'/'}>
           <Image
@@ -18,10 +18,16 @@ export default function Nav() {
           />
         </Link>
         <div className=" flex gap-4 items-center mr-8">
-          <Link href={'/'} className="font-semibold">
+          <Link
+            href={'/community'}
+            className="font-semibold hover:text-blue-400 transition-all"
+          >
             양도 게시판
           </Link>
-          <Link href={'/'} className="font-semibold">
+          <Link
+            href={'/'}
+            className="font-semibold hover:text-blue-400 transition-all"
+          >
             채팅방
           </Link>
           <Image
