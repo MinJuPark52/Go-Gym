@@ -2,6 +2,7 @@
 
 import { useState, ChangeEvent, FormEvent } from "react";
 import Image from "next/image";
+import Link from "next/link";
 
 const Rest_api_key = "5210bb9949fa1d15f1590799fc571710"; // REST API KEY
 const redirect_uri = "http://localhost:3000/oauth"; // Redirect URI
@@ -35,7 +36,7 @@ export default function Page() {
 
   const handleSubmit = (e: FormEvent) => {
     e.preventDefault();
-    console.log("Login submitted with", { email, password });
+    // 유효성검사
   };
 
   return (
@@ -67,9 +68,10 @@ export default function Page() {
             </button>
           </div>
         </form>
+
         <button
           onClick={handleLogin}
-          style={{ border: "none", backgroundColor: "transparent" }}
+          className="mt-5" // Optional, add margin-top for spacing
         >
           <Image
             src="/kakao_login.png"
@@ -81,7 +83,9 @@ export default function Page() {
         </button>
 
         <div>
-          <p className="text-gray-800">회원탈퇴</p>
+          <Link href="/login/join">
+            <button>회원가입</button>
+          </Link>
         </div>
       </div>
     </div>

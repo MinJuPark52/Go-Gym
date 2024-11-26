@@ -1,4 +1,3 @@
-/*
 import React from "react";
 
 export default function Join() {
@@ -35,4 +34,3 @@ export default function Join() {
     </>
   );
 }
-*/
