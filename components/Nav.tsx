@@ -1,8 +1,8 @@
-import Image from 'next/image';
-import logo from '../public/logo_transparent.png';
-import profile from '../public/default_profile.png';
-import alarm from '../public/Alarm.png';
-import Link from 'next/link';
+import Image from "next/image";
+import logo from "../public/logo_transparent.png";
+import profile from "../public/default_profile.png";
+import alarm from "../public/Alarm.png";
+import Link from "next/link";
 
 export default function Nav() {
   return (
@@ -16,10 +16,10 @@ export default function Nav() {
           className="m-2 ml-8 cursor-pointer"
         />
         <div className=" flex gap-4 items-center mr-8">
-          <Link href={'/'} className="font-semibold">
+          <Link href={"/"} className="font-semibold">
             양도 게시판
           </Link>
-          <Link href={'/'} className="font-semibold">
+          <Link href={"/"} className="font-semibold">
             채팅방
           </Link>
           <Image

@@ -1,24 +1,24 @@
-import type { Metadata } from 'next';
-import localFont from 'next/font/local';
-import './globals.css';
-import Nav from '@/components/Nav';
+import type { Metadata } from "next";
+import localFont from "next/font/local";
+import "./globals.css";
+import Nav from "@/components/Nav";
 
 const geistSans = localFont({
-  src: './fonts/GeistVF.woff',
-  variable: '--font-geist-sans',
-  weight: '100 900',
+  src: "./fonts/GeistVF.woff",
+  variable: "--font-geist-sans",
+  weight: "100 900",
 });
 const geistMono = localFont({
-  src: './fonts/GeistMonoVF.woff',
-  variable: '--font-geist-mono',
-  weight: '100 900',
+  src: "./fonts/GeistMonoVF.woff",
+  variable: "--font-geist-mono",
+  weight: "100 900",
 });
 
 export const metadata: Metadata = {
-  title: 'Go GYM',
-  description: 'GO GO',
+  title: "Go GYM",
+  description: "GO GO",
   icons: {
-    icon: '/favicon.png',
+    icon: "/favicon.png",
   },
 };
 
