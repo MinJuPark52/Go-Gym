@@ -1,7 +1,7 @@
-import Image from 'next/image';
-import { FaHeart } from 'react-icons/fa';
-import { IoChatbubblesOutline } from 'react-icons/io5';
-import profile from '../../public/default_profile.png';
+import Image from "next/image";
+import { FaHeart } from "react-icons/fa";
+import { IoChatbubblesOutline } from "react-icons/io5";
+import profile from "../../public/default_profile.png";
 
 interface PostType {
   authorNickName: string;
@@ -22,7 +22,7 @@ export default function PostItem({
   title,
   wishCount,
 }: PostType) {
-  let postStatusKo = postStatus === 'PENDING' && '판매중';
+  let postStatusKo = postStatus === "PENDING" && "판매중";
 
   return (
     <div className=" w-80 h-48 rounded-lg border border-[#ccc] shadow cursor-pointer">
@@ -52,13 +52,13 @@ export default function PostItem({
       <div className=" flex justify-between mt-2 ml-2 mr-2">
         <div className=" flex items-center gap-4  ">
           <div className=" flex items-center">
-            <FaHeart color="#DC7D7D" />{' '}
+            <FaHeart color="#DC7D7D" />{" "}
             <span className=" ml-1 text-gray-500 text-sm font-normal">
               {wishCount}
             </span>
           </div>
           <div className=" flex items-center">
-            <IoChatbubblesOutline size={24} />{' '}
+            <IoChatbubblesOutline size={24} />{" "}
             <span className=" ml-1 text-gray-500 text-sm font-normal">100</span>
           </div>
         </div>
@@ -79,7 +79,7 @@ function timeAgo(pastDate: string) {
   if (diffInMinutes < 60) {
     // 분 단위로 표현
     if (diffInMinutes < 1) {
-      return '방금 전';
+      return "방금 전";
     }
     return `${diffInMinutes}분 전`;
   } else if (diffInHours < 24) {
