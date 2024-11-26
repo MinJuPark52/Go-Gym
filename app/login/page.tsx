@@ -4,10 +4,9 @@ import { useState, ChangeEvent, FormEvent } from "react";
 import Image from "next/image";
 import Link from "next/link";
 
-const Rest_api_key = "5210bb9949fa1d15f1590799fc571710"; // REST API KEY
 const redirect_uri = "http://localhost:3000/oauth"; // Redirect URI
 // oauth 요청 URL
-const kakaoURL = `https://kauth.kakao.com/oauth/authorize?client_id=${Rest_api_key}&redirect_uri=${redirect_uri}&response_type=code`;
+const kakaoURL = `https://kauth.kakao.com/oauth/authorize?client_id=&redirect_uri=${redirect_uri}&response_type=code`;
 
 const handleLogin = () => {
   window.location.href = kakaoURL;
