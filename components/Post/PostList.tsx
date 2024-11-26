@@ -26,7 +26,7 @@ export default function PostList() {
   console.log(data);
 
   return (
-    <div className=" flex flex-wrap justify-center gap-8 w-full">
+    <div className=" flex flex-wrap justify-center gap-8 w-full ">
       {data &&
         data.map((post: PostType) => <PostItem key={post.id} {...post} />)}
     </div>

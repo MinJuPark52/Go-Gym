@@ -2,11 +2,6 @@
 @tailwind components;
 @tailwind utilities;
 
-@font-face {
-  font-family: 'BMJUA';
-  src: url('./fonts/BMJUA.ttf') format('truetype');
-}
-
 :root {
   --background: #ffffff;
   --foreground: #171717;
@@ -22,8 +17,7 @@
 body {
   color: var(--foreground);
   background: var(--background);
-  font-family: BMJUA;
-  height: 100vh;
+  min-height: 100vh;
   width: 100vw;
 }
 
