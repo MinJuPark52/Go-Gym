@@ -32,11 +32,11 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+        className={`${geistSans.variable} ${geistMono.variable} antialiased `}
       >
         <ClientLayout>
           <Nav />
-          {children}
+          <div className="min-h-[90vh]">{children}</div>
           <Footer />
         </ClientLayout>
       </body>
