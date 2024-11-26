@@ -2,9 +2,8 @@ export default function Footer() {
   return (
     <footer className="bg-gray-900 text-white py-8">
       <div className="container mx-auto px-4">
-        {/* 상단 영역 */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-          {/* 회사 정보 */}
+          {/* 팀 정보 */}
           <div>
             <h2 className="text-lg font-bold">Go GYM</h2>
             <p className="text-sm mt-2">
