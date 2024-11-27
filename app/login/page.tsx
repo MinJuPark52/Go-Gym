@@ -1,85 +1,85 @@
 "use client";
 
-import { useState, ChangeEvent, FormEvent } from "react";
+import { useState, ChangeEvent } from "react";
 import Image from "next/image";
 import Link from "next/link";
 
-const redirect_uri = "http://localhost:3000/oauth"; // Redirect URI
-// oauth 요청 URL
-const kakaoURL = `https://kauth.kakao.com/oauth/authorize?client_id=&redirect_uri=${redirect_uri}&response_type=code`;
+interface InputProps {
+  type: string;
+  placeholder: string;
+  value: string;
+  onChange: (e: ChangeEvent<HTMLInputElement>) => void;
+}
 
-const handleLogin = () => {
-  window.location.href = kakaoURL;
-};
+const client_id = "your_kakao_client_id_here";
+const redirect_uri = "http://localhost:3000/oauth";
+const kakaoURL = `https://kauth.kakao.com/oauth/authorize?client_id=${client_id}&redirect_uri=${redirect_uri}&response_type=code`;
+
+const Input: React.FC<InputProps> = ({
+  type,
+  placeholder,
+  value,
+  onChange,
+}) => (
+  <input
+    type={type}
+    placeholder={placeholder}
+    value={value}
+    onChange={onChange}
+    className="w-full p-2 rounded-md border border-gray-300 mb-3"
+  />
+);
 
 export default function Page() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
-  interface InputProps {
-    type: string;
-    placeholder: string;
-    value: string;
-    onChange: (e: ChangeEvent<HTMLInputElement>) => void;
-  }
+  // Handle Kakao login redirect
+  const handleLogin = () => (window.location.href = kakaoURL);
 
-  const Input = ({ type, placeholder, value, onChange }: InputProps) => (
-    <input
-      type={type}
-      placeholder={placeholder}
-      value={value}
-      onChange={onChange}
-      className="border-2 border-gray-300 px-4 py-2 rounded w-full m-2"
-    />
-  );
-
-  const handleSubmit = (e: FormEvent) => {
+  // Form submit handler
+  const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    // 유효성검사
+    console.log("Email:", email, "Password:", password);
   };
 
   return (
-    <div className="flex justify-center items-center mt-20">
-      <div className="flex flex-col space-y-7 border-2 border-gray-300 p-6 w-[400px] h-[350px] rounded-lg">
+    <div className="flex items-center justify-center bg-gray-50 w-full h-[40rem]">
+      <div className="flex flex-col space-y-7 border-2 border-gray-50 p-6 bg-white">
+        <h2 className="text-2xl font-semibold text-center">로그인</h2>
+
         <form onSubmit={handleSubmit}>
-          <div>
-            <Input
-              type="text"
-              placeholder="이메일"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-            />
-          </div>
-          <div>
-            <Input
-              type="password"
-              placeholder="비밀번호"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-            />
-          </div>
-          <div>
-            <button
-              type="submit"
-              className="border-2 border-blue-400 hover:border-blue-500 px-20 py-2 mt-5 ml-2 rounded w-full"
-            >
-              로그인
-            </button>
-          </div>
+          <Input
+            type="text"
+            placeholder="이메일"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+          />
+          <Input
+            type="password"
+            placeholder="비밀번호"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+          />
+
+          <button
+            type="submit"
+            className="w-full bg-blue-500 text-white py-2 rounded-md hover:bg-blue-600 focus:outline-none mt-4"
+          >
+            로그인
+          </button>
         </form>
 
-        <button
-          onClick={handleLogin}
-          className="mt-5" // Optional, add margin-top for spacing
-        >
+        <div className="flex justify-center">
           <Image
             src="/kakao_login.png"
-            alt="kakao_login"
+            alt="카카오 로그인"
             width={200}
-            height={0}
-            className="ml-20"
+            height={50}
+            className="cursor-pointer"
+            onClick={handleLogin}
           />
-        </button>
+        </div>
 
         <div>
           <Link href="/login/join">
