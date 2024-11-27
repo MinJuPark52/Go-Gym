@@ -58,8 +58,10 @@ export default function PostDetail() {
                 {data.postType === 'SELL' ? '팝니다' : '삽니다'}
               </p>
               <p className=" font-bold">
-                <span className=" text-gray-500 ">작성자 : </span>
-                {data.authorNickname}
+                <span className=" text-gray-500">작성자 : </span>
+                <span className=" cursor-pointer hover:underline underline-offset-4">
+                  {data.authorNickname}
+                </span>
               </p>
             </div>
             <p className=" font-bold">
@@ -85,11 +87,14 @@ export default function PostDetail() {
             </div>
           </div>
 
-          <div className="flex p-4 ">
+          <div className=" relative flex p-4 ">
             <PostDetailImage
               imageUrl={data.imageUrl1}
               onClick={handleImageClick}
             />
+            <button className=" absolute bottom-4 right-4 p-1 pl-2 pr-2 rounded-lg bg-blue-300 text-2xl text-white hover:bg-blue-500 transition-all">
+              채팅하기
+            </button>
           </div>
         </div>
       )}
