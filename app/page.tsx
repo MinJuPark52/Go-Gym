@@ -2,7 +2,7 @@ import PostList from '@/components/Post/PostList';
 import Slider from '@/components/Post/Slider';
 import Link from 'next/link';
 
-export default function Home() {
+export default function HomePage() {
   return (
     <>
       <Slider />
