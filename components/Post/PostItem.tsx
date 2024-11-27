@@ -1,8 +1,10 @@
+
 import Image from 'next/image';
 import { FaHeart } from 'react-icons/fa';
 import { IoChatbubblesOutline } from 'react-icons/io5';
 import profile from '../../public/default_profile.png';
 import Link from 'next/link';
+
 
 interface PostType {
   id: string;
@@ -25,7 +27,7 @@ export default function PostItem({
   title,
   wishCount,
 }: PostType) {
-  let postStatusKo = postStatus === 'PENDING' && '판매중';
+  let postStatusKo = postStatus === "PENDING" && "판매중";
 
   return (
     <Link href={`/community/${id}`}>
@@ -68,6 +70,7 @@ export default function PostItem({
                 100
               </span>
             </div>
+
           </div>
           <p>{gymName}</p>
         </div>
@@ -87,7 +90,7 @@ function timeAgo(pastDate: string) {
   if (diffInMinutes < 60) {
     // 분 단위로 표현
     if (diffInMinutes < 1) {
-      return '방금 전';
+      return "방금 전";
     }
     return `${diffInMinutes}분 전`;
   } else if (diffInHours < 24) {
