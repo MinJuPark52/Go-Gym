@@ -1,3 +1,9 @@
+import EditPost from '@/components/Post/EditPost';
+
 export default function EditPostPage() {
-  return <div>글쓰기</div>;
+  return (
+    <div className=" flex justify-center">
+      <EditPost />
+    </div>
+  );
 }

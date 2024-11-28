@@ -4,6 +4,7 @@ import './globals.css';
 import Nav from '@/components/UI/Nav';
 import ClientLayout from './layout-client';
 import Footer from '@/components/UI/Footer';
+import Head from 'next/head';
 
 const geistSans = localFont({
   src: './fonts/GeistVF.woff',
@@ -31,6 +32,12 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" suppressHydrationWarning>
+      <Head>
+        <link
+          rel="stylesheet"
+          href="https://unpkg.com/react-quill@1.3.3/dist/quill.snow.css"
+        />
+      </Head>
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased `}
       >
