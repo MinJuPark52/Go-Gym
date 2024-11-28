@@ -1,8 +1,8 @@
-import Image from "next/image";
-import logo from "../public/logo_transparent.png";
-import profile from "../public/default_profile.png";
-import alarm from "../public/Alarm.png";
-import Link from "next/link";
+import Image from 'next/image';
+import logo from '../../public/logo_transparent.png';
+import profile from '../../public/default_profile.png';
+import alarm from '../../public/Alarm.png';
+import Link from 'next/link';
 
 export default function Nav() {
   return (

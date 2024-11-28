@@ -26,24 +26,7 @@ export const FIRST_FILTER_CATEGORY: FILTER_CATEGORY_TYPE[] = [
       },
     ],
   },
-  {
-    label: 'postStatus',
-    categoryName: '게시글 상태',
-    options: [
-      {
-        value: 'PENDING',
-        optionName: '게시중',
-      },
-      {
-        value: 'IN_PROGRESS',
-        optionName: '거래중',
-      },
-      {
-        value: 'COMPLETE',
-        optionName: '거래 완료',
-      },
-    ],
-  },
+
   {
     label: 'membershipType',
     categoryName: '회원권 타입',
@@ -79,6 +62,24 @@ export const SECOND_FILTER_CATEGORY: FILTER_CATEGORY_TYPE[] = [
       {
         value: 'months_6_plus',
         optionName: '6개월 이상',
+      },
+    ],
+  },
+  {
+    label: 'postStatus',
+    categoryName: '게시글 상태',
+    options: [
+      {
+        value: 'PENDING',
+        optionName: '게시중',
+      },
+      {
+        value: 'IN_PROGRESS',
+        optionName: '거래중',
+      },
+      {
+        value: 'COMPLETE',
+        optionName: '거래 완료',
       },
     ],
   },
