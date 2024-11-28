@@ -5,7 +5,7 @@ interface props {
 
 export default function ImageSelect({ name, onChange }: props) {
   return (
-    <div className="relative flex justify-center items-center w-60 h-56 border-2 border-gray-400 rounded-lg">
+    <div className="relative flex justify-center items-center w-60 h-56">
       <input
         type="file"
         accept="image/*"

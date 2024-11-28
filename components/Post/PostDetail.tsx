@@ -1,6 +1,7 @@
 'use client';
 import { FaHeart } from 'react-icons/fa';
 import { CgCloseO } from 'react-icons/cg';
+import DOMpurify from 'dompurify';
 
 import { useQuery } from '@tanstack/react-query';
 import axios from 'axios';
@@ -80,7 +81,12 @@ export default function PostDetail() {
             </div>
           </div>
           <div className=" relative min-h-[360px] p-4 border-b border-gray-400">
-            내용 {data.content}
+            <div
+              className=" overflow-hidden whitespace-pre-wrap"
+              dangerouslySetInnerHTML={{
+                __html: DOMpurify.sanitize(data.content),
+              }}
+            />
             <div className=" flex items-center gap-1 absolute bottom-2 right-2 cursor-pointer">
               <span className=" text-gray-400 text-sm font-bold ">찜</span>
               <FaHeart color="#DC7D7D" size={24} />

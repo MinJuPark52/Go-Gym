@@ -211,6 +211,24 @@
       "gymName": "oo 헬스장",
       "city": "서울특별시",
       "district": "강남구"
+    },
+    {
+      "id": "4ee8",
+      "title": "팝니다",
+      "content": "<p>팝니다</p>",
+      "expirationDate": "2024-12-31",
+      "remainingSession": "12",
+      "amount": "12",
+      "latitude": 37.3694515538591,
+      "longitude": 126.806862117111,
+      "gymKaKaoUrl": "https://map.kakao.com/link/to/아리테휘트니스 시흥능곡점,37.3694515538591,126.806862117111",
+      "gymName": "아리테휘트니스 시흥능곡점",
+      "imageUrl1": "",
+      "imageUrl2": "",
+      "imageUrl3": "",
+      "postType": "SELL",
+      "postStatus": "PENDING",
+      "membershipType": "MEMBERSHUP_ONLY"
     }
   ]
 }

@@ -1,4 +1,5 @@
 import type { Config } from 'tailwindcss';
+import type { PluginAPI } from 'tailwindcss/types/config';
 
 export default {
   content: [
@@ -29,5 +30,21 @@ export default {
       },
     },
   },
-  plugins: [],
+  plugins: [
+    function ({ addComponents }: PluginAPI) {
+      addComponents({
+        'input[type="number"]::-webkit-outer-spin-button': {
+          '-webkit-appearance': 'none',
+          margin: '0',
+        },
+        'input[type="number"]::-webkit-inner-spin-button': {
+          '-webkit-appearance': 'none',
+          margin: '0',
+        },
+        'input[type="number"]': {
+          '-moz-appearance': 'textfield',
+        },
+      });
+    },
+  ],
 } satisfies Config;
