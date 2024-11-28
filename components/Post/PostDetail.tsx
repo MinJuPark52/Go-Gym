@@ -87,7 +87,7 @@ export default function PostDetail() {
             </div>
           </div>
 
-          <div className=" relative flex p-4 ">
+          <div className=" relative flex p-4 min-h-20">
             <PostDetailImage
               imageUrl={data.imageUrl1}
               onClick={handleImageClick}
