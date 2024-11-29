@@ -19,7 +19,7 @@ export default function SearchKakaoMap({
   ) => void;
 }) {
   const [loading, error] = useKakaoLoader({
-    appkey: process.env.KAKAO_API_KEY!,
+    appkey: process.env.NEXT_PUBLIC_KAKAO_API_KEY!,
     libraries: ['services'],
   });
 
@@ -37,13 +37,15 @@ export default function SearchKakaoMap({
     const ps = new window.kakao.maps.services.Places();
     ps.keywordSearch(keyword, (data: any[], status: any) => {
       if (status === window.kakao.maps.services.Status.OK) {
-        setPlaces(data); // 검색 결과를 상태로 설정
-        if (data.length > 0) {
-          setMapCenter({
-            lat: parseFloat(data[0].y),
-            lng: parseFloat(data[0].x),
-          }); // 첫 번째 검색 결과로 중심 이동
-        }
+        setTimeout(() => {
+          setPlaces(data); // 검색 결과를 상태로 설정
+          if (data.length > 0) {
+            setMapCenter({
+              lat: parseFloat(data[0].y),
+              lng: parseFloat(data[0].x),
+            }); // 첫 번째 검색 결과로 중심 이동
+          }
+        }, 0);
       }
     });
   };
@@ -56,7 +58,10 @@ export default function SearchKakaoMap({
   };
 
   if (loading) return <div>Loading...</div>;
-  if (error) return <div>Error: {JSON.stringify(error)}</div>;
+  if (error) {
+    console.error(error);
+    return <div>Error: {JSON.stringify(error)}</div>;
+  }
 
   return (
     <div className="absolute top-0 left-0 right-0 bottom-0 flex flex-col gap-4 justify-center items-center bg-slate-400 bg-opacity-30">

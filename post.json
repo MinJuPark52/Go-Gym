@@ -229,6 +229,46 @@
       "postType": "SELL",
       "postStatus": "PENDING",
       "membershipType": "MEMBERSHUP_ONLY"
+    },
+    {
+      "id": "ffbe",
+      "title": "팔아요",
+      "content": "<p>팝니다요</p>",
+      "expirationDate": "2024-12-26",
+      "remainingSession": "12",
+      "amount": "12",
+      "city": "",
+      "district": "",
+      "latitude": 37.4792396696667,
+      "longitude": 127.000067834997,
+      "gymKaKaoUrl": "https://map.kakao.com/link/to/바디어필PT스튜디오 방배점,37.4792396696667,127.000067834997",
+      "gymName": "바디어필PT스튜디오 방배점",
+      "imageUrl1": "",
+      "imageUrl2": "",
+      "imageUrl3": "",
+      "postType": "SELL",
+      "postStatus": "PENDING",
+      "membershipType": "MEMBERSHIP_WITH_PT"
+    },
+    {
+      "id": "0324",
+      "title": "팔아요",
+      "content": "<p>팝니다요</p>",
+      "expirationDate": "2024-12-31",
+      "remainingSession": "12",
+      "amount": "12",
+      "city": "서울특별시",
+      "district": "서초구",
+      "latitude": 37.4792396696667,
+      "longitude": 127.000067834997,
+      "gymKaKaoUrl": "https://map.kakao.com/link/to/바디어필PT스튜디오 방배점,37.4792396696667,127.000067834997",
+      "gymName": "바디어필PT스튜디오 방배점",
+      "imageUrl1": "",
+      "imageUrl2": "",
+      "imageUrl3": "",
+      "postType": "SELL",
+      "postStatus": "PENDING",
+      "membershipType": "MEMBERSHIP_WITH_PT"
     }
   ]
 }

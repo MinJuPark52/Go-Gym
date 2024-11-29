@@ -5,13 +5,22 @@ import {
   FIRST_FILTER_CATEGORY,
 } from '@/constants/category';
 import { FilterCategory } from './FilterCategory';
-import { ChangeEvent, useState } from 'react';
+import { ChangeEvent, useEffect, useState } from 'react';
 import QuillEditor from './QuillEditor';
 import ImageSelect from './ImageSelect';
 import Image from 'next/image';
 import SearchKakaoMap from './SearchKaKaoMap';
-import { useMutation } from '@tanstack/react-query';
+import { UseQueryOptions, useMutation, useQuery } from '@tanstack/react-query';
 import axios from 'axios';
+import { getAccessToken, getCity } from '@/api/api';
+
+type ExtendedUseQueryOptions<
+  TQueryFnData,
+  TError,
+  TData = TQueryFnData
+> = UseQueryOptions<TQueryFnData, TError, TData> & {
+  cacheTime?: number; // cacheTime 추가
+};
 
 interface categoryStateType {
   postType: 'default' | 'SELL' | 'BUY';
@@ -30,6 +39,8 @@ export default function EditPost() {
     expirationDate: '',
     remainingSession: 0,
     amount: 0,
+    city: '',
+    district: '',
   });
   const [isMapOpen, setIsMapOpen] = useState(false);
   const [mapValue, setMapValue] = useState({
@@ -51,6 +62,45 @@ export default function EditPost() {
     membershipType: 'default',
   });
 
+  //토큰발급
+
+  useEffect(() => {
+    const getToken = async () => {
+      const response = await getAccessToken();
+
+      if (response) {
+        sessionStorage.setItem('accessToken', response);
+      }
+    };
+
+    getToken();
+  }, []);
+
+  useEffect(() => {
+    // mapValue.latitude가 0이 아닌 경우에만 getCity 호출
+    const token = sessionStorage.getItem('accessToken');
+
+    if (mapValue.latitude !== 0 && token) {
+      const fetchCityData = async () => {
+        const response = await getCity(
+          mapValue.latitude.toString(),
+          mapValue.longitude.toString(),
+          token
+        );
+
+        if (response) {
+          setValues({
+            ...values,
+            city: response.sido_nm,
+            district: response.sgg_nm,
+          });
+        }
+      };
+
+      fetchCityData();
+    }
+  }, [mapValue]);
+
   const { mutate, isPending } = useMutation({
     mutationFn: async (jsonData: Record<string, any>) =>
       await axios.post('http://localhost:4000/postDetails', jsonData),
@@ -68,7 +118,6 @@ export default function EditPost() {
       ...values,
       [e.target.name]: e.target.value,
     });
-    console.log(values);
   };
 
   const handleContent = (value: string) => {
