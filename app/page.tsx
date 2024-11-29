@@ -1,6 +1,6 @@
-import PostList from '@/components/Post/PostList';
-import Slider from '@/components/Post/Slider';
-import Link from 'next/link';
+import PostList from "@/components/Post/PostList";
+import Slider from "@/components/Post/Slider";
+import Link from "next/link";
 
 export default function Home() {
   return (
