@@ -1,8 +1,9 @@
 "use client";
 
 import { ChangeEvent, useState } from "react";
-import Image from "next/image";
 import Link from "next/link";
+import axios from "axios";
+import { BiSolidMessageRounded } from "react-icons/bi";
 
 interface InputProps {
   type: string;
@@ -32,12 +33,12 @@ const LoginInput = ({
 );
 
 export default function LoginForm() {
-  const [loginFormData, setloginFormData] = useState({
+  const [loginFormData, setLoginFormData] = useState({
     email: "",
     password: "",
   });
 
-  const [loginErrors, setloginErrors] = useState({
+  const [loginErrors, setLoginErrors] = useState({
     email: "",
     password: "",
   });
@@ -45,12 +46,11 @@ export default function LoginForm() {
   const handleLoginChange =
     (field: keyof typeof loginFormData) =>
     (e: ChangeEvent<HTMLInputElement>) => {
-      setloginFormData({ ...loginFormData, [field]: e.target.value });
+      setLoginFormData({ ...loginFormData, [field]: e.target.value });
     };
 
-  const client_id = "your_kakao_client_id_here";
-  const redirect_uri = "http://localhost:3000/oauth";
-  const kakaoURL = `https://kauth.kakao.com/oauth/authorize?client_id=${client_id}&redirect_uri=${redirect_uri}&response_type=code`;
+  const redirect_uri = "http://localhost:3000/auth";
+  const kakaoURL = `https://kauth.kakao.com/oauth/authorize?client_id=${process.env.NEXT_PUBLIC_API_KEY}&redirect_uri=${redirect_uri}&response_type=code`;
 
   const handleLogin = () => {
     window.location.href = kakaoURL;
@@ -74,7 +74,7 @@ export default function LoginForm() {
       valid = false;
     }
 
-    setloginErrors({ email: emailErr, password: passwordErr });
+    setLoginErrors({ email: emailErr, password: passwordErr });
 
     return valid;
   };
@@ -82,34 +82,22 @@ export default function LoginForm() {
   const handleLoginSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (!validateForm()) {
-      // If validation fails, do not submit
-      return;
-    }
+    if (validateForm()) {
+      try {
+        const response = await axios({
+          method: "post",
+          url: "/api/auth/sign-in",
+          data: {
+            email: loginFormData.email,
 
-    try {
-      const response = await fetch("/api/login", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(loginFormData),
-      });
-
-      const data = await response.json();
-
-      if (response.ok) {
-        alert("로그인이 완료되었습니다!");
-        console.log("Submitted:", loginFormData);
-        setTimeout(() => {
-          window.location.href = "/";
-        }, 1000);
-      } else {
-        alert(data.message || "로그인에 실패했습니다");
+            password: loginFormData.password,
+          },
+        });
+        console.log(response.data);
+      } catch (error) {
+        console.error("Error:", error);
+        alert("서버와의 연결에 실패했습니다.");
       }
-    } catch (error) {
-      console.error("Error:", error);
-      alert("다시 시도해주세요.");
     }
   };
 
@@ -122,7 +110,7 @@ export default function LoginForm() {
 
       <LoginInput
         type="email"
-        placeholder="이메일"
+        placeholder="이메일 : example@gmail.com"
         value={loginFormData.email}
         onChange={handleLoginChange("email")}
         errorMessage={loginErrors.email}
@@ -143,15 +131,11 @@ export default function LoginForm() {
         로그인
       </button>
 
-      <div className="flex justify-center mt-4">
-        <Image
-          src="/kakao_login.png"
-          alt="카카오 로그인"
-          width={200}
-          height={30}
-          onClick={handleLogin}
-          className="cursor-pointer"
-        />
+      <div onClick={handleLogin} className="flex items-center justify-center">
+        <div className="inline-flex items-center justify-center bg-yellow-300 w-[150px] h-[40px] shadow-sm rounded-md mt-2">
+          <BiSolidMessageRounded className="w-[20px] h-[20px] mr-2" />
+          <span className="text-center text-sm">카카오 로그인</span>
+        </div>
       </div>
 
       <div>

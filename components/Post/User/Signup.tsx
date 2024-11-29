@@ -1,6 +1,7 @@
 "use client";
 
 import { ChangeEvent, useState } from "react";
+import axios, { AxiosError } from "axios";
 
 interface InputProps {
   type: string;
@@ -71,12 +72,38 @@ export default function SignupPage() {
     let valid = true;
     const newErrors = { ...signupErrors };
 
-    if (!signupFormData.name) {
-      newErrors.name = "이름을 입력해주세요.";
-      valid = false;
-    } else {
-      newErrors.name = "";
-    }
+    const fields = [
+      {
+        name: "name",
+        message: "이름을 입력하세요",
+        condition: !signupFormData.name,
+      },
+      {
+        name: "nickname",
+        message: "닉네임을 입력해주세요.",
+        condition: !signupFormData.nickname,
+      },
+      {
+        name: "area",
+        message: "관심지역을 선택해주세요.",
+        condition: signupFormData.area === "none",
+      },
+      {
+        name: "area2",
+        message: "관심지역을 선택해주세요.",
+        condition: signupFormData.area2 === "none",
+      },
+      {
+        name: "phone",
+        message: "핸드폰 번호를 입력해주세요.",
+        condition: !signupFormData.phone,
+      },
+    ];
+
+    fields.forEach((field) => {
+      newErrors[field.name] = field.condition ? field.message : "";
+      valid = field.condition ? false : valid;
+    });
 
     if (!signupFormData.email) {
       newErrors.email = "이메일을 입력해주세요.";
@@ -86,20 +113,6 @@ export default function SignupPage() {
       valid = false;
     } else {
       newErrors.email = "";
-    }
-
-    if (!signupFormData.nickname) {
-      newErrors.nickname = "닉네임을 입력해주세요.";
-      valid = false;
-    } else {
-      newErrors.nickname = "";
-    }
-
-    if (!signupFormData.phone) {
-      newErrors.phone = "핸드폰 번호를 입력해주세요.";
-      valid = false;
-    } else {
-      newErrors.phone = "";
     }
 
     if (!signupFormData.password) {
@@ -117,20 +130,6 @@ export default function SignupPage() {
       newErrors.password = "";
     }
 
-    if (signupFormData.area === "none") {
-      newErrors.area = "관심지역을 선택해주세요.";
-      valid = false;
-    } else {
-      newErrors.area = "";
-    }
-
-    if (signupFormData.area2 === "none") {
-      newErrors.area2 = "관심지역2를 선택해주세요.";
-      valid = false;
-    } else {
-      newErrors.area2 = "";
-    }
-
     setsignupErrors(newErrors);
     return valid;
   };
@@ -142,27 +141,42 @@ export default function SignupPage() {
     if (loading[type]) return;
     setLoading((prev) => ({ ...prev, [type]: true }));
 
-    {
-      /*중복 검사 api*/
-    }
-
     try {
-      const response = await fetch(
-        `/api/duplicate${type === "nickname" ? "/nickname" : ""}?user${
-          type === "nickname" ? "Nickname" : "Email"
-        }=${value}`
-      );
-      const data = await response.json();
+      const api =
+        type === "email" ? "/api/auth/check-email" : "/api/auth/check-nickname";
+      const response = await axios.get(api, {
+        params: { [type]: value },
+      });
+
+      const data = response.data;
       setAvailability((prev) => ({
         ...prev,
-        [type]: data.result === "true" ? false : true,
+        [type]: data.result === "true",
       }));
-      alert(data.message);
+      alert(
+        data.message ||
+          `${type === "nickname" ? "닉네임" : "이메일"} ${
+            data.data === true ? "사용 가능합니다." : "이미 존재합니다."
+          }`
+      );
     } catch (error) {
       console.error(`Error checking ${type}:`, error);
-      alert(
-        `${type === "nickname" ? "닉네임" : "이메일"}을 다시 입력해주세요.`
-      );
+
+      if ((error as AxiosError).response) {
+        const responseMessage = (error as AxiosError).response?.data;
+
+        if ((error as AxiosError).response?.status === 400) {
+          alert(
+            responseMessage ||
+              `${
+                type === "nickname" ? "닉네임" : "이메일"
+              } 형식이 올바르지 않습니다.`
+          );
+        }
+        if ((error as AxiosError).response?.status === 500) {
+          alert(responseMessage || "서버 내부 오류입니다.");
+        }
+      }
     } finally {
       setLoading((prev) => ({ ...prev, [type]: false }));
     }
@@ -173,31 +187,22 @@ export default function SignupPage() {
 
     if (validateForm()) {
       try {
-        {
-          /*회원가입 api*/
-        }
-        const response = await fetch("/api/signup", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
+        const response = await axios({
+          method: "post",
+          url: "/api/auth/sign-up",
+          data: {
+            name: signupFormData.name,
+            email: signupFormData.email,
+            nickname: signupFormData.nickname,
+            phone: signupFormData.phone,
+            password: signupFormData.password,
+            areas: signupFormData.area,
+            areas2: null,
+            // role: "User",
+            // profilemageUrl : ""
           },
-          body: JSON.stringify(signupFormData),
         });
-
-        const data = await response.json();
-
-        if (response.ok) {
-          alert("회원가입이 완료되었습니다!");
-          console.log("Submitted:", signupFormData);
-          {
-            /*const router = useRouter(); 대신 사용*/
-          }
-          setTimeout(() => {
-            window.location.href = "/";
-          }, 1000);
-        } else {
-          alert(data.message || "회원가입에 실패했습니다");
-        }
+        console.log(response.data);
       } catch (error) {
         console.error("Error:", error);
         alert("다시 시도해주세요.");
@@ -227,7 +232,7 @@ export default function SignupPage() {
           <div>
             <SignupInput
               type="text"
-              placeholder="이메일"
+              placeholder="이메일:aaa@gmail.com"
               value={signupFormData.email}
               onChange={handleSignupChange("email")}
               errorMessage={signupErrors.email}
