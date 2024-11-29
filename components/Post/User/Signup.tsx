@@ -232,7 +232,7 @@ export default function SignupPage() {
           <div>
             <SignupInput
               type="text"
-              placeholder="이메일:aaa@gmail.com"
+              placeholder="이메일 : example@gmail.com"
               value={signupFormData.email}
               onChange={handleSignupChange("email")}
               errorMessage={signupErrors.email}
