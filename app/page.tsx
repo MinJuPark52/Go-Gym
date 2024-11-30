@@ -1,8 +1,8 @@
-import PostList from "@/components/Post/PostList";
-import Slider from "@/components/Post/Slider";
-import Link from "next/link";
+import PostList from '@/components/Post/PostList';
+import Slider from '@/components/UI/Slider';
 
-export default function Home() {
+
+export default function HomePage() {
   return (
     <>
       <Slider />
