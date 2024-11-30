@@ -1,6 +1,7 @@
 import axios from 'axios';
 
 //sgis 토근 발급
+
 //prettier-ignore
 const API_URL = '/api/sigs/OpenAPI3';
 

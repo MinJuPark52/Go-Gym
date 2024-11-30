@@ -1,8 +1,8 @@
-"use client";
+'use client';
 
-import { ChangeEvent, useState } from "react";
-import Image from "next/image";
-import Link from "next/link";
+import { ChangeEvent, useState } from 'react';
+import Image from 'next/image';
+import Link from 'next/link';
 
 interface InputProps {
   type: string;
@@ -33,13 +33,13 @@ const LoginInput = ({
 
 export default function LoginForm() {
   const [loginFormData, setloginFormData] = useState({
-    email: "",
-    password: "",
+    email: '',
+    password: '',
   });
 
   const [loginErrors, setloginErrors] = useState({
-    email: "",
-    password: "",
+    email: '',
+    password: '',
   });
 
   const handleLoginChange =
@@ -48,8 +48,8 @@ export default function LoginForm() {
       setloginFormData({ ...loginFormData, [field]: e.target.value });
     };
 
-  const client_id = "your_kakao_client_id_here";
-  const redirect_uri = "http://localhost:3000/oauth";
+  const client_id = 'your_kakao_client_id_here';
+  const redirect_uri = 'http://localhost:3000/oauth';
   const kakaoURL = `https://kauth.kakao.com/oauth/authorize?client_id=${client_id}&redirect_uri=${redirect_uri}&response_type=code`;
 
   const handleLogin = () => {
@@ -57,20 +57,20 @@ export default function LoginForm() {
   };
 
   const validateForm = () => {
-    let emailErr = "";
-    let passwordErr = "";
+    let emailErr = '';
+    let passwordErr = '';
     let valid = true;
 
     if (!loginFormData.email) {
-      emailErr = "이메일을 @포함해서 입력해주세요.";
+      emailErr = '이메일을 @포함해서 입력해주세요.';
       valid = false;
     } else if (!/\S+@\S+\.\S+/.test(loginFormData.email)) {
-      emailErr = "유효한 이메일 주소를 입력해주세요.";
+      emailErr = '유효한 이메일 주소를 입력해주세요.';
       valid = false;
     }
 
     if (!loginFormData.password) {
-      passwordErr = "비밀번호를 입력해주세요.";
+      passwordErr = '비밀번호를 입력해주세요.';
       valid = false;
     }
 
@@ -88,10 +88,10 @@ export default function LoginForm() {
     }
 
     try {
-      const response = await fetch("/api/login", {
-        method: "POST",
+      const response = await fetch('/api/login', {
+        method: 'POST',
         headers: {
-          "Content-Type": "application/json",
+          'Content-Type': 'application/json',
         },
         body: JSON.stringify(loginFormData),
       });
@@ -99,17 +99,17 @@ export default function LoginForm() {
       const data = await response.json();
 
       if (response.ok) {
-        alert("로그인이 완료되었습니다!");
-        console.log("Submitted:", loginFormData);
+        alert('로그인이 완료되었습니다!');
+        console.log('Submitted:', loginFormData);
         setTimeout(() => {
-          window.location.href = "/";
+          window.location.href = '/';
         }, 1000);
       } else {
-        alert(data.message || "로그인에 실패했습니다");
+        alert(data.message || '로그인에 실패했습니다');
       }
     } catch (error) {
-      console.error("Error:", error);
-      alert("다시 시도해주세요.");
+      console.error('Error:', error);
+      alert('다시 시도해주세요.');
     }
   };
 
@@ -124,7 +124,7 @@ export default function LoginForm() {
         type="email"
         placeholder="이메일"
         value={loginFormData.email}
-        onChange={handleLoginChange("email")}
+        onChange={handleLoginChange('email')}
         errorMessage={loginErrors.email}
       />
 
@@ -132,7 +132,7 @@ export default function LoginForm() {
         type="password"
         placeholder="비밀번호"
         value={loginFormData.password}
-        onChange={handleLoginChange("password")}
+        onChange={handleLoginChange('password')}
         errorMessage={loginErrors.password}
       />
 
