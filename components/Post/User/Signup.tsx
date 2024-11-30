@@ -11,6 +11,18 @@ interface InputProps {
   errorMessage?: string;
 }
 
+interface SignupErrors {
+  [key: string]: string;
+  name: string;
+  email: string;
+  nickname: string;
+  phone: string;
+  password: string;
+  area: string;
+  area2: string;
+  profileImageUrl: string;
+}
+
 const SignupInput: React.FC<InputProps> = ({
   type,
   placeholder,
@@ -31,6 +43,7 @@ const SignupInput: React.FC<InputProps> = ({
   </div>
 );
 
+// 관심지역
 const areas = ["서울"];
 const areas2 = ["부산"];
 
@@ -43,7 +56,10 @@ export default function SignupPage() {
     password: "",
     area: "none",
     area2: "none",
+    profileImageUrl: "",
+    role: "",
   });
+
   const [availability, setAvailability] = useState({
     email: null as boolean | null,
     nickname: null as boolean | null,
@@ -52,6 +68,7 @@ export default function SignupPage() {
     email: false,
     nickname: false,
   });
+
   const [signupErrors, setsignupErrors] = useState({
     name: "",
     email: "",
@@ -60,6 +77,7 @@ export default function SignupPage() {
     password: "",
     area: "",
     area2: "",
+    profileImageUrl: "",
   });
 
   const handleSignupChange =
@@ -70,7 +88,7 @@ export default function SignupPage() {
 
   const validateForm = () => {
     let valid = true;
-    const newErrors = { ...signupErrors };
+    const newErrors: SignupErrors = { ...signupErrors };
 
     const fields = [
       {
@@ -160,7 +178,7 @@ export default function SignupPage() {
           }`
       );
     } catch (error) {
-      console.error(`Error checking ${type}:`, error);
+      console.error(`Error checking availability: ${type}:`, error);
 
       if ((error as AxiosError).response) {
         const responseMessage = (error as AxiosError).response?.data;
@@ -198,14 +216,31 @@ export default function SignupPage() {
             password: signupFormData.password,
             areas: signupFormData.area,
             areas2: null,
+            profileImageUrl: signupFormData.profileImageUrl,
             // role: "User",
-            // profilemageUrl : ""
           },
         });
         console.log(response.data);
+        alert("회원가입이 완료되었습니다.");
+
+        // 이메일 인증 요청
+        try {
+          const emailResponse = await axios({
+            method: "post",
+            url: "/api/auth/verify-email",
+            data: {
+              email: signupFormData.email,
+            },
+          });
+          console.log(emailResponse.data);
+          alert("이메일 인증 링크가 전송되었습니다.");
+        } catch (error) {
+          console.error("Error:", error);
+          alert("이메일 인증을 요청하는데 실패했습니다. 다시 시도해주세요.");
+        }
       } catch (error) {
-        console.error("Error:", error);
-        alert("다시 시도해주세요.");
+        console.log("회원가입 오류:", error);
+        alert("회원가입에 실패했습니다. 다시 시도해주세요.");
       }
     }
   };
@@ -214,9 +249,19 @@ export default function SignupPage() {
     <div className="flex items-center justify-center bg-gray-50 border-r-gray-300 w-full h-[40rem]">
       <form
         onSubmit={handleSignupSubmit}
-        className="w-full h-[30rem] max-w-md bg-white p-8 space-y-3"
+        className="w-full h-[35rem] max-w-md bg-white p-8 space-y-3 overflow-y-auto"
       >
         <h2 className="text-2xl font-semibold text-center">회원가입</h2>
+
+        <div>
+          <SignupInput
+            type="text"
+            placeholder="프로필 이미지 URL"
+            value={signupFormData.profileImageUrl}
+            onChange={handleSignupChange("profileImageUrl")}
+            errorMessage={signupErrors.profileImageUrl}
+          />
+        </div>
 
         <div>
           <SignupInput
@@ -232,7 +277,7 @@ export default function SignupPage() {
           <div>
             <SignupInput
               type="text"
-              placeholder="이메일 : example@gmail.com"
+              placeholder="이메일"
               value={signupFormData.email}
               onChange={handleSignupChange("email")}
               errorMessage={signupErrors.email}

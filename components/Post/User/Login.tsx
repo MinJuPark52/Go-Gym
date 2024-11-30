@@ -79,6 +79,7 @@ export default function LoginForm() {
     return valid;
   };
 
+  // 토큰 사용해서 로그인
   const handleLoginSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
@@ -89,14 +90,24 @@ export default function LoginForm() {
           url: "/api/auth/sign-in",
           data: {
             email: loginFormData.email,
-
             password: loginFormData.password,
           },
         });
-        console.log(response.data);
+
+        if (response.data.token) {
+          localStorage.setItem("authToken", response.data.token);
+
+          localStorage.setItem("userData", JSON.stringify(response.data.user));
+
+          console.log("Login successful:", response.data);
+          window.location.href = "/";
+        } else {
+          console.error("No token was received.");
+          alert("로그인에 실패했습니다.");
+        }
       } catch (error) {
         console.error("Error:", error);
-        alert("서버와의 연결에 실패했습니다.");
+        alert("잘못된 정보입니다.");
       }
     }
   };
@@ -104,9 +115,9 @@ export default function LoginForm() {
   return (
     <form
       onSubmit={handleLoginSubmit}
-      className="w-full max-w-md bg-white p-8 space-y-3"
+      className="w-full h-[25rem] max-w-md bg-white p-8 space-y-3"
     >
-      <h2 className="text-2xl font-semibold text-center">로그인</h2>
+      <h2 className="text-2xl font-semibold text-center mt-2">로그인</h2>
 
       <LoginInput
         type="email"
