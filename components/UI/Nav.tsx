@@ -25,7 +25,7 @@ export default function Nav() {
             양도 게시판
           </Link>
           <Link
-            href={'/'}
+            href={'/chat'}
             className="font-semibold hover:text-blue-400 transition-all"
           >
             채팅방

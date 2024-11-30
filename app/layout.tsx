@@ -33,12 +33,6 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <Head>
-        <link
-          rel="stylesheet"
-          href="https://unpkg.com/react-quill@1.3.3/dist/quill.snow.css"
-        />
-      </Head>
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased `}
       >
