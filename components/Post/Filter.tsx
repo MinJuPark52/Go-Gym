@@ -10,18 +10,22 @@ import { act, useState } from 'react';
 import ActiveFilter from './ActiveFilter';
 
 interface categoryStateType {
-  postType: 'default' | 'sell' | 'buy';
-  postStatus: 'default' | 'ing' | 'buycomplete' | 'sellComplete';
-  membershipType: 'default' | 'membership' | 'membershipWithPT' | 'PTOnly';
+  postType: 'default' | 'SELL' | 'BUY';
+  postStatus: 'default' | 'PENDING' | 'IN_PROGRESS' | 'COMPLETED';
+  membershipType:
+    | 'default'
+    | 'MEMBERSHIP_ONLY'
+    | 'MEMBERSHIP_WITH_PT'
+    | 'PT_ONLY';
   membershipDuration: 'default' | 'months_0_3' | 'months_3_6' | 'months_6_plus';
   PTCount: 'default' | 'PT_0_10' | 'PT_10_25' | 'PT_25_plus';
 }
 
 export default function Filter() {
   const [categoryValue, setCategoryValue] = useState<categoryStateType>({
-    postType: 'sell',
-    postStatus: 'ing',
-    membershipType: 'membership',
+    postType: 'SELL',
+    postStatus: 'PENDING',
+    membershipType: 'MEMBERSHIP_ONLY',
     membershipDuration: 'months_0_3',
     PTCount: 'PT_0_10',
   });
