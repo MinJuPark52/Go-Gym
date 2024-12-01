@@ -86,29 +86,25 @@ export default function LoginForm() {
     if (validateForm()) {
       try {
         const response = await axios({
-          method: "post",
-          url: "/api/auth/sign-in",
-          data: {
-            email: loginFormData.email,
-            password: loginFormData.password,
-          },
+          method: "get",
+          url: `http://localhost:3001/login?email=${encodeURIComponent(
+            loginFormData.email
+          )}&password=${encodeURIComponent(loginFormData.password)}`,
         });
 
-        if (response.data.token) {
-          localStorage.setItem("authToken", response.data.token);
-
-          localStorage.setItem("userData", JSON.stringify(response.data.user));
-
+        if (response.status === 200 && response.data !== null) {
+          alert("로그인 성공!");
           console.log("Login successful:", response.data);
-          window.location.href = "/";
         } else {
-          console.error("No token was received.");
-          alert("로그인에 실패했습니다.");
+          alert("로그인실패");
+          console.log("Login fail:", response.data);
         }
       } catch (error) {
-        console.error("Error:", error);
-        alert("잘못된 정보입니다.");
+        console.log(error);
       }
+    } else {
+      alert("잘못된 정보입니다");
+      console.error("Form validation failed");
     }
   };
 

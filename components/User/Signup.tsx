@@ -54,8 +54,8 @@ export default function SignupPage() {
     nickname: "",
     phone: "",
     password: "",
-    area: "none",
-    area2: "none",
+    area: "",
+    area2: "",
     profileImageUrl: "",
     role: "",
   });
@@ -100,16 +100,6 @@ export default function SignupPage() {
         name: "nickname",
         message: "닉네임을 입력해주세요.",
         condition: !signupFormData.nickname,
-      },
-      {
-        name: "area",
-        message: "관심지역을 선택해주세요.",
-        condition: signupFormData.area === "none",
-      },
-      {
-        name: "area2",
-        message: "관심지역을 선택해주세요.",
-        condition: signupFormData.area2 === "none",
       },
       {
         name: "phone",
@@ -206,8 +196,8 @@ export default function SignupPage() {
     if (validateForm()) {
       try {
         const response = await axios({
-          method: "post",
-          url: "/api/auth/sign-up",
+          method: "get",
+          url: "http://localhost:3001/signup",
           data: {
             name: signupFormData.name,
             email: signupFormData.email,
@@ -215,28 +205,34 @@ export default function SignupPage() {
             phone: signupFormData.phone,
             password: signupFormData.password,
             areas: signupFormData.area,
-            areas2: null,
+            areas2: "",
             profileImageUrl: signupFormData.profileImageUrl,
-            // role: "User",
+            role: "User",
           },
         });
-        console.log(response.data);
-        alert("회원가입이 완료되었습니다.");
 
-        // 이메일 인증 요청
-        try {
-          const emailResponse = await axios({
-            method: "post",
-            url: "/api/auth/verify-email",
-            data: {
-              email: signupFormData.email,
-            },
-          });
-          console.log(emailResponse.data);
-          alert("이메일 인증 링크가 전송되었습니다.");
-        } catch (error) {
-          console.error("Error:", error);
-          alert("이메일 인증을 요청하는데 실패했습니다. 다시 시도해주세요.");
+        const { status, data } = response;
+        if (status === 200) {
+          console.log(data);
+          alert("회원가입이 완료되었습니다.");
+
+          try {
+            const emailResponse = await axios({
+              method: "get",
+              url: `http://localhost:3001/signup?email=${encodeURIComponent(
+                signupFormData.email
+              )}`,
+            });
+
+            const { status: emailStatus, data: emailData } = emailResponse; // 이메일 응답 상태 코드와 데이터 분리
+            if (emailStatus === 200) {
+              console.log(emailData);
+              alert("이메일 인증 링크가 전송되었습니다.");
+            }
+          } catch (error) {
+            console.error("Error:", error);
+            alert("이메일 인증을 요청하는데 실패했습니다. 다시 시도해주세요.");
+          }
         }
       } catch (error) {
         console.log("회원가입 오류:", error);
@@ -353,7 +349,7 @@ export default function SignupPage() {
               onChange={handleSignupChange("area")}
               className="w-full p-3 border border-gray-300 rounded-md focus:outline-none"
             >
-              <option value="none">관심지역</option>
+              <option value="">관심지역</option>
               {areas.map((area) => (
                 <option key={area} value={area}>
                   {area}
@@ -372,7 +368,7 @@ export default function SignupPage() {
               onChange={handleSignupChange("area2")}
               className="w-full p-3 border border-gray-300 rounded-md focus:outline-none mb-3"
             >
-              <option value="none">관심지역2</option>
+              <option value="">관심지역2</option>
               {areas2.map((area) => (
                 <option key={area} value={area}>
                   {area}
