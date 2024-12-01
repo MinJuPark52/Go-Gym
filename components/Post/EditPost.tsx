@@ -14,14 +14,6 @@ import { UseQueryOptions, useMutation, useQuery } from '@tanstack/react-query';
 import axios from 'axios';
 import { getAccessToken, getCity } from '@/api/api';
 
-type ExtendedUseQueryOptions<
-  TQueryFnData,
-  TError,
-  TData = TQueryFnData
-> = UseQueryOptions<TQueryFnData, TError, TData> & {
-  cacheTime?: number; // cacheTime 추가
-};
-
 interface categoryStateType {
   postType: 'default' | 'SELL' | 'BUY';
   postStatus: 'default' | 'PENDING' | 'IN_PROGRESS' | 'COMPLETED';
