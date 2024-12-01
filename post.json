@@ -269,6 +269,7 @@
       "postType": "SELL",
       "postStatus": "PENDING",
       "membershipType": "MEMBERSHIP_WITH_PT"
+<<<<<<< HEAD
     },
     {
       "id": "a4e9",
@@ -289,6 +290,8 @@
       "postType": "BUY",
       "postStatus": "PENDING",
       "membershipType": "MEMBERSHUP_ONLY"
+=======
+>>>>>>> 11595fb3f03156b3fe5bd64a35c6c37b666c44e6
     }
   ]
 }

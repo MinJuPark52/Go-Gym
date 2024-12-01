@@ -81,7 +81,7 @@ const Slider = () => {
                 바로가기
               </Link>
             </div>
-            <Image src={item.img} alt={item.name} />
+            <Image src={item.img} alt={item.name} priority />
           </div>
         );
       })}
