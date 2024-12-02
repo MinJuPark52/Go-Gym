@@ -46,5 +46,6 @@ export default {
         },
       });
     },
+    require('tailwind-scrollbar-hide'),
   ],
 } satisfies Config;

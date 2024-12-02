@@ -4,6 +4,7 @@ import { useQuery } from '@tanstack/react-query';
 import axios from 'axios';
 import ChatList from './ChatList';
 import Chat from './Chat';
+import { useEffect } from 'react';
 
 interface ChatItem {
   chatRoomId: number;
@@ -17,6 +18,7 @@ interface ChatItem {
 }
 
 export default function ChatRoom() {
+  //채팅방 목록 가져오기
   const { data, isSuccess } = useQuery<ChatItem[]>({
     queryKey: ['chatList'],
     queryFn: async () =>

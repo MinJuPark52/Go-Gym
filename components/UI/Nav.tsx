@@ -37,13 +37,15 @@ export default function Nav() {
             className=" cursor-pointer"
             priority
           />
-          <Image
-            src={profile}
-            alt="profile"
-            width={40}
-            className=" cursor-pointer"
-            priority
-          />
+          <Link href={'/mypage'}>
+            <Image
+              src={profile}
+              alt="profile"
+              width={40}
+              className=" cursor-pointer"
+              priority
+            />
+          </Link>
         </div>
       </div>
     </div>
