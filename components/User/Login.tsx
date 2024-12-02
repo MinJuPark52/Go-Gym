@@ -5,6 +5,12 @@ import Link from "next/link";
 import axios from "axios";
 import { BiSolidMessageRounded } from "react-icons/bi";
 
+interface User {
+  id?: string;
+  email: string;
+  password: string;
+}
+
 interface InputProps {
   type: string;
   placeholder: string;
@@ -79,32 +85,36 @@ export default function LoginForm() {
     return valid;
   };
 
-  // 토큰 사용해서 로그인
   const handleLoginSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
     if (validateForm()) {
       try {
-        const response = await axios({
-          method: "get",
-          url: `http://localhost:3001/login?email=${encodeURIComponent(
-            loginFormData.email
-          )}&password=${encodeURIComponent(loginFormData.password)}`,
-        });
+        const response = await axios.get<User[]>("http://localhost:4000/users");
+        if (response.status === 200) {
+          const user = response.data.find(
+            (user) =>
+              user.email === loginFormData.email &&
+              user.password === loginFormData.password
+          );
 
-        if (response.status === 200 && response.data !== null) {
-          alert("로그인 성공!");
-          console.log("Login successful:", response.data);
+          if (user) {
+            console.log("Login successful");
+            localStorage.setItem("user", JSON.stringify(user));
+            // 로그인 성공 후 메인화면(추후 변경)
+            window.location.href = "/";
+          } else {
+            console.log("Login failed");
+            alert("이메일 또는 비밀번호가 일치하지 않습니다.");
+          }
         } else {
-          alert("로그인실패");
-          console.log("Login fail:", response.data);
+          console.log("Login request failed");
+          alert("로그인 요청에 실패했습니다.");
         }
       } catch (error) {
-        console.log(error);
+        console.error("Error:", error);
+        alert("로그인 중 오류가 발생했습니다. 다시 시도해주세요.");
       }
-    } else {
-      alert("잘못된 정보입니다");
-      console.error("Form validation failed");
     }
   };
 

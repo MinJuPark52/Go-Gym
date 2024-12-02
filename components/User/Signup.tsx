@@ -1,7 +1,13 @@
 "use client";
 
 import { ChangeEvent, useState } from "react";
-import axios, { AxiosError } from "axios";
+import axios from "axios";
+
+interface Signup {
+  id?: string;
+  email: string;
+  password: string;
+}
 
 interface InputProps {
   type: string;
@@ -60,10 +66,6 @@ export default function SignupPage() {
     role: "",
   });
 
-  const [availability, setAvailability] = useState({
-    email: null as boolean | null,
-    nickname: null as boolean | null,
-  });
   const [loading, setLoading] = useState({
     email: false,
     nickname: false,
@@ -127,12 +129,10 @@ export default function SignupPage() {
       newErrors.password = "비밀번호를 입력해주세요.";
       valid = false;
     } else if (
-      !/(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*])/.test(
-        signupFormData.password
-      )
+      !/(?=.*[a-z])(?=.*\d)(?=.*[!@#$%^&*])/.test(signupFormData.password)
     ) {
       newErrors.password =
-        "비밀번호는 특수문자, 대소문자, 숫자를 포함해야 합니다.";
+        "비밀번호는 특수문자, 소문자, 숫자를 포함해야 합니다.";
       valid = false;
     } else {
       newErrors.password = "";
@@ -142,6 +142,9 @@ export default function SignupPage() {
     return valid;
   };
 
+  const [isEmailAvailable, setIsEmailAvailable] = useState(false);
+  const [isNicknameAvailable, setIsNicknameAvailable] = useState(false);
+
   const checkAvailability = async (
     type: "email" | "nickname",
     value: string
@@ -149,42 +152,40 @@ export default function SignupPage() {
     if (loading[type]) return;
     setLoading((prev) => ({ ...prev, [type]: true }));
 
+    // 중복 확인
     try {
       const api =
-        type === "email" ? "/api/auth/check-email" : "/api/auth/check-nickname";
+        type === "email"
+          ? "http://localhost:4000/users"
+          : "http://localhost:4000/nicknames";
       const response = await axios.get(api, {
         params: { [type]: value },
       });
 
       const data = response.data;
-      setAvailability((prev) => ({
-        ...prev,
-        [type]: data.result === "true",
-      }));
-      alert(
-        data.message ||
-          `${type === "nickname" ? "닉네임" : "이메일"} ${
-            data.data === true ? "사용 가능합니다." : "이미 존재합니다."
-          }`
-      );
-    } catch (error) {
-      console.error(`Error checking availability: ${type}:`, error);
-
-      if ((error as AxiosError).response) {
-        const responseMessage = (error as AxiosError).response?.data;
-
-        if ((error as AxiosError).response?.status === 400) {
-          alert(
-            responseMessage ||
-              `${
-                type === "nickname" ? "닉네임" : "이메일"
-              } 형식이 올바르지 않습니다.`
-          );
+      if (!data || !data.result) {
+        alert(`${type === "nickname" ? "닉네임" : "이메일"} 사용 가능합니다.`);
+        if (type === "email") {
+          setIsEmailAvailable(true);
+        } else {
+          setIsNicknameAvailable(true);
         }
-        if ((error as AxiosError).response?.status === 500) {
-          alert(responseMessage || "서버 내부 오류입니다.");
+      } else {
+        const isAvailable = data.result === "true";
+        alert(
+          `${type === "nickname" ? "닉네임" : "이메일"} ${
+            isAvailable ? "사용 가능합니다." : "이미 존재합니다."
+          }`
+        );
+        if (type === "email") {
+          setIsEmailAvailable(isAvailable);
+        } else {
+          setIsNicknameAvailable(isAvailable);
         }
       }
+    } catch (error) {
+      console.error(`Error checking availability for ${type}:`, error);
+      alert("서버 오류가 발생했습니다.");
     } finally {
       setLoading((prev) => ({ ...prev, [type]: false }));
     }
@@ -193,50 +194,38 @@ export default function SignupPage() {
   const handleSignupSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
+    if (!isEmailAvailable || !isNicknameAvailable) {
+      alert("중복 확인을 해주세요.");
+      return;
+    }
+
     if (validateForm()) {
       try {
-        const response = await axios({
-          method: "get",
-          url: "http://localhost:3001/signup",
-          data: {
-            name: signupFormData.name,
-            email: signupFormData.email,
-            nickname: signupFormData.nickname,
-            phone: signupFormData.phone,
-            password: signupFormData.password,
-            areas: signupFormData.area,
-            areas2: "",
-            profileImageUrl: signupFormData.profileImageUrl,
-            role: "User",
-          },
-        });
+        // 회원가입
+        const response = await axios.get<Signup[]>(
+          "http://localhost:4000/signups"
+        );
 
-        const { status, data } = response;
-        if (status === 200) {
-          console.log(data);
+        if (response.status === 200) {
+          console.log(response.data);
           alert("회원가입이 완료되었습니다.");
 
-          try {
-            const emailResponse = await axios({
-              method: "get",
-              url: `http://localhost:3001/signup?email=${encodeURIComponent(
-                signupFormData.email
-              )}`,
-            });
+          const emailResponse = await axios.get(
+            `http://localhost:4000/emails`,
+            { params: { email: signupFormData.email } }
+          );
 
-            const { status: emailStatus, data: emailData } = emailResponse; // 이메일 응답 상태 코드와 데이터 분리
-            if (emailStatus === 200) {
-              console.log(emailData);
-              alert("이메일 인증 링크가 전송되었습니다.");
-            }
-          } catch (error) {
-            console.error("Error:", error);
-            alert("이메일 인증을 요청하는데 실패했습니다. 다시 시도해주세요.");
+          if (emailResponse.status === 200) {
+            alert("이메일 인증 링크가 전송되었습니다.");
+          } else {
+            throw new Error("이메일 인증 요청 실패");
           }
+        } else {
+          throw new Error("회원가입 실패");
         }
       } catch (error) {
-        console.log("회원가입 오류:", error);
-        alert("회원가입에 실패했습니다. 다시 시도해주세요.");
+        console.error("오류:", error);
+        alert("회원가입에 실패했습니다.");
       }
     }
   };
@@ -289,11 +278,6 @@ export default function SignupPage() {
           </button>
         </div>
 
-        <div className="mt-2">
-          {availability.email === false && <p>이미 사용중인 이메일입니다.</p>}
-          {availability.email === true && <p>사용 가능한 이메일입니다.</p>}
-        </div>
-
         <div className="flex items-center space-x-2">
           <div>
             <SignupInput
@@ -315,10 +299,6 @@ export default function SignupPage() {
             >
               {loading.nickname ? "확인 중" : "중복확인"}
             </button>
-            {availability.nickname === false && (
-              <p>이미 사용중인 닉네임입니다.</p>
-            )}
-            {availability.nickname === true && <p>사용 가능한 닉네임입니다.</p>}
           </div>
         </div>
 
