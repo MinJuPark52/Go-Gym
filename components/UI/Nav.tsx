@@ -25,7 +25,7 @@ export default function Nav() {
             양도 게시판
           </Link>
           <Link
-            href={'/'}
+            href={'/chat'}
             className="font-semibold hover:text-blue-400 transition-all"
           >
             채팅방
@@ -37,13 +37,15 @@ export default function Nav() {
             className=" cursor-pointer"
             priority
           />
-          <Image
-            src={profile}
-            alt="profile"
-            width={40}
-            className=" cursor-pointer"
-            priority
-          />
+          <Link href={'/mypage'}>
+            <Image
+              src={profile}
+              alt="profile"
+              width={40}
+              className=" cursor-pointer"
+              priority
+            />
+          </Link>
         </div>
       </div>
     </div>

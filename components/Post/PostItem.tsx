@@ -1,10 +1,9 @@
-
 import Image from 'next/image';
 import { FaHeart } from 'react-icons/fa';
 import { IoChatbubblesOutline } from 'react-icons/io5';
 import profile from '../../public/default_profile.png';
 import Link from 'next/link';
-
+import useTimeAgo from '@/hooks/useTimeAgo';
 
 interface PostType {
   id: string;
@@ -27,7 +26,9 @@ export default function PostItem({
   title,
   wishCount,
 }: PostType) {
-  let postStatusKo = postStatus === "PENDING" && "판매중";
+  let postStatusKo = postStatus === 'PENDING' && '판매중';
+
+  const timeago = useTimeAgo(created_at);
 
   return (
     <Link href={`/community/${id}`}>
@@ -35,7 +36,7 @@ export default function PostItem({
         <div>
           <div className=" flex justify-between m-2">
             <p className=" text-gray-500 text-sm font-bold">{postStatusKo}</p>
-            <p className=" text-gray-500 text-xs">{timeAgo(created_at)}</p>
+            <p className=" text-gray-500 text-xs">{timeago}</p>
           </div>
           <div className=" flex justify-between ml-1 pb-1 mr-2 h-28 border-b border-[#ccc]">
             <Image
@@ -70,35 +71,10 @@ export default function PostItem({
                 100
               </span>
             </div>
-
           </div>
           <p>{gymName}</p>
         </div>
       </div>
     </Link>
   );
-}
-
-function timeAgo(pastDate: string) {
-  const now = new Date(); // 현재 시간
-  const past = new Date(pastDate); // 주어진 날짜
-
-  const diffInMilliseconds = now.getTime() - past.getTime(); // 두 날짜의 차이 (밀리초)
-  const diffInMinutes = Math.floor(diffInMilliseconds / 60000); // 차이를 분으로 변환
-  const diffInHours = Math.floor(diffInMilliseconds / 3600000); // 차이를 시간으로 변환
-
-  if (diffInMinutes < 60) {
-    // 분 단위로 표현
-    if (diffInMinutes < 1) {
-      return "방금 전";
-    }
-    return `${diffInMinutes}분 전`;
-  } else if (diffInHours < 24) {
-    // 시간 단위로 표현
-    return `${diffInHours}시간 전`;
-  } else {
-    // 하루 이상 차이 나는 경우, 날짜로 표시
-    const diffInDays = Math.floor(diffInMilliseconds / 86400000); // 차이를 일로 변환
-    return `${diffInDays}일 전`;
-  }
 }

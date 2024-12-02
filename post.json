@@ -290,5 +290,27 @@
       "postStatus": "PENDING",
       "membershipType": "MEMBERSHUP_ONLY"
     }
+  ],
+  "chatList": [
+    {
+      "chatRoomId": 123,
+      "createdAt": "2024-10-24 21:15:30",
+      "postId": 456,
+      "counterpartyId": 789,
+      "counterpartyNickname": "3대500",
+      "unreadMessageCount": 2,
+      "lastMessage": "구매 가능한가요?",
+      "lastMessageAt": "2024-10-24 21:20:30"
+    },
+    {
+      "chatRoomId": 404,
+      "createdAt": "2024-11-30 13:40:30",
+      "postId": 405,
+      "counterpartyId": 406,
+      "counterpartyNickname": "쉬는날은헬스",
+      "unreadMessageCount": 5,
+      "lastMessage": "네. 그럼 약속 시간은 언제로 할까요?",
+      "lastMessageAt": "2024-11-30 13:45:30"
+    }
   ]
 }
