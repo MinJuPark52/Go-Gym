@@ -26,7 +26,7 @@ export default function PostItem({
   title,
   wishCount,
 }: PostType) {
-  let postStatusKo = postStatus === 'PENDING' && '판매중';
+  const postStatusKo = postStatus === 'PENDING' && '판매중';
 
   const timeago = useTimeAgo(created_at);
 

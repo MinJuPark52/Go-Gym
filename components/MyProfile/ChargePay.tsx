@@ -2,13 +2,13 @@
 
 import { useState } from 'react';
 import PortOne from '@portone/browser-sdk/v2';
-import axiosInstance from '@/api/axiosInstance';
 
 export default function ChargePay() {
   const [money, setMoney] = useState(0);
 
   const paymentId = `${crypto.randomUUID()}`;
-  const data = {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const data: any = {
     storeId: process.env.NEXT_PUBLIC_PORTONE_STORE_ID,
     paymentId,
     orderName: '짐페이 충전',

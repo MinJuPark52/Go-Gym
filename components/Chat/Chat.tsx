@@ -1,5 +1,4 @@
 'use client';
-import useSocketStore from '@/store/useSocketStore';
 import Image from 'next/image';
 import { useState } from 'react';
 import profile from '@/public/default_profile.png';
@@ -43,7 +42,7 @@ export default function Chat({ onSendMessage }: props) {
     handleSendMessage();
   };
 
-  let buttonStyle = text.trim().length ? 'bg-blue-300' : 'bg-gray-300';
+  const buttonStyle = text.trim().length ? 'bg-blue-300' : 'bg-gray-300';
 
   return (
     <form

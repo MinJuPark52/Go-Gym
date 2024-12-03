@@ -32,6 +32,7 @@ const Slider = () => {
     readonly name: string;
     readonly title: string;
     readonly text: string;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     readonly img: any;
   }
 

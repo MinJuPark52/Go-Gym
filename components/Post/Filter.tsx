@@ -6,7 +6,7 @@ import {
   SECOND_FILTER_CATEGORY,
 } from '@/constants/category';
 import { FilterCategory } from './FilterCategory';
-import { act, useState } from 'react';
+import { useState } from 'react';
 import ActiveFilter from './ActiveFilter';
 
 interface categoryStateType {
@@ -55,21 +55,23 @@ export default function Filter() {
   const handleSelectOptions = (e: React.ChangeEvent<HTMLSelectElement>) => {
     setCategoryValue({ ...categoryValue, [e.target.name]: e.target.value });
 
-    e.target.value !== 'default'
-      ? setActiveFilters({
-          ...activeFilters,
-          [e.target.name]: {
-            id: e.target.name,
-            filterValue: e.target.options[e.target.selectedIndex].text,
-          },
-        })
-      : setActiveFilters({
-          ...activeFilters,
-          [e.target.name]: {
-            id: e.target.name,
-            filterValue: '',
-          },
-        });
+    if (e.target.value !== 'default') {
+      setActiveFilters({
+        ...activeFilters,
+        [e.target.name]: {
+          id: e.target.name,
+          filterValue: e.target.options[e.target.selectedIndex].text,
+        },
+      });
+    } else {
+      setActiveFilters({
+        ...activeFilters,
+        [e.target.name]: {
+          id: e.target.name,
+          filterValue: '',
+        },
+      });
+    }
   };
 
   return (

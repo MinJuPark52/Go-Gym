@@ -10,7 +10,7 @@ import QuillEditor from './QuillEditor';
 import ImageSelect from './ImageSelect';
 import Image from 'next/image';
 import SearchKakaoMap from './SearchKaKaoMap';
-import { UseQueryOptions, useMutation, useQuery } from '@tanstack/react-query';
+import { useMutation } from '@tanstack/react-query';
 import axios from 'axios';
 import { getAccessToken, getCity } from '@/api/api';
 
@@ -57,15 +57,16 @@ export default function EditPost() {
   //토큰발급
 
   useEffect(() => {
-    const getToken = async () => {
-      const response = await getAccessToken();
+    if (typeof window !== 'undefined') {
+      const getToken = async () => {
+        const response = await getAccessToken();
+        if (response) {
+          sessionStorage.setItem('accessToken', response);
+        }
+      };
 
-      if (response) {
-        sessionStorage.setItem('accessToken', response);
-      }
-    };
-
-    getToken();
+      getToken();
+    }
   }, []);
 
   useEffect(() => {
@@ -94,8 +95,12 @@ export default function EditPost() {
   }, [mapValue]);
 
   const { mutate, isPending } = useMutation({
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     mutationFn: async (jsonData: Record<string, any>) =>
-      await axios.post('http://localhost:4000/postDetails', jsonData),
+      await axios.post(
+        `${process.env.NEXT_PUBLIC_BACKEND_URL}/postDetails`,
+        jsonData
+      ),
     onSuccess: (data) => {
       alert('게시글이 작성되었습니다.');
       console.log(data);

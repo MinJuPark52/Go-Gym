@@ -19,7 +19,7 @@ interface ChatItem {
 }
 
 export default function ChatRoom() {
-  const { connect, messages, sendMessage, disconnect } = useWebSocketStore();
+  const { connect, sendMessage, disconnect } = useWebSocketStore();
   //채팅방 목록 가져오기
   const { data, isSuccess } = useQuery<ChatItem[]>({
     queryKey: ['chatList'],

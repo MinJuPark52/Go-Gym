@@ -1,10 +1,14 @@
 'use client';
 
-import React, { useEffect, useMemo, useState } from 'react';
-import ReactQuill from 'react-quill-new';
+import React, { useEffect, useState, useMemo } from 'react';
+import dynamic from 'next/dynamic';
+
+// ReactQuill을 동적으로 클라이언트에서만 로드되도록 설정
+const ReactQuill = dynamic(() => import('react-quill-new'), { ssr: false });
+
 import 'react-quill-new/dist/quill.snow.css';
 
-interface props {
+interface Props {
   onChange: (value: string) => void;
 }
 
@@ -25,12 +29,12 @@ const formats = [
   'size',
 ];
 
-export default function QuillEditor({ onChange }: props) {
+export default function QuillEditor({ onChange }: Props) {
   const [values, setValues] = useState<string>('');
 
   useEffect(() => {
     onChange(values);
-  }, [values]);
+  }, [values, onChange]);
 
   const modules = useMemo(() => {
     return {
