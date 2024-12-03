@@ -30,8 +30,6 @@ const formats = [
 ];
 
 export default function QuillEditor({ onChange }: Props) {
-  const [values, setValues] = useState<string>('');
-
   const modules = useMemo(() => {
     return {
       toolbar: {
@@ -52,7 +50,7 @@ export default function QuillEditor({ onChange }: Props) {
       theme="snow"
       modules={modules}
       formats={formats}
-      onChange={(value) => setValues(value)}
+      onChange={(value) => onChange(value)}
     />
   );
 }
