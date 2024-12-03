@@ -334,7 +334,14 @@ export default function EditPost() {
           </div>
         </div>
       </form>
-      {isMapOpen && <SearchKakaoMap onClick={handleClickGym} />}
+      {isMapOpen && (
+        <SearchKakaoMap
+          onClick={handleClickGym}
+          onClose={() => {
+            setIsMapOpen(false);
+          }}
+        />
+      )}
     </>
   );
 }

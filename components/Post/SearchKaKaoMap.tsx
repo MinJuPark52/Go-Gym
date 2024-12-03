@@ -10,6 +10,7 @@ import {
 
 export default function SearchKakaoMap({
   onClick,
+  onClose,
 }: {
   onClick: (
     latitude: number,
@@ -17,9 +18,10 @@ export default function SearchKakaoMap({
     gymKaKaoUrl: string,
     gymName: string
   ) => void;
+  onClose: () => void;
 }) {
   const [loading, error] = useKakaoLoader({
-    appkey: process.env.NEXT_PUBLIC_KAKAO_API_KEY!,
+    appkey: process.env.NEXT_PUBLIC_KAKAO_JAVASCRIPT_KEY!,
     libraries: ['services'],
   });
 
