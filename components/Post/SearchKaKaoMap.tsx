@@ -20,6 +20,7 @@ export default function SearchKakaoMap({
   onClose: () => void;
 }) {
   const [loading, error] = useKakaoLoader({
+    //에러나는거같네요
     appkey: process.env.NEXT_PUBLIC_KAKAO_JAVASCRIPT_KEY!,
     libraries: ['services'],
   });
