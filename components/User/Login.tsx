@@ -6,7 +6,6 @@ import axios from "axios";
 import { BiSolidMessageRounded } from "react-icons/bi";
 
 interface User {
-  id?: string;
   email: string;
   password: string;
 }
@@ -58,7 +57,7 @@ export default function LoginForm() {
   const redirect_uri = "http://localhost:3000/auth";
   const kakaoURL = `https://kauth.kakao.com/oauth/authorize?client_id=${process.env.NEXT_PUBLIC_API_KEY}&redirect_uri=${redirect_uri}&response_type=code`;
 
-  const handleLogin = () => {
+  const handleKakaoLogin = () => {
     window.location.href = kakaoURL;
   };
 
@@ -90,7 +89,14 @@ export default function LoginForm() {
 
     if (validateForm()) {
       try {
-        const response = await axios.get<User[]>("http://localhost:4000/users");
+        const response = await axios.post<User[]>(
+          "http://3.36.198.162:8080/api/auth/sign-in",
+          {
+            email: loginFormData.email,
+            password: loginFormData.password,
+          }
+        );
+
         if (response.status === 200) {
           const user = response.data.find(
             (user) =>
@@ -99,20 +105,17 @@ export default function LoginForm() {
           );
 
           if (user) {
-            console.log("Login successful");
-            localStorage.setItem("user", JSON.stringify(user));
-            // 로그인 성공 후 메인화면(추후 변경)
-            window.location.href = "/";
+            console.log("Login successful", user);
           } else {
-            console.log("Login failed");
             alert("이메일 또는 비밀번호가 일치하지 않습니다.");
           }
-        } else {
-          console.log("Login request failed");
-          alert("로그인 요청에 실패했습니다.");
         }
       } catch (error) {
-        console.error("Error:", error);
+        if (axios.isAxiosError(error)) {
+          console.error("Axios error:", error.response || error.message);
+        } else {
+          console.error("Unknown error:", error);
+        }
         alert("로그인 중 오류가 발생했습니다. 다시 시도해주세요.");
       }
     }
@@ -148,15 +151,20 @@ export default function LoginForm() {
         로그인
       </button>
 
-      <div onClick={handleLogin} className="flex items-center justify-center">
-        <div className="inline-flex items-center justify-center bg-yellow-300 w-[150px] h-[40px] shadow-sm rounded-md mt-2">
+      <div
+        onClick={handleKakaoLogin}
+        className="flex items-center justify-center cursor-pointer mt-2"
+      >
+        <div className="inline-flex items-center justify-center bg-yellow-300 w-[150px] h-[40px] shadow-sm rounded-md">
           <BiSolidMessageRounded className="w-[20px] h-[20px] mr-2" />
           <span className="text-center text-sm">카카오 로그인</span>
         </div>
       </div>
 
-      <div>
-        <Link href="/signup">회원가입</Link>
+      <div className="mt-4 text-center">
+        <Link href="/signup" className="text-blue-500">
+          회원가입
+        </Link>
       </div>
     </form>
   );

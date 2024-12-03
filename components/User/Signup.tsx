@@ -6,7 +6,7 @@ import axios from "axios";
 interface Signup {
   id?: string;
   email: string;
-  password: string;
+  nickname: string;
 }
 
 interface InputProps {
@@ -64,11 +64,6 @@ export default function SignupPage() {
     area2: "",
     profileImageUrl: "",
     role: "",
-  });
-
-  const [loading, setLoading] = useState({
-    email: false,
-    nickname: false,
   });
 
   const [signupErrors, setsignupErrors] = useState({
@@ -144,6 +139,10 @@ export default function SignupPage() {
 
   const [isEmailAvailable, setIsEmailAvailable] = useState(false);
   const [isNicknameAvailable, setIsNicknameAvailable] = useState(false);
+  const [loading, setLoading] = useState({
+    email: false,
+    nickname: false,
+  });
 
   const checkAvailability = async (
     type: "email" | "nickname",
@@ -153,34 +152,34 @@ export default function SignupPage() {
     setLoading((prev) => ({ ...prev, [type]: true }));
 
     // 중복 확인
+    const api =
+      type === "email"
+        ? "http://3.36.198.162:8080/api/check-email"
+        : "http://3.36.198.162:8080/api/check-nickname";
+
     try {
-      const api =
-        type === "email"
-          ? "http://localhost:4000/users"
-          : "http://localhost:4000/nicknames";
       const response = await axios.get(api, {
         params: { [type]: value },
       });
 
       const data = response.data;
-      if (!data || !data.result) {
-        alert(`${type === "nickname" ? "닉네임" : "이메일"} 사용 가능합니다.`);
-        if (type === "email") {
+
+      if (type === "email") {
+        if (data.emailAvailable) {
+          // API가 이메일 사용 가능 여부를 boolean으로 반환한다고 가정
+          alert("이메일 사용 가능합니다.");
           setIsEmailAvailable(true);
         } else {
-          setIsNicknameAvailable(true);
+          alert("이메일 이미 존재합니다.");
+          setIsEmailAvailable(false);
         }
-      } else {
-        const isAvailable = data.result === "true";
-        alert(
-          `${type === "nickname" ? "닉네임" : "이메일"} ${
-            isAvailable ? "사용 가능합니다." : "이미 존재합니다."
-          }`
-        );
-        if (type === "email") {
-          setIsEmailAvailable(isAvailable);
+      } else if (type === "nickname") {
+        if (data.nicknameAvailable) {
+          alert("닉네임 사용 가능합니다.");
+          setIsNicknameAvailable(true);
         } else {
-          setIsNicknameAvailable(isAvailable);
+          alert("닉네임 이미 존재합니다.");
+          setIsNicknameAvailable(false);
         }
       }
     } catch (error) {
@@ -202,8 +201,8 @@ export default function SignupPage() {
     if (validateForm()) {
       try {
         // 회원가입
-        const response = await axios.get<Signup[]>(
-          "http://localhost:4000/signups"
+        const response = await axios.post<Signup[]>(
+          "http://3.36.198.162:8080/api/auth/sign-up"
         );
 
         if (response.status === 200) {
@@ -211,7 +210,7 @@ export default function SignupPage() {
           alert("회원가입이 완료되었습니다.");
 
           const emailResponse = await axios.get(
-            `http://localhost:4000/emails`,
+            "http://3.36.198.162:8080/api/auth/verify-email",
             { params: { email: signupFormData.email } }
           );
 
