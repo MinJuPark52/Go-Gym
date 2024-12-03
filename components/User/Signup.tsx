@@ -1,6 +1,13 @@
 "use client";
 
 import { ChangeEvent, useState } from "react";
+import axios from "axios";
+
+interface Signup {
+  id?: string;
+  email: string;
+  nickname: string;
+}
 
 interface InputProps {
   type: string;
@@ -8,6 +15,18 @@ interface InputProps {
   value: string;
   onChange: (e: ChangeEvent<HTMLInputElement>) => void;
   errorMessage?: string;
+}
+
+interface SignupErrors {
+  [key: string]: string;
+  name: string;
+  email: string;
+  nickname: string;
+  phone: string;
+  password: string;
+  area: string;
+  area2: string;
+  profileImageUrl: string;
 }
 
 const SignupInput: React.FC<InputProps> = ({
@@ -30,6 +49,7 @@ const SignupInput: React.FC<InputProps> = ({
   </div>
 );
 
+// 관심지역
 const areas = ["서울"];
 const areas2 = ["부산"];
 
@@ -40,17 +60,12 @@ export default function SignupPage() {
     nickname: "",
     phone: "",
     password: "",
-    area: "none",
-    area2: "none",
+    area: "",
+    area2: "",
+    profileImageUrl: "",
+    role: "",
   });
-  const [availability, setAvailability] = useState({
-    email: null as boolean | null,
-    nickname: null as boolean | null,
-  });
-  const [loading, setLoading] = useState({
-    email: false,
-    nickname: false,
-  });
+
   const [signupErrors, setsignupErrors] = useState({
     name: "",
     email: "",
@@ -59,6 +74,7 @@ export default function SignupPage() {
     password: "",
     area: "",
     area2: "",
+    profileImageUrl: "",
   });
 
   const handleSignupChange =
@@ -69,14 +85,30 @@ export default function SignupPage() {
 
   const validateForm = () => {
     let valid = true;
-    const newErrors = { ...signupErrors };
+    const newErrors: SignupErrors = { ...signupErrors };
 
-    if (!signupFormData.name) {
-      newErrors.name = "이름을 입력해주세요.";
-      valid = false;
-    } else {
-      newErrors.name = "";
-    }
+    const fields = [
+      {
+        name: "name",
+        message: "이름을 입력하세요",
+        condition: !signupFormData.name,
+      },
+      {
+        name: "nickname",
+        message: "닉네임을 입력해주세요.",
+        condition: !signupFormData.nickname,
+      },
+      {
+        name: "phone",
+        message: "핸드폰 번호를 입력해주세요.",
+        condition: !signupFormData.phone,
+      },
+    ];
+
+    fields.forEach((field) => {
+      newErrors[field.name] = field.condition ? field.message : "";
+      valid = field.condition ? false : valid;
+    });
 
     if (!signupFormData.email) {
       newErrors.email = "이메일을 입력해주세요.";
@@ -88,52 +120,29 @@ export default function SignupPage() {
       newErrors.email = "";
     }
 
-    if (!signupFormData.nickname) {
-      newErrors.nickname = "닉네임을 입력해주세요.";
-      valid = false;
-    } else {
-      newErrors.nickname = "";
-    }
-
-    if (!signupFormData.phone) {
-      newErrors.phone = "핸드폰 번호를 입력해주세요.";
-      valid = false;
-    } else {
-      newErrors.phone = "";
-    }
-
     if (!signupFormData.password) {
       newErrors.password = "비밀번호를 입력해주세요.";
       valid = false;
     } else if (
-      !/(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*])/.test(
-        signupFormData.password
-      )
+      !/(?=.*[a-z])(?=.*\d)(?=.*[!@#$%^&*])/.test(signupFormData.password)
     ) {
       newErrors.password =
-        "비밀번호는 특수문자, 대소문자, 숫자를 포함해야 합니다.";
+        "비밀번호는 특수문자, 소문자, 숫자를 포함해야 합니다.";
       valid = false;
     } else {
       newErrors.password = "";
     }
 
-    if (signupFormData.area === "none") {
-      newErrors.area = "관심지역을 선택해주세요.";
-      valid = false;
-    } else {
-      newErrors.area = "";
-    }
-
-    if (signupFormData.area2 === "none") {
-      newErrors.area2 = "관심지역2를 선택해주세요.";
-      valid = false;
-    } else {
-      newErrors.area2 = "";
-    }
-
     setsignupErrors(newErrors);
     return valid;
   };
+
+  const [isEmailAvailable, setIsEmailAvailable] = useState(false);
+  const [isNicknameAvailable, setIsNicknameAvailable] = useState(false);
+  const [loading, setLoading] = useState({
+    email: false,
+    nickname: false,
+  });
 
   const checkAvailability = async (
     type: "email" | "nickname",
@@ -142,27 +151,40 @@ export default function SignupPage() {
     if (loading[type]) return;
     setLoading((prev) => ({ ...prev, [type]: true }));
 
-    {
-      /*중복 검사 api*/
-    }
+    // 중복 확인
+    const api =
+      type === "email"
+        ? "http://3.36.198.162:8080/api/check-email"
+        : "http://3.36.198.162:8080/api/check-nickname";
 
     try {
-      const response = await fetch(
-        `/api/duplicate${type === "nickname" ? "/nickname" : ""}?user${
-          type === "nickname" ? "Nickname" : "Email"
-        }=${value}`
-      );
-      const data = await response.json();
-      setAvailability((prev) => ({
-        ...prev,
-        [type]: data.result === "true" ? false : true,
-      }));
-      alert(data.message);
+      const response = await axios.get(api, {
+        params: { [type]: value },
+      });
+
+      const data = response.data;
+
+      if (type === "email") {
+        if (data.emailAvailable) {
+          // API가 이메일 사용 가능 여부를 boolean으로 반환한다고 가정
+          alert("이메일 사용 가능합니다.");
+          setIsEmailAvailable(true);
+        } else {
+          alert("이메일 이미 존재합니다.");
+          setIsEmailAvailable(false);
+        }
+      } else if (type === "nickname") {
+        if (data.nicknameAvailable) {
+          alert("닉네임 사용 가능합니다.");
+          setIsNicknameAvailable(true);
+        } else {
+          alert("닉네임 이미 존재합니다.");
+          setIsNicknameAvailable(false);
+        }
+      }
     } catch (error) {
-      console.error(`Error checking ${type}:`, error);
-      alert(
-        `${type === "nickname" ? "닉네임" : "이메일"}을 다시 입력해주세요.`
-      );
+      console.error(`Error checking availability for ${type}:`, error);
+      alert("서버 오류가 발생했습니다.");
     } finally {
       setLoading((prev) => ({ ...prev, [type]: false }));
     }
@@ -171,36 +193,38 @@ export default function SignupPage() {
   const handleSignupSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
+    if (!isEmailAvailable || !isNicknameAvailable) {
+      alert("중복 확인을 해주세요.");
+      return;
+    }
+
     if (validateForm()) {
       try {
-        {
-          /*회원가입 api*/
-        }
-        const response = await fetch("/api/signup", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(signupFormData),
-        });
+        // 회원가입
+        const response = await axios.post<Signup[]>(
+          "http://3.36.198.162:8080/api/auth/sign-up"
+        );
 
-        const data = await response.json();
+        if (response.status === 200) {
+          console.log(response.data);
+          alert("회원가입이 완료되었습니다.");
 
-        if (response.ok) {
-          alert("회원가입이 완료되었습니다!");
-          console.log("Submitted:", signupFormData);
-          {
-            /*const router = useRouter(); 대신 사용*/
+          const emailResponse = await axios.get(
+            "http://3.36.198.162:8080/api/auth/verify-email",
+            { params: { email: signupFormData.email } }
+          );
+
+          if (emailResponse.status === 200) {
+            alert("이메일 인증 링크가 전송되었습니다.");
+          } else {
+            throw new Error("이메일 인증 요청 실패");
           }
-          setTimeout(() => {
-            window.location.href = "/";
-          }, 1000);
         } else {
-          alert(data.message || "회원가입에 실패했습니다");
+          throw new Error("회원가입 실패");
         }
       } catch (error) {
-        console.error("Error:", error);
-        alert("다시 시도해주세요.");
+        console.error("오류:", error);
+        alert("회원가입에 실패했습니다.");
       }
     }
   };
@@ -209,9 +233,19 @@ export default function SignupPage() {
     <div className="flex items-center justify-center bg-gray-50 border-r-gray-300 w-full h-[40rem]">
       <form
         onSubmit={handleSignupSubmit}
-        className="w-full h-[30rem] max-w-md bg-white p-8 space-y-3"
+        className="w-full h-[35rem] max-w-md bg-white p-8 space-y-3 overflow-y-auto"
       >
         <h2 className="text-2xl font-semibold text-center">회원가입</h2>
+
+        <div>
+          <SignupInput
+            type="text"
+            placeholder="프로필 이미지 URL"
+            value={signupFormData.profileImageUrl}
+            onChange={handleSignupChange("profileImageUrl")}
+            errorMessage={signupErrors.profileImageUrl}
+          />
+        </div>
 
         <div>
           <SignupInput
@@ -243,11 +277,6 @@ export default function SignupPage() {
           </button>
         </div>
 
-        <div className="mt-2">
-          {availability.email === false && <p>이미 사용중인 이메일입니다.</p>}
-          {availability.email === true && <p>사용 가능한 이메일입니다.</p>}
-        </div>
-
         <div className="flex items-center space-x-2">
           <div>
             <SignupInput
@@ -269,10 +298,6 @@ export default function SignupPage() {
             >
               {loading.nickname ? "확인 중" : "중복확인"}
             </button>
-            {availability.nickname === false && (
-              <p>이미 사용중인 닉네임입니다.</p>
-            )}
-            {availability.nickname === true && <p>사용 가능한 닉네임입니다.</p>}
           </div>
         </div>
 
@@ -303,7 +328,7 @@ export default function SignupPage() {
               onChange={handleSignupChange("area")}
               className="w-full p-3 border border-gray-300 rounded-md focus:outline-none"
             >
-              <option value="none">관심지역</option>
+              <option value="">관심지역</option>
               {areas.map((area) => (
                 <option key={area} value={area}>
                   {area}
@@ -322,7 +347,7 @@ export default function SignupPage() {
               onChange={handleSignupChange("area2")}
               className="w-full p-3 border border-gray-300 rounded-md focus:outline-none mb-3"
             >
-              <option value="none">관심지역2</option>
+              <option value="">관심지역2</option>
               {areas2.map((area) => (
                 <option key={area} value={area}>
                   {area}
