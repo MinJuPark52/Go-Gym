@@ -2,7 +2,8 @@ import axios from 'axios';
 
 // Axios 인스턴스 생성
 const axiosInstance = axios.create({
-  baseURL: 'http://3.36.198.162:8080', // 기본 URL
+  // baseURL: 'http://3.36.198.162:8080', // 기본 URL 백엔드 연동시
+  baseURL: '/backend', //개발모드
   timeout: 10000, // 요청 제한 시간 (10초)
   headers: {
     'Content-Type': 'application/json', // 기본 헤더
@@ -13,7 +14,7 @@ const axiosInstance = axios.create({
 axiosInstance.interceptors.request.use(
   (config) => {
     // 요청 전에 토큰 추가 예시
-    const token = localStorage.getItem('token');
+    const token = sessionStorage.getItem('token');
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
     }
