@@ -12,7 +12,6 @@ import Image from 'next/image';
 
 export default function PostDetail() {
   const [visibleModal, setVisibleModal] = useState(false);
-  const [modalImage, setModalImage] = useState('');
   const { id } = useParams();
   const { data } = useQuery({
     queryKey: ['postDetail'],

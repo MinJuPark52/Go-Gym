@@ -10,7 +10,6 @@ import {
 
 export default function SearchKakaoMap({
   onClick,
-  onClose,
 }: {
   onClick: (
     latitude: number,
@@ -26,6 +25,7 @@ export default function SearchKakaoMap({
   });
 
   const [keyword, setKeyword] = useState(''); // 검색 키워드
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const [places, setPlaces] = useState<any[]>([]); // 검색 결과를 저장할 상태
   const [mapCenter, setMapCenter] = useState({
     lat: 37.566535,
@@ -37,6 +37,7 @@ export default function SearchKakaoMap({
     if (!window.kakao.maps.services) return;
 
     const ps = new window.kakao.maps.services.Places();
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     ps.keywordSearch(keyword, (data: any[], status: any) => {
       if (status === window.kakao.maps.services.Status.OK) {
         setTimeout(() => {
