@@ -6,6 +6,12 @@ import axios from "axios";
 interface Signup {
   email: string;
   nickname: string;
+  phone: string;
+  password: string;
+  area: string;
+  area2: string;
+  profileImageUrl: string;
+  role: string;
 }
 
 interface InputProps {
@@ -68,25 +74,6 @@ const areas = [
   "강원특별자치도",
   "전북특별자치도",
 ];
-const areas2 = [
-  "서울특별시",
-  "부산광역시",
-  "대구광역시",
-  "인천광역시",
-  "광주광역시",
-  "대전광역시",
-  "울산광역시",
-  "세종특별자치시",
-  "경기도",
-  "충청북도",
-  "충청남도",
-  "전라남도",
-  "경상북도",
-  "경상남도",
-  "제주특별자치시",
-  "강원특별자치도",
-  "전북특별자치도",
-];
 
 export default function SignupPage() {
   const [signupFormData, setsignupFormData] = useState({
@@ -112,6 +99,7 @@ export default function SignupPage() {
     profileImageUrl: "",
   });
 
+  const [areaAuto, setAreaAuto] = useState<string[]>([]);
   const [isEmailAvailable, setIsEmailAvailable] = useState(false);
   const [isNicknameAvailable, setIsNicknameAvailable] = useState(false);
   const [loading, setLoading] = useState({
@@ -119,10 +107,30 @@ export default function SignupPage() {
     nickname: false,
   });
 
+  // 지역1 (area) 선택 시 세부 지역(autoArea) 데이터 불러오기
+  const fetchAutoArea = async (area: string) => {
+    if (!area) return; // 지역1이 선택되지 않으면 아무 것도 하지 않음
+
+    setLoading((prev) => ({ ...prev, email: true }));
+    try {
+      const response = await axios.get("/backend/regins?name={서울특별시}"); // 실제 API URL로 변경
+      setAreaAuto(response.data);
+    } catch (err) {
+      console.error("세부 지역 정보를 불러오는 데 실패했습니다.", err);
+    } finally {
+      setLoading((prev) => ({ ...prev, email: false }));
+    }
+  };
+
   const handleSignupChange =
     (field: keyof typeof signupFormData) =>
     (e: ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
-      setsignupFormData({ ...signupFormData, [field]: e.target.value });
+      const value = e.target.value;
+      setsignupFormData({ ...signupFormData, [field]: value });
+
+      if (field === "area") {
+        fetchAutoArea(value); // 지역1을 선택하면 세부지역을 불러오기
+      }
     };
 
   const validateForm = () => {
@@ -176,19 +184,15 @@ export default function SignupPage() {
       return;
     }
 
-    // 회원가입 후 메일 인증
     if (validateForm()) {
       try {
         const response = await axios.post<Signup[]>(
           "/backend/api/auth/sign-up",
           signupFormData
         );
-        console.log(response);
 
         if (response.status === 200) {
-          console.log("회원가입 응답:", response.data);
           alert("회원가입이 완료되었습니다.");
-
           const emailResponse = await axios.get(
             "/backend/api/auth/verify-email",
             { params: { email: signupFormData.email } }
@@ -196,9 +200,6 @@ export default function SignupPage() {
 
           if (emailResponse.status === 200) {
             alert("이메일 인증 링크가 전송되었습니다.");
-          } else {
-            console.error("이메일 인증 실패:", emailResponse.data);
-            throw new Error("이메일 인증 요청 실패");
           }
         } else {
           throw new Error("회원가입 실패");
@@ -219,7 +220,7 @@ export default function SignupPage() {
 
     const emailRegex = /\S+@\S+\.\S+/;
     if (!emailRegex.test(email)) {
-      alert(" 이메일 주소에 '@'을 포함해주세요.");
+      alert("이메일 주소에 '@'을 포함해주세요.");
       return;
     }
 
@@ -228,11 +229,8 @@ export default function SignupPage() {
     try {
       const response = await axios.get<Signup[]>(
         "/backend/api/auth/check-email",
-        {
-          params: { email },
-        }
+        { params: { email } }
       );
-      console.log(response);
 
       if (response.status === 200) {
         setIsEmailAvailable(true);
@@ -262,7 +260,6 @@ export default function SignupPage() {
       const response = await axios.get("/backend/api/auth/check-nickname", {
         params: { nickname },
       });
-      console.log(response);
 
       if (response.status === 200) {
         setIsNicknameAvailable(true);
@@ -286,7 +283,6 @@ export default function SignupPage() {
         className="w-full h-[35rem] max-w-md bg-white p-8 space-y-3 overflow-y-auto"
       >
         <h2 className="text-2xl font-semibold text-center">회원가입</h2>
-
         <div>
           <SignupInput
             type="text"
@@ -369,45 +365,61 @@ export default function SignupPage() {
           />
         </div>
 
-        <div className="flex space-x-4">
-          <div className="w-full">
-            <select
-              value={signupFormData.area}
-              onChange={handleSignupChange("area")}
-              className="w-full p-3 border border-gray-300 rounded-md focus:outline-none"
-            >
-              <option value="">관심지역1</option>
-              {areas.map((area) => (
-                <option key={area} value={area}>
-                  {area}
-                </option>
-              ))}
-            </select>
+        <select
+          value={signupFormData.area}
+          onChange={handleSignupChange("area")}
+          className="w-full p-2 rounded-md border border-gray-300"
+        >
+          <option value="">관심지역1</option>
+          {areas.map((area, index) => (
+            <option key={index} value={area}>
+              {area}
+            </option>
+          ))}
+        </select>
 
-            {signupErrors.area && (
-              <p className="text-red-500 text-sm">{signupErrors.area}</p>
-            )}
-          </div>
+        {signupFormData.area && areaAuto.length > 0 && (
+          <select
+            value={signupFormData.area2}
+            onChange={handleSignupChange("area2")}
+            className="w-full p-2 rounded-md border border-gray-300"
+          >
+            <option value="">세부 지역 선택</option>
+            {areaAuto.map((area, index) => (
+              <option key={index} value={area}>
+                {area}
+              </option>
+            ))}
+          </select>
+        )}
 
-          <div className="w-full">
-            <select
-              value={signupFormData.area2}
-              onChange={handleSignupChange("area2")}
-              className="w-full p-3 border border-gray-300 rounded-md focus:outline-none mb-3"
-            >
-              <option value="">관심지역2</option>
-              {areas2.map((area) => (
-                <option key={area} value={area}>
-                  {area}
-                </option>
-              ))}
-            </select>
+        <select
+          value={signupFormData.area}
+          onChange={handleSignupChange("area")}
+          className="w-full p-2 rounded-md border border-gray-300"
+        >
+          <option value="">관심지역2</option>
+          {areas.map((area, index) => (
+            <option key={index} value={area}>
+              {area}
+            </option>
+          ))}
+        </select>
 
-            {signupErrors.area2 && (
-              <p className="text-red-500 text-sm">{signupErrors.area2}</p>
-            )}
-          </div>
-        </div>
+        {signupFormData.area && areaAuto.length > 0 && (
+          <select
+            value={signupFormData.area2}
+            onChange={handleSignupChange("area2")}
+            className="w-full p-2 rounded-md border border-gray-300"
+          >
+            <option value="">세부 지역 선택</option>
+            {areaAuto.map((area, index) => (
+              <option key={index} value={area}>
+                {area}
+              </option>
+            ))}
+          </select>
+        )}
 
         <div>
           <button
