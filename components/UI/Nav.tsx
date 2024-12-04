@@ -5,9 +5,10 @@ import logo from '../../public/logo_transparent.png';
 import profile from '../../public/default_profile.png';
 import alarm from '../../public/Alarm.png';
 import Link from 'next/link';
+import useLoginStore from '@/store/useLoginStore';
 
 export default function Nav() {
-  const token = sessionStorage.getItem('token');
+  const { loginState } = useLoginStore();
 
   return (
     <div className=" flex justify-center border-b border-[#ccc] h-18 shadow-md">
@@ -41,7 +42,7 @@ export default function Nav() {
             className=" cursor-pointer"
             priority
           />
-          {token ? (
+          {loginState ? (
             <Link href={'/mypage'}>
               <Image
                 src={profile}
