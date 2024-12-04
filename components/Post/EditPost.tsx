@@ -13,6 +13,7 @@ import SearchKakaoMap from './SearchKaKaoMap';
 import { useMutation } from '@tanstack/react-query';
 import axios from 'axios';
 import { getAccessToken, getCity } from '@/api/api';
+import axiosInstance from '@/api/axiosInstance';
 
 interface categoryStateType {
   postType: 'default' | 'SELL' | 'BUY';
@@ -97,10 +98,7 @@ export default function EditPost() {
   const { mutate, isPending } = useMutation({
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     mutationFn: async (jsonData: Record<string, any>) =>
-      await axios.post(
-        `${process.env.NEXT_PUBLIC_BACKEND_URL}/postDetails`,
-        jsonData
-      ),
+      await axiosInstance.post(`/backend/api/posts`, jsonData),
     onSuccess: (data) => {
       alert('게시글이 작성되었습니다.');
       console.log(data);
@@ -190,7 +188,9 @@ export default function EditPost() {
       ...images,
       ...categoryValue,
     };
-    mutate(jsonData);
+
+    console.log(jsonData);
+    // mutate(jsonData);
 
     //백엔드 연동시 formData로 변환해서 보내기
     // const formData = new FormData();
