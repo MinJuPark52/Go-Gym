@@ -2,6 +2,7 @@
 
 import { ChangeEvent, useState } from "react";
 import axios from "axios";
+import useAreaStore from "@/store/useAreaStore";
 
 interface Signup {
   email: string;
@@ -76,6 +77,7 @@ const areas = [
 ];
 
 export default function SignupPage() {
+  const { signup } = useAreaStore();
   const [signupFormData, setsignupFormData] = useState({
     name: "",
     email: "",
@@ -107,14 +109,19 @@ export default function SignupPage() {
     nickname: false,
   });
 
-  // 지역1 (area) 선택 시 세부 지역(autoArea) 데이터 불러오기
   const fetchAutoArea = async (area: string) => {
-    if (!area) return; // 지역1이 선택되지 않으면 아무 것도 하지 않음
-
+    if (!area) return;
     setLoading((prev) => ({ ...prev, email: true }));
     try {
-      const response = await axios.get("/backend/regins?name={서울특별시}"); // 실제 API URL로 변경
+      const response = await axios.get("/backend/api/regins?name={서울특별시}");
       setAreaAuto(response.data);
+      const authHeader = response.headers["authorization"];
+      if (authHeader) {
+        const token = authHeader.split(" ")[1];
+        console.log("JWT Token:", token);
+        sessionStorage.setItem("token", token);
+        signup(token);
+      }
     } catch (err) {
       console.error("세부 지역 정보를 불러오는 데 실패했습니다.", err);
     } finally {
@@ -129,7 +136,7 @@ export default function SignupPage() {
       setsignupFormData({ ...signupFormData, [field]: value });
 
       if (field === "area") {
-        fetchAutoArea(value); // 지역1을 선택하면 세부지역을 불러오기
+        fetchAutoArea(value);
       }
     };
 

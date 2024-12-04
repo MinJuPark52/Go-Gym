@@ -49,7 +49,7 @@ export default function LoginForm() {
     password: "",
   });
 
-  const { login } = useLoginStore();
+  const { signup } = useAreaStore();
 
   const handleLoginChange =
     (field: keyof typeof loginFormData) =>
