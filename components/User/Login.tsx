@@ -4,6 +4,7 @@ import { ChangeEvent, useState } from "react";
 import Link from "next/link";
 import axios from "axios";
 import { BiSolidMessageRounded } from "react-icons/bi";
+import useLoginStore from "@/store/useLoginStore";
 
 interface User {
   email: string;
@@ -48,6 +49,8 @@ export default function LoginForm() {
     password: "",
   });
 
+  const { login } = useLoginStore();
+
   const handleLoginChange =
     (field: keyof typeof loginFormData) =>
     (e: ChangeEvent<HTMLInputElement>) => {
@@ -61,31 +64,31 @@ export default function LoginForm() {
     window.location.href = kakaoURL;
   };
 
-  const validateForm = () => {
-    let emailErr = "";
-    let passwordErr = "";
-    let valid = true;
-
-    if (!loginFormData.email) {
-      emailErr = "이메일을 @포함해서 입력해주세요.";
-      valid = false;
-    } else if (!/\S+@\S+\.\S+/.test(loginFormData.email)) {
-      emailErr = "유효한 이메일 주소를 입력해주세요.";
-      valid = false;
-    }
-
-    if (!loginFormData.password) {
-      passwordErr = "비밀번호를 입력해주세요.";
-      valid = false;
-    }
-
-    setLoginErrors({ email: emailErr, password: passwordErr });
-
-    return valid;
-  };
-
   const handleLoginSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+
+    const validateForm = () => {
+      let emailErr = "";
+      let passwordErr = "";
+      let valid = true;
+
+      if (!loginFormData.email) {
+        emailErr = "이메일을 @포함해서 입력해주세요.";
+        valid = false;
+      } else if (!/\S+@\S+\.\S+/.test(loginFormData.email)) {
+        emailErr = "유효한 이메일 주소를 입력해주세요.";
+        valid = false;
+      }
+
+      if (!loginFormData.password) {
+        passwordErr = "비밀번호를 입력해주세요.";
+        valid = false;
+      }
+
+      setLoginErrors({ email: emailErr, password: passwordErr });
+
+      return valid;
+    };
 
     if (validateForm()) {
       try {
@@ -93,6 +96,7 @@ export default function LoginForm() {
           email: loginFormData.email,
           password: loginFormData.password,
         });
+
         console.log(response);
         if (response) {
           const authHeader = response.headers["authorization"];
@@ -101,6 +105,8 @@ export default function LoginForm() {
             console.log("JWT Token:", token);
 
             sessionStorage.setItem("token", token);
+
+            login(token);
           }
         }
       } catch (error) {
@@ -154,10 +160,8 @@ export default function LoginForm() {
         </div>
       </div>
 
-      <div className="mt-4 text-center">
-        <Link href="/signup" className="text-blue-500">
-          회원가입
-        </Link>
+      <div>
+        <Link href="/signup">회원가입</Link>
       </div>
     </form>
   );

@@ -76,6 +76,13 @@ export default function SignupPage() {
     profileImageUrl: "",
   });
 
+  const [isEmailAvailable, setIsEmailAvailable] = useState(false);
+  const [isNicknameAvailable, setIsNicknameAvailable] = useState(false);
+  const [loading, setLoading] = useState({
+    email: false,
+    nickname: false,
+  });
+
   const handleSignupChange =
     (field: keyof typeof signupFormData) =>
     (e: ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
@@ -125,13 +132,49 @@ export default function SignupPage() {
     return valid;
   };
 
+  const handleSignupSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+
+    if (!isEmailAvailable || !isNicknameAvailable) {
+      alert("중복확인을 해주세요.");
+      return;
+    }
+
+    // 회원가입 후 메일 인증
+    if (validateForm()) {
+      try {
+        const response = await axios.post<Signup[]>(
+          "/backend/api/auth/sign-up",
+          signupFormData
+        );
+        console.log(response);
+
+        if (response.status === 200) {
+          console.log("회원가입 응답:", response.data);
+          alert("회원가입이 완료되었습니다.");
+
+          const emailResponse = await axios.get(
+            "/backend/api/auth/verify-email",
+            { params: { email: signupFormData.email } }
+          );
+
+          if (emailResponse.status === 200) {
+            alert("이메일 인증 링크가 전송되었습니다.");
+          } else {
+            console.error("이메일 인증 실패:", emailResponse.data);
+            throw new Error("이메일 인증 요청 실패");
+          }
+        } else {
+          throw new Error("회원가입 실패");
+        }
+      } catch (error) {
+        console.error("오류:", error);
+        alert("회원가입에 실패했습니다.");
+      }
+    }
+  };
+
   // 이메일 중복 확인
-  const [isEmailAvailable, setIsEmailAvailable] = useState(false);
-  const [isNicknameAvailable, setIsNicknameAvailable] = useState(false);
-  const [loading, setLoading] = useState({
-    email: false,
-    nickname: false,
-  });
   const checkEmail = async (email: string) => {
     if (loading.email || !email) {
       alert("이메일을 입력해주세요.");
@@ -154,15 +197,6 @@ export default function SignupPage() {
         }
       );
       console.log(response);
-
-      if (response) {
-        const authHeader = response.headers["authorization"];
-        if (authHeader) {
-          const token = authHeader.split(" ")[1];
-          console.log("JWT Token:", token);
-          sessionStorage.setItem("token", token);
-        }
-      }
 
       if (response.status === 200) {
         setIsEmailAvailable(true);
@@ -194,15 +228,6 @@ export default function SignupPage() {
       });
       console.log(response);
 
-      if (response) {
-        const authHeader = response.headers["authorization"];
-        if (authHeader) {
-          const token = authHeader.split(" ")[1];
-          console.log("JWT Token:", token);
-          sessionStorage.setItem("token", token);
-        }
-      }
-
       if (response.status === 200) {
         setIsNicknameAvailable(true);
         alert("닉네임 사용 가능합니다.");
@@ -215,57 +240,6 @@ export default function SignupPage() {
       setIsNicknameAvailable(false);
     } finally {
       setLoading((prev) => ({ ...prev, nickname: false }));
-    }
-  };
-
-  const handleSignupSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-
-    if (!isEmailAvailable || !isNicknameAvailable) {
-      alert("중복확인을 해주세요.");
-      return;
-    }
-
-    // 회원가입 후 메일 인증
-    if (validateForm()) {
-      try {
-        const response = await axios.post<Signup[]>(
-          "/backend/api/auth/sign-up",
-          signupFormData
-        );
-        console.log(response);
-
-        if (response && response.headers) {
-          const authHeader = response.headers["authorization"];
-          if (authHeader) {
-            const token = authHeader.split(" ")[1];
-            console.log("JWT Token:", token);
-            sessionStorage.setItem("token", token);
-          }
-        }
-
-        if (response.status === 200) {
-          console.log("회원가입 응답:", response.data);
-          alert("회원가입이 완료되었습니다.");
-
-          const emailResponse = await axios.get(
-            "/backend/api/auth/verify-email",
-            { params: { email: signupFormData.email } }
-          );
-
-          if (emailResponse.status === 200) {
-            alert("이메일 인증 링크가 전송되었습니다.");
-          } else {
-            console.error("이메일 인증 실패:", emailResponse);
-            throw new Error("이메일 인증 요청 실패");
-          }
-        } else {
-          throw new Error("회원가입 실패");
-        }
-      } catch (error) {
-        console.error("오류:", error);
-        alert("회원가입에 실패했습니다.");
-      }
     }
   };
 

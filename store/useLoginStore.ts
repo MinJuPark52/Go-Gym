@@ -24,8 +24,8 @@ const useLoginStore = create<LoginState>((set) => ({
     });
 
     setTimeout(() => {
-      set({ loginState: false, token: null });
-    }, 1000);
+      set({ loginState: false, token: null, expirationTime: 0 });
+    }, 3600000);
   },
 
   logout: () => {
