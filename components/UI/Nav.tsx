@@ -1,3 +1,5 @@
+'use client';
+
 import Image from 'next/image';
 import logo from '../../public/logo_transparent.png';
 import profile from '../../public/default_profile.png';
@@ -5,6 +7,8 @@ import alarm from '../../public/Alarm.png';
 import Link from 'next/link';
 
 export default function Nav() {
+  const token = sessionStorage.getItem('token');
+
   return (
     <div className=" flex justify-center border-b border-[#ccc] h-18 shadow-md">
       <div className=" flex justify-between items-center  w-[80%]">
@@ -37,15 +41,24 @@ export default function Nav() {
             className=" cursor-pointer"
             priority
           />
-          <Link href={'/mypage'}>
-            <Image
-              src={profile}
-              alt="profile"
-              width={40}
-              className=" cursor-pointer"
-              priority
-            />
-          </Link>
+          {token ? (
+            <Link href={'/mypage'}>
+              <Image
+                src={profile}
+                alt="profile"
+                width={40}
+                className=" cursor-pointer"
+                priority
+              />
+            </Link>
+          ) : (
+            <Link
+              href={'/login'}
+              className="font-semibold hover:text-blue-400 transition-all"
+            >
+              로그인
+            </Link>
+          )}
         </div>
       </div>
     </div>
