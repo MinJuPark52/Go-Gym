@@ -6,6 +6,7 @@ import ChatList from './ChatList';
 import Chat from './Chat';
 import { useEffect } from 'react';
 import useWebSocketStore from '@/store/useSocketStore';
+import axiosInstance from '@/api/axiosInstance';
 
 interface ChatItem {
   chatRoomId: number;
@@ -19,12 +20,11 @@ interface ChatItem {
 }
 
 export default function ChatRoom() {
-  const { connect, sendMessage, disconnect } = useWebSocketStore();
+  const { connect, messages, sendMessage, disconnect } = useWebSocketStore();
   //채팅방 목록 가져오기
   const { data, isSuccess } = useQuery<ChatItem[]>({
     queryKey: ['chatList'],
-    queryFn: async () =>
-      (await axios.get('http://localhost:4000/chatList')).data,
+    queryFn: async () => (await axiosInstance.get('backend/chatList')).data,
     staleTime: 100000,
   });
 
