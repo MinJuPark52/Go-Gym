@@ -111,11 +111,11 @@ export default function SignupPage() {
     setLoading((prev) => ({ ...prev, email: true }));
     try {
       const response = await axios.get(
-        "/backend/api/regions?name={${signupForm area?}}"
+        `/backend/api/regions?name=${signupFormData.area}`
       );
       setAreaAuto(response.data);
     } catch (err) {
-      console.error("세부 지역 정보를 불러오는 데 실패했습니다.", err);
+      console.error("하위 지역 정보를 불러오는 데 실패했습니다.", err);
     } finally {
       setLoading((prev) => ({ ...prev, email: false }));
     }
@@ -384,7 +384,7 @@ export default function SignupPage() {
             onChange={handleSignupChange("area2")}
             className="w-full p-2 rounded-md border border-gray-300"
           >
-            <option value="">세부 지역 선택</option>
+            <option value="">하위 지역 선택</option>
             {areaAuto.map((area, index) => (
               <option key={index} value={area}>
                 {area}
@@ -412,7 +412,7 @@ export default function SignupPage() {
             onChange={handleSignupChange("area2")}
             className="w-full p-2 rounded-md border border-gray-300"
           >
-            <option value="">세부 지역 선택</option>
+            <option value="">지역 선택</option>
             {areaAuto.map((area, index) => (
               <option key={index} value={area}>
                 {area}
