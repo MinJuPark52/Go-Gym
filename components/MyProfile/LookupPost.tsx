@@ -9,9 +9,9 @@ export default function LookupPost() {
   const url = `/api/members/${category}`;
   let content = '';
 
-  if (category === 'write') {
+  if (category === 'my-posts') {
     content = '내가 작성한 게시글';
-  } else if (category === 'like') {
+  } else if (category === 'wishlist') {
     content = '내가 찜한 게시글';
   } else {
     content = '최근 본 게시글';

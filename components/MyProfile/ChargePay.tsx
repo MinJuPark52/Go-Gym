@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import PortOne from '@portone/browser-sdk/v2';
+import axios from 'axios';
 
 export default function ChargePay() {
   const [money, setMoney] = useState(0);
@@ -43,7 +44,14 @@ export default function ChargePay() {
     async function requestPayment() {
       if (data) {
         const response = await PortOne.requestPayment(data);
+
+        //백엔드 엔드포인트
+        const validation = await axios.post('url', {
+          txId: response?.txId,
+          paymentId: response?.paymentId,
+        });
         console.log(response);
+        console.log(validation);
       }
     }
 
