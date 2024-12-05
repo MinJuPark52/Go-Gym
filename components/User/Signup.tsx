@@ -2,7 +2,6 @@
 
 import { ChangeEvent, useState } from "react";
 import axios from "axios";
-import useAreaStore from "@/store/useAreaStore";
 
 interface Signup {
   email: string;
@@ -55,7 +54,6 @@ const SignupInput: React.FC<InputProps> = ({
   </div>
 );
 
-// 관심지역
 const areas = [
   "서울특별시",
   "부산광역시",
@@ -77,7 +75,6 @@ const areas = [
 ];
 
 export default function SignupPage() {
-  const { signup } = useAreaStore();
   const [signupFormData, setsignupFormData] = useState({
     name: "",
     email: "",
@@ -113,15 +110,10 @@ export default function SignupPage() {
     if (!area) return;
     setLoading((prev) => ({ ...prev, email: true }));
     try {
-      const response = await axios.get("/backend/api/regins?name={서울특별시}");
+      const response = await axios.get(
+        "/backend/api/regions?name={${signupForm area?}}"
+      );
       setAreaAuto(response.data);
-      const authHeader = response.headers["authorization"];
-      if (authHeader) {
-        const token = authHeader.split(" ")[1];
-        console.log("JWT Token:", token);
-        sessionStorage.setItem("token", token);
-        signup(token);
-      }
     } catch (err) {
       console.error("세부 지역 정보를 불러오는 데 실패했습니다.", err);
     } finally {
