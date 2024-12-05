@@ -14,7 +14,7 @@ export default function ChangeProfile() {
   });
 
   return (
-    <div className=" flex items-center mt-4 p-8 border-2 border-gray-400 rounded-md">
+    <div className=" flex items-center mt-4 p-8 min-w-[640px] border-2 border-gray-400 rounded-md">
       <Image
         src={profile}
         alt="profile"

@@ -1,9 +1,9 @@
 'use client';
 
 import { useQuery } from '@tanstack/react-query';
-import axios from 'axios';
 import PostItem from './PostItem';
 import axiosInstance from '@/api/axiosInstance';
+import axios from 'axios';
 
 interface PostType {
   amount: number;
@@ -21,12 +21,13 @@ export default function PostList() {
   const { data } = useQuery({
     queryKey: ['post'],
     queryFn: async () =>
-      (await axiosInstance.get('/api/posts?page=0&size=10')).data,
+      // (await axiosInstance.get('/api/posts?page=0&size=10')).data,
+      (await axios.get('http://localhost:4000/posts')).data,
     staleTime: 1000 * 10,
   });
 
   return (
-    <div className=" flex flex-wrap justify-center gap-8 mb-12 w-full ">
+    <div className=" flex flex-wrap justify-center gap-8 mb-12 w-full min-w-[700px] ">
       {data &&
         data.map((post: PostType) => <PostItem key={post.id} {...post} />)}
     </div>
