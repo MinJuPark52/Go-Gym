@@ -182,14 +182,6 @@ export default function EditPost() {
       return;
     }
 
-    const jsonData = {
-      ...values,
-      ...mapValue,
-      ...images,
-      ...categoryValue,
-    };
-
-    console.log(jsonData);
     // mutate(jsonData);
 
     //백엔드 연동시 formData로 변환해서 보내기

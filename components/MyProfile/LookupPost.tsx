@@ -6,6 +6,7 @@ import PostList from '../Post/PostList';
 export default function LookupPost() {
   const { category } = useParams();
 
+  const url = `/api/members/${category}`;
   let content = '';
 
   if (category === 'write') {
@@ -19,7 +20,7 @@ export default function LookupPost() {
   return (
     <div className="flex flex-col gap-16 mt-8">
       <h1 className=" text-3xl">{content}</h1>
-      <PostList />
+      <PostList url={url} />
     </div>
   );
 }

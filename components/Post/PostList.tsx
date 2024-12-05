@@ -17,11 +17,11 @@ interface PostType {
   wishCount: number;
 }
 
-export default function PostList() {
+export default function PostList({ url }: { url?: string }) {
   const { data } = useQuery({
     queryKey: ['post'],
     queryFn: async () =>
-      // (await axiosInstance.get('/api/posts?page=0&size=10')).data,
+      // (await axiosInstance.get('url?page=0&size=10')).data, 백엔드 연동시 사용
       (await axios.get('http://localhost:4000/posts')).data,
     staleTime: 1000 * 10,
   });

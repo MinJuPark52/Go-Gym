@@ -52,28 +52,28 @@ export default function MyPageNav() {
         </button>
         {visible.post && (
           <div className=" flex flex-col p-2 gap-2 items-start animate-slide-down">
-            <Link href={'/mypage/postLook/write'}>
+            <Link href={'/mypage/postLook/my-posts'}>
               <button
                 className={`text-sm text-gray-600 font-bold hover:text-blue-400 cursor-pointer ${
-                  params.category === 'write' ? 'text-blue-400' : ''
+                  params.category === 'my-posts' ? 'text-blue-400' : ''
                 }`}
               >
                 작성한 게시글
               </button>
             </Link>
-            <Link href={'/mypage/postLook/like'}>
+            <Link href={'/mypage/postLook/wishlist'}>
               <button
                 className={`text-sm text-gray-600 font-bold hover:text-blue-400 cursor-pointer ${
-                  params.category === 'like' ? 'text-blue-400' : ''
+                  params.category === 'wishlist' ? 'text-blue-400' : ''
                 }`}
               >
                 찜한 게시글
               </button>
             </Link>
-            <Link href={'/mypage/postLook/latest'}>
+            <Link href={'/mypage/postLook/recent-view'}>
               <button
                 className={`text-sm text-gray-600 font-bold hover:text-blue-400 cursor-pointer ${
-                  params.category === 'latest' ? 'text-blue-400' : ''
+                  params.category === 'recent-view' ? 'text-blue-400' : ''
                 }`}
               >
                 최근 본 게시글

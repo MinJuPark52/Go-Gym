@@ -44,7 +44,7 @@ export default function ModifiedPost() {
     gymName: '',
   });
   //<Record<string, string | File | null>> 백엔드 연동시 타입추가
-  const [images, setImages] = useState<Record<string, string | null>>({
+  const [images, setImages] = useState<Record<string, string | File | null>>({
     imageUrl1: '',
     imageUrl2: '',
     imageUrl3: '',
@@ -219,48 +219,37 @@ export default function ModifiedPost() {
       return;
     }
 
-    const jsonData = {
-      ...values,
-      ...mapValue,
-      ...images,
-      ...categoryValue,
-    };
+    const formData = new FormData();
 
-    console.log(jsonData);
-    // mutate(jsonData);
+    // values 추가
+    // number가 있기때문에 toString()을 사용해 타입 고정
+    for (const key in values) {
+      formData.append(key, values[key as keyof typeof values].toString());
+    }
 
-    //백엔드 연동시 formData로 변환해서 보내기
-    // const formData = new FormData();
+    // mapValue 추가
+    for (const key in mapValue) {
+      formData.append(key, mapValue[key as keyof typeof mapValue].toString());
+    }
 
-    // // values 추가
-    // // number가 있기때문에 toString()을 사용해 타입 고정
-    // for (const key in values) {
-    //   formData.append(key, values[key as keyof typeof values].toString());
-    // }
+    // images 추가
+    for (const key in images) {
+      if (images[key]) {
+        formData.append(key, images[key] as File);
+      }
+    }
 
-    // // mapValue 추가
-    // for (const key in mapValue) {
-    //   formData.append(key, mapValue[key as keyof typeof mapValue].toString());
-    // }
+    // categoryValue 추가
+    for (const key in categoryValue) {
+      formData.append(key, categoryValue[key as keyof typeof categoryValue]);
+    }
 
-    // // images 추가
-    // for (const key in images) {
-    //   if (images[key]) {
-    //     formData.append(key, images[key] as File);
-    //   }
-    // }
+    const data: Record<string, string> = {};
+    formData.forEach((value, key) => {
+      data[key] = value as string; // 값이 string 타입으로 추론되도록 처리
+    });
 
-    // // categoryValue 추가
-    // for (const key in categoryValue) {
-    //   formData.append(key, categoryValue[key as keyof typeof categoryValue]);
-    // }
-
-    // const data: Record<string, string> = {};
-    // formData.forEach((value, key) => {
-    //   data[key] = value as string; // 값이 string 타입으로 추론되도록 처리
-    // });
-
-    // mutate(data);
+    mutate(data);
   };
 
   if (isPending) {
@@ -356,7 +345,7 @@ export default function ModifiedPost() {
                 <Image
                   key={el}
                   // json서버 사용시까진 blob url  src={URL.createObjectURL(images[el] as File)}
-                  src={images[el] as string}
+                  src={URL.createObjectURL(images[el] as File)}
                   alt="헬스장 이미지"
                   className="rounded-lg"
                   width={240}
