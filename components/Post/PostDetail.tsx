@@ -9,6 +9,7 @@ import { useParams } from 'next/navigation';
 import PostDetailImage from './PostDetailImage';
 import { useState } from 'react';
 import Image from 'next/image';
+import Link from 'next/link';
 
 export default function PostDetail() {
   const [visibleModal, setVisibleModal] = useState(false);
@@ -42,9 +43,11 @@ export default function PostDetail() {
             <div className=" mt-12 ml-2 mr-2 mb-2">
               <div className=" flex justify-between">
                 <p className=" text-2xl font-bold">{data.title}</p>
-                <button className="p-1 pl-2 pr-2 rounded-lg bg-blue-300 text-2xl text-white hover:bg-blue-500 transition-all">
-                  수정하기
-                </button>
+                <Link href={`/community/modifiedpost/${id}`}>
+                  <button className="p-1 pl-2 pr-2 rounded-lg bg-blue-300 text-2xl text-white hover:bg-blue-500 transition-all">
+                    수정하기
+                  </button>
+                </Link>
               </div>
               <div className=" flex w-fit mt-4 pl-2 pr-2 pt-1 pb-1 rounded-lg bg-[#5AC800] bg-opacity-60 ">
                 <p className=" text-[11px] text-[#377008] font-bold">
