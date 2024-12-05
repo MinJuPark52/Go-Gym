@@ -24,12 +24,13 @@ export default function ChatRoom() {
   //채팅방 목록 가져오기
   const { data, isSuccess } = useQuery<ChatItem[]>({
     queryKey: ['chatList'],
-    queryFn: async () => (await axiosInstance.get('backend/chatList')).data,
+    queryFn: async () => (await axiosInstance.get('/chatList')).data,
     staleTime: 100000,
   });
 
   useEffect(() => {
-    connect(process.env.NEXT_PUBLIC_BACKEND_URL + '/ws', '2', (message) => {
+    // 숫자 부분만 chatroomid적어주면 됨
+    connect('/chat' + '/ws', '1', (message) => {
       console.log('New message:', message.body);
     });
 
@@ -56,6 +57,7 @@ export default function ChatRoom() {
     senderId: string;
     content: string;
   }) => {
+    //송신 경로 등록
     sendMessage(
       '/app/chatroom/message',
       JSON.stringify({
@@ -64,7 +66,14 @@ export default function ChatRoom() {
         content,
       })
     );
+    console.log(messages);
   };
+
+  //게시물 상세보기에 채팅하기
+  async function buttonClick() {
+    const response = await axios.post('/chat/api/chatroom/2');
+    console.log(response);
+  }
 
   return (
     <div className=" flex w-[75%] h-[100%] border-l border-gray-400">
