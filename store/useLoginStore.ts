@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 import { create } from "zustand";
+=======
+import { create } from 'zustand';
+>>>>>>> 7ee5a973c21c0b6c8e88b607c4ae979d5d5037a7
 
 interface LoginState {
   loginState: boolean;
@@ -10,8 +14,8 @@ interface LoginState {
 }
 
 const useLoginStore = create<LoginState>((set) => ({
-  loginState: false,
-  token: null,
+  loginState: sessionStorage.getItem('token') ? true : false,
+  token: sessionStorage.getItem('token') || null,
   expirationTime: 0,
 
   login: (token: string) => {
@@ -41,7 +45,7 @@ const useLoginStore = create<LoginState>((set) => ({
     const currentTime = Date.now();
     if (currentTime > expirationTime) {
       set({ loginState: false, token: null });
-      console.log("토큰이 만료되어 자동 로그아웃되었습니다.");
+      console.log('토큰이 만료되어 자동 로그아웃되었습니다.');
     }
   },
 }));
