@@ -8,10 +8,9 @@ interface Signup {
   nickname: string;
   phone: string;
   password: string;
-  area: string;
-  area2: string;
+  region1: string | null;
+  region2: string | null;
   profileImageUrl: string;
-  role: string;
 }
 
 interface InputProps {
@@ -29,8 +28,8 @@ interface SignupErrors {
   nickname: string;
   phone: string;
   password: string;
-  area: string;
-  area2: string;
+  region1: string;
+  region2: string;
   profileImageUrl: string;
 }
 
@@ -54,7 +53,7 @@ const SignupInput: React.FC<InputProps> = ({
   </div>
 );
 
-const areas = [
+const region1 = [
   "서울특별시",
   "부산광역시",
   "대구광역시",
@@ -81,10 +80,9 @@ export default function SignupPage() {
     nickname: "",
     phone: "",
     password: "",
-    area: "",
-    area2: "",
+    region1: null,
+    region2: null,
     profileImageUrl: "",
-    role: "",
   });
 
   const [signupErrors, setsignupErrors] = useState({
@@ -93,33 +91,26 @@ export default function SignupPage() {
     nickname: "",
     phone: "",
     password: "",
-    area: "",
-    area2: "",
+    region1: "",
+    region2: "",
     profileImageUrl: "",
   });
 
-  const [areaAuto, setAreaAuto] = useState<string[]>([]);
   const [isEmailAvailable, setIsEmailAvailable] = useState(false);
   const [isNicknameAvailable, setIsNicknameAvailable] = useState(false);
-  const [loading, setLoading] = useState({
-    email: false,
-    nickname: false,
-  });
 
-  const fetchAutoArea = async (area: string) => {
-    if (!area) return;
-    setLoading((prev) => ({ ...prev, email: true }));
-    try {
-      const response = await axios.get(
-        `/backend/api/regions?name=${signupFormData.area}`
-      );
-      setAreaAuto(response.data);
-    } catch (err) {
-      console.error("하위 지역 정보를 불러오는 데 실패했습니다.", err);
-    } finally {
-      setLoading((prev) => ({ ...prev, email: false }));
-    }
-  };
+  // const fetchAutoArea = async (region1: string) => {
+  //   if (!region1) return;
+
+  //   try {
+  //     const response = await axios.get(
+  //       `/backend/api/regions?name=${signupFormData.region1}`
+  //     );
+  //     setAreaAuto(response.data);
+  //   } catch (err) {
+  //     console.error('하위 지역 정보를 불러오는 데 실패했습니다.', err);
+
+  // };
 
   const handleSignupChange =
     (field: keyof typeof signupFormData) =>
@@ -127,9 +118,9 @@ export default function SignupPage() {
       const value = e.target.value;
       setsignupFormData({ ...signupFormData, [field]: value });
 
-      if (field === "area") {
-        fetchAutoArea(value);
-      }
+      // if (field === 'region1') {
+      //   fetchAutoArea(value);
+      // }
     };
 
   const validateForm = () => {
@@ -175,45 +166,9 @@ export default function SignupPage() {
     return valid;
   };
 
-  const handleSignupSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-
-    if (!isEmailAvailable || !isNicknameAvailable) {
-      alert("중복확인을 해주세요.");
-      return;
-    }
-
-    if (validateForm()) {
-      try {
-        const response = await axios.post<Signup[]>(
-          "/backend/api/auth/sign-up",
-          signupFormData
-        );
-
-        if (response.status === 200) {
-          alert("회원가입이 완료되었습니다.");
-
-          const emailResponse = await axios.get(
-            "/backend/api/auth/verify-email",
-            { params: { email: signupFormData.email } }
-          );
-
-          if (emailResponse.status === 200) {
-            alert("이메일 인증 링크가 전송되었습니다.");
-          }
-        } else {
-          throw new Error("회원가입 실패");
-        }
-      } catch (error) {
-        console.error("오류:", error);
-        alert("회원가입에 실패했습니다.");
-      }
-    }
-  };
-
   // 이메일 중복 확인
   const checkEmail = async (email: string) => {
-    if (loading.email || !email) {
+    if (!email) {
       alert("이메일을 입력해주세요.");
       return;
     }
@@ -223,8 +178,6 @@ export default function SignupPage() {
       alert("이메일 주소에 '@'을 포함해주세요.");
       return;
     }
-
-    setLoading((prev) => ({ ...prev, email: true }));
 
     try {
       const response = await axios.get<Signup[]>(
@@ -242,19 +195,15 @@ export default function SignupPage() {
       console.error("Error checking email availability:", error);
       alert("서버 오류가 발생했습니다.");
       setIsEmailAvailable(false);
-    } finally {
-      setLoading((prev) => ({ ...prev, email: false }));
     }
   };
 
   // 닉네임 중복 확인
   const checkNickname = async (nickname: string) => {
-    if (loading.nickname || !nickname) {
+    if (!nickname) {
       alert("닉네임을 입력해주세요.");
       return;
     }
-
-    setLoading((prev) => ({ ...prev, nickname: true }));
 
     try {
       const response = await axios.get("/backend/api/auth/check-nickname", {
@@ -272,7 +221,46 @@ export default function SignupPage() {
       alert("서버 오류가 발생했습니다.");
       setIsNicknameAvailable(false);
     } finally {
-      setLoading((prev) => ({ ...prev, nickname: false }));
+    }
+  };
+
+  //회원가입 로직
+  const handleSignupSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+
+    if (!isEmailAvailable || !isNicknameAvailable) {
+      alert("중복확인을 해주세요.");
+      return;
+    }
+
+    if (validateForm()) {
+      try {
+        const response = await axios.post<Signup[]>(
+          "/backend/api/auth/sign-up",
+          signupFormData
+        );
+
+        if (response.status === 200) {
+          const emailResponse = await axios.post(
+            "/backend/api/auth/send-verification-email",
+            null,
+            { params: { email: signupFormData.email } }
+          );
+
+          if (emailResponse.status === 200) {
+            alert(
+              "이메일 인증 링크가 전송되었습니다. 이메일을 통해 인증해주세요"
+            );
+          } else {
+            throw new Error("링크 전송 X");
+          }
+        } else {
+          throw new Error("회원가입 실패");
+        }
+      } catch (error) {
+        console.error("오류:", error);
+        alert("회원가입에 실패했습니다.");
+      }
     }
   };
 
@@ -315,11 +303,11 @@ export default function SignupPage() {
           </div>
           <button
             type="button"
-            onClick={() => checkEmail(signupFormData.email)} // Updated handler
-            disabled={loading.email}
-            className="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600 focus:outline-none"
+            onClick={() => checkEmail(signupFormData.email)}
+            className="bg-blue-500 text-white px-4 py-2 rounded-md focus:outline-none"
+            disabled={isEmailAvailable}
           >
-            {loading.email ? "확인 중" : "중복확인"}
+            {isEmailAvailable ? "사용 가능" : "중복확인"}
           </button>
         </div>
 
@@ -337,10 +325,10 @@ export default function SignupPage() {
             <button
               type="button"
               onClick={() => checkNickname(signupFormData.nickname)}
-              disabled={loading.nickname}
-              className="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600 focus:outline-none"
+              className="bg-blue-500 text-white px-4 py-2 rounded-md focus:outline-none"
+              disabled={isNicknameAvailable}
             >
-              {loading.nickname ? "확인 중" : "중복확인"}
+              {isNicknameAvailable ? "사용 가능" : "중복확인"}
             </button>
           </div>
         </div>
@@ -365,61 +353,61 @@ export default function SignupPage() {
           />
         </div>
 
-        <select
-          value={signupFormData.area}
-          onChange={handleSignupChange("area")}
+        {/* <select
+          value={signupFormData.region1}
+          onChange={handleSignupChange('region1')}
           className="w-full p-2 rounded-md border border-gray-300"
         >
           <option value="">관심지역1</option>
-          {areas.map((area, index) => (
-            <option key={index} value={area}>
-              {area}
+          {region1s.map((region1, index) => (
+            <option key={index} value={region1}>
+              {region1}
             </option>
           ))}
         </select>
 
-        {signupFormData.area && areaAuto.length > 0 && (
+        {signupFormData.region1 && areaAuto.length > 0 && (
           <select
-            value={signupFormData.area2}
-            onChange={handleSignupChange("area2")}
+            value={signupFormData.region2}
+            onChange={handleSignupChange('region2')}
             className="w-full p-2 rounded-md border border-gray-300"
           >
             <option value="">하위 지역 선택</option>
-            {areaAuto.map((area, index) => (
-              <option key={index} value={area}>
-                {area}
+            {areaAuto.map((region1, index) => (
+              <option key={index} value={region1}>
+                {region1}
               </option>
             ))}
           </select>
         )}
 
         <select
-          value={signupFormData.area}
-          onChange={handleSignupChange("area")}
+          value={signupFormData.region1}
+          onChange={handleSignupChange('region1')}
           className="w-full p-2 rounded-md border border-gray-300"
         >
           <option value="">관심지역2</option>
-          {areas.map((area, index) => (
-            <option key={index} value={area}>
-              {area}
+          {region1s.map((region1, index) => (
+            <option key={index} value={region1}>
+              {region1}
             </option>
           ))}
         </select>
 
-        {signupFormData.area && areaAuto.length > 0 && (
+        {signupFormData.region1 && areaAuto.length > 0 && (
           <select
-            value={signupFormData.area2}
-            onChange={handleSignupChange("area2")}
+            value={signupFormData.region2}
+            onChange={handleSignupChange('region2')}
             className="w-full p-2 rounded-md border border-gray-300"
           >
             <option value="">지역 선택</option>
-            {areaAuto.map((area, index) => (
-              <option key={index} value={area}>
-                {area}
+            {areaAuto.map((region1, index) => (
+              <option key={index} value={region1}>
+                {region1}
               </option>
             ))}
           </select>
-        )}
+        )} */}
 
         <div>
           <button
