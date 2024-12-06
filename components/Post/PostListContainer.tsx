@@ -1,8 +1,40 @@
+'use client';
+
 import Link from 'next/link';
 import Filter from './Filter';
 import PostList from './PostList';
+import { useState } from 'react';
+
+interface categoryStateType {
+  postType: 'default' | 'SELL' | 'BUY';
+  postStatus: 'default' | 'PENDING' | 'IN_PROGRESS' | 'COMPLETED';
+  membershipType:
+    | 'default'
+    | 'MEMBERSHIP_ONLY'
+    | 'MEMBERSHIP_WITH_PT'
+    | 'PT_ONLY';
+  membershipDuration: 'default' | 'months_0_3' | 'months_3_6' | 'months_6_plus';
+  PTCount: 'default' | 'PT_0_10' | 'PT_10_25' | 'PT_25_plus';
+}
 
 export default function PostListContainer() {
+  const [filter, setFilter] = useState<categoryStateType>({
+    postType: 'default',
+    postStatus: 'default',
+    membershipType: 'default',
+    membershipDuration: 'default',
+    PTCount: 'default',
+  });
+
+  const handleFilterUrl = (obj: categoryStateType) => {
+    setFilter(obj);
+    console.log(filter);
+  };
+
+  //prettier-ignore
+  let query = `${filter.postType !== 'default' ? '' : 'postType=' + filter.postType}&${filter.postStatus !== 'default' ? '' : 'postStatus=' + filter.postStatus}&${filter.membershipType !== 'default' ? '' : 'membershipType=' + filter.membershipType}&${filter.membershipDuration !== 'default' ? '' : 'membershipDuration=' + filter.membershipDuration}&${filter.PTCount !== 'default' ? '' : 'PTCount=' + filter.PTCount}&`
+  let url = `/backend/api/filter?${query}`;
+
   return (
     <div className=" flex flex-col mt-12 w-[70%]">
       <div className=" flex justify-between items-center">
@@ -14,7 +46,7 @@ export default function PostListContainer() {
         </Link>
       </div>
       <div className=" mb-12">
-        <Filter />
+        <Filter onChangeFilter={handleFilterUrl} filter={filter} />
       </div>
       <PostList />
     </div>
