@@ -10,10 +10,11 @@ import QuillEditor from './QuillEditor';
 import ImageSelect from './ImageSelect';
 import Image from 'next/image';
 import SearchKakaoMap from './SearchKaKaoMap';
-import { useMutation } from '@tanstack/react-query';
-import axios from 'axios';
+import { useMutation, useQuery } from '@tanstack/react-query';
 import { getAccessToken, getCity } from '@/api/api';
 import axiosInstance from '@/api/axiosInstance';
+import { useParams } from 'next/navigation';
+import axios from 'axios';
 
 interface categoryStateType {
   postType: 'default' | 'SELL' | 'BUY';
@@ -25,7 +26,7 @@ interface categoryStateType {
     | 'PT_ONLY';
 }
 
-export default function EditPost() {
+export default function ModifiedPost() {
   const [values, setValues] = useState({
     title: '',
     content: '',
@@ -43,7 +44,7 @@ export default function EditPost() {
     gymName: '',
   });
   //<Record<string, string | File | null>> 백엔드 연동시 타입추가
-  const [images, setImages] = useState<Record<string, string | null>>({
+  const [images, setImages] = useState<Record<string, string | File | null>>({
     imageUrl1: '',
     imageUrl2: '',
     imageUrl3: '',
@@ -53,6 +54,29 @@ export default function EditPost() {
     postType: 'default',
     postStatus: 'PENDING',
     membershipType: 'default',
+  });
+
+  const params = useParams();
+
+  const { data } = useQuery({
+    queryKey: ['postDetail', params.postid],
+    queryFn: async () =>
+      (await axios.get(`http://localhost:4000/postDetails/${params.postid}`))
+        .data,
+    staleTime: 10000,
+  });
+
+  const { mutate, isPending } = useMutation({
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    mutationFn: async (jsonData: Record<string, any>) =>
+      await axiosInstance.put(`/backend/api/posts/${params.postid}`, jsonData),
+    onSuccess: (data) => {
+      alert('게시글이 작성되었습니다.');
+      console.log(data);
+    },
+    onError: () => {
+      alert('게시글이 작성되지않았습니다.');
+    },
   });
 
   //토큰발급
@@ -95,18 +119,31 @@ export default function EditPost() {
     }
   }, [mapValue]);
 
-  const { mutate, isPending } = useMutation({
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    mutationFn: async (jsonData: Record<string, any>) =>
-      await axiosInstance.post(`/backend/api/posts`, jsonData),
-    onSuccess: (data) => {
-      alert('게시글이 작성되었습니다.');
+  useEffect(() => {
+    if (data) {
       console.log(data);
-    },
-    onError: () => {
-      alert('게시글이 작성되지않았습니다.');
-    },
-  });
+      setValues({
+        title: data.title,
+        content: '',
+        expirationDate: data.expirationDate,
+        remainingSession: data.remainingSession,
+        amount: data.amount,
+        city: data.city,
+        district: data.district,
+      });
+      setMapValue({
+        latitude: data.latitude,
+        longitude: data.longitude,
+        gymKaKaoUrl: data.gymKaKaoUrl,
+        gymName: data.gymName,
+      });
+      setImages({
+        imageUrl1: data.imageUrl1 || '',
+        imageUrl2: data.imageUrl2 || '',
+        imageUrl3: data.imageUrl3 || '',
+      });
+    }
+  }, [data]);
 
   const handleValues = (e: ChangeEvent<HTMLInputElement>) => {
     setValues({
@@ -182,40 +219,37 @@ export default function EditPost() {
       return;
     }
 
-    // mutate(jsonData);
+    const formData = new FormData();
 
-    //백엔드 연동시 formData로 변환해서 보내기
-    // const formData = new FormData();
+    // values 추가
+    // number가 있기때문에 toString()을 사용해 타입 고정
+    for (const key in values) {
+      formData.append(key, values[key as keyof typeof values].toString());
+    }
 
-    // // values 추가
-    // // number가 있기때문에 toString()을 사용해 타입 고정
-    // for (const key in values) {
-    //   formData.append(key, values[key as keyof typeof values].toString());
-    // }
+    // mapValue 추가
+    for (const key in mapValue) {
+      formData.append(key, mapValue[key as keyof typeof mapValue].toString());
+    }
 
-    // // mapValue 추가
-    // for (const key in mapValue) {
-    //   formData.append(key, mapValue[key as keyof typeof mapValue].toString());
-    // }
+    // images 추가
+    for (const key in images) {
+      if (images[key]) {
+        formData.append(key, images[key] as File);
+      }
+    }
 
-    // // images 추가
-    // for (const key in images) {
-    //   if (images[key]) {
-    //     formData.append(key, images[key] as File);
-    //   }
-    // }
+    // categoryValue 추가
+    for (const key in categoryValue) {
+      formData.append(key, categoryValue[key as keyof typeof categoryValue]);
+    }
 
-    // // categoryValue 추가
-    // for (const key in categoryValue) {
-    //   formData.append(key, categoryValue[key as keyof typeof categoryValue]);
-    // }
+    const data: Record<string, string> = {};
+    formData.forEach((value, key) => {
+      data[key] = value as string; // 값이 string 타입으로 추론되도록 처리
+    });
 
-    // const data: Record<string, string> = {};
-    // formData.forEach((value, key) => {
-    //   data[key] = value as string; // 값이 string 타입으로 추론되도록 처리
-    // });
-
-    // mutate(data);
+    mutate(data);
   };
 
   if (isPending) {
@@ -311,7 +345,7 @@ export default function EditPost() {
                 <Image
                   key={el}
                   // json서버 사용시까진 blob url  src={URL.createObjectURL(images[el] as File)}
-                  src={images[el] as string}
+                  src={URL.createObjectURL(images[el] as File)}
                   alt="헬스장 이미지"
                   className="rounded-lg"
                   width={240}
@@ -326,7 +360,7 @@ export default function EditPost() {
               type="submit"
               className=" p-1 pl-6 pr-6 rounded-lg bg-blue-300 text-xl text-white hover:bg-blue-500 transition-all"
             >
-              작성하기
+              수정하기
             </button>
           </div>
         </div>
