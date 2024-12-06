@@ -34,6 +34,8 @@ export default function EditPost() {
     amount: 0,
     city: '',
     district: '',
+    ptType: 'PT_0_10',
+    monthsType: 'MONTHS_0_3',
   });
   const [isMapOpen, setIsMapOpen] = useState(false);
   const [mapValue, setMapValue] = useState({
@@ -181,6 +183,12 @@ export default function EditPost() {
       alert('제목과 내용을 입력해주세요');
       return;
     }
+
+    setValues({
+      ...values,
+      monthsType: updateMonthsType(values.expirationDate),
+    });
+    setValues({ ...values, monthsType: updatePtType(values.remainingSession) });
 
     // mutate(jsonData);
 
@@ -341,4 +349,37 @@ export default function EditPost() {
       )}
     </>
   );
+}
+
+function updateMonthsType(expirationDate: string) {
+  const currentDate = new Date();
+  const targetDate = new Date(expirationDate);
+
+  // 현재 날짜와 만료 날짜의 월 차이를 계산
+  const diffInMonths =
+    (targetDate.getFullYear() - currentDate.getFullYear()) * 12 +
+    (targetDate.getMonth() - currentDate.getMonth());
+
+  // monthsType 결정
+  let monthsType = 'MONTHS_6_PLUS';
+  if (diffInMonths <= 3) {
+    monthsType = 'MONTHS_0_3';
+  } else if (diffInMonths > 3 && diffInMonths <= 6) {
+    monthsType = 'MONTHS_3_6';
+  }
+
+  return monthsType;
+}
+
+function updatePtType(remainingSession: number) {
+  let type = 'PT_0_10';
+  if (remainingSession <= 10) {
+    type = 'PT_0_10';
+  } else if (remainingSession > 10 && remainingSession <= 25) {
+    type = 'PT_10_25';
+  } else {
+    type = 'PT_25_PLUS';
+  }
+
+  return type;
 }
