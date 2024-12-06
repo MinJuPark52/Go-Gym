@@ -39,14 +39,20 @@ export default function PostItem({
             <p className=" text-gray-500 text-xs">{timeago}</p>
           </div>
           <div className=" flex justify-between ml-1 pb-1 mr-2 h-28 border-b border-[#ccc]">
-            <Image
-              src={imageUrl1}
-              alt="헬스장 사진"
-              width={200}
-              height={64}
-              className=" rounded-md"
-              priority
-            />
+            {imageUrl1 ? (
+              <Image
+                src={imageUrl1}
+                alt="헬스장 사진"
+                width={200}
+                height={64}
+                className=" rounded-md"
+                priority
+              />
+            ) : (
+              <div className=" flex justify-center items-center w-[200px] h-[100px] rounded-lg bg-gray-400 bg-opacity-50">
+                기본 이미지
+              </div>
+            )}
 
             <div className=" flex flex-col justify-between items-end">
               <p>{title}</p>

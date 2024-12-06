@@ -9,7 +9,7 @@ const nextConfig: NextConfig = {
       },
       {
         source: '/backend/:path*', // Local API
-        destination: 'http://3.36.198.162:8080/:path*',
+        destination: 'https://go-gym.site/:path*',
       },
       {
         source: '/chat/:path*', // Local API
