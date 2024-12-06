@@ -8,8 +8,8 @@ interface Signup {
   nickname: string;
   phone: string;
   password: string;
-  region1: string | null;
-  region2: string | null;
+  region1: string | undefined;
+  region2: string | undefined;
   profileImageUrl: string;
 }
 
@@ -48,12 +48,11 @@ const SignupInput: React.FC<InputProps> = ({
       onChange={onChange}
       className="w-full p-2 rounded-md border border-gray-300"
     />
-
     {errorMessage && <p className="text-red-500 text-sm">{errorMessage}</p>}
   </div>
 );
 
-const region1 = [
+const regions = [
   "서울특별시",
   "부산광역시",
   "대구광역시",
@@ -80,8 +79,8 @@ export default function SignupPage() {
     nickname: "",
     phone: "",
     password: "",
-    region1: null,
-    region2: null,
+    region1: undefined,
+    region2: undefined,
     profileImageUrl: "",
   });
 
@@ -99,34 +98,16 @@ export default function SignupPage() {
   const [isEmailAvailable, setIsEmailAvailable] = useState(false);
   const [isNicknameAvailable, setIsNicknameAvailable] = useState(false);
 
-  // const fetchAutoArea = async (region1: string) => {
-  //   if (!region1) return;
-
-  //   try {
-  //     const response = await axios.get(
-  //       `/backend/api/regions?name=${signupFormData.region1}`
-  //     );
-  //     setAreaAuto(response.data);
-  //   } catch (err) {
-  //     console.error('하위 지역 정보를 불러오는 데 실패했습니다.', err);
-
-  // };
-
   const handleSignupChange =
     (field: keyof typeof signupFormData) =>
     (e: ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
       const value = e.target.value;
       setsignupFormData({ ...signupFormData, [field]: value });
-
-      // if (field === 'region1') {
-      //   fetchAutoArea(value);
-      // }
     };
 
   const validateForm = () => {
     let valid = true;
     const newErrors: SignupErrors = { ...signupErrors };
-
     const fields = [
       {
         name: "name",
@@ -353,61 +334,35 @@ export default function SignupPage() {
           />
         </div>
 
-        {/* <select
-          value={signupFormData.region1}
-          onChange={handleSignupChange('region1')}
-          className="w-full p-2 rounded-md border border-gray-300"
-        >
-          <option value="">관심지역1</option>
-          {region1s.map((region1, index) => (
-            <option key={index} value={region1}>
-              {region1}
-            </option>
-          ))}
-        </select>
-
-        {signupFormData.region1 && areaAuto.length > 0 && (
+        <div>
           <select
-            value={signupFormData.region2}
-            onChange={handleSignupChange('region2')}
+            value={signupFormData.region1}
+            onChange={handleSignupChange("region1")}
             className="w-full p-2 rounded-md border border-gray-300"
           >
-            <option value="">하위 지역 선택</option>
-            {areaAuto.map((region1, index) => (
-              <option key={index} value={region1}>
-                {region1}
+            <option value="">지역 선택1</option>
+            {regions.map((region) => (
+              <option key={region} value={region}>
+                {region}
               </option>
             ))}
           </select>
-        )}
+        </div>
 
-        <select
-          value={signupFormData.region1}
-          onChange={handleSignupChange('region1')}
-          className="w-full p-2 rounded-md border border-gray-300"
-        >
-          <option value="">관심지역2</option>
-          {region1s.map((region1, index) => (
-            <option key={index} value={region1}>
-              {region1}
-            </option>
-          ))}
-        </select>
-
-        {signupFormData.region1 && areaAuto.length > 0 && (
+        <div>
           <select
             value={signupFormData.region2}
-            onChange={handleSignupChange('region2')}
+            onChange={handleSignupChange("region2")}
             className="w-full p-2 rounded-md border border-gray-300"
           >
-            <option value="">지역 선택</option>
-            {areaAuto.map((region1, index) => (
-              <option key={index} value={region1}>
-                {region1}
+            <option value="">지역 선택2</option>
+            {regions.map((region) => (
+              <option key={region} value={region}>
+                {region}
               </option>
             ))}
           </select>
-        )} */}
+        </div>
 
         <div>
           <button
