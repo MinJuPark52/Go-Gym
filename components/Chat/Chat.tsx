@@ -50,7 +50,7 @@ export default function Chat({ onSendMessage }: props) {
   return (
     <form
       onSubmit={handleSubmitMessage}
-      className=" relative flex flex-col w-[70%] h-[100%] bg-blue-100 bg-opacity-40"
+      className=" relative flex flex-col w-[70%] h-[100%] p-4 bg-blue-100 bg-opacity-40"
     >
       <div className=" flex flex-col gap-4 h-[calc(100%-10rem)] p-2 overflow-y-auto scrollbar-hide">
         <div className=" flex items-center gap-4">

@@ -9,9 +9,13 @@ import { useParams } from 'next/navigation';
 import PostDetailImage from './PostDetailImage';
 import { useState } from 'react';
 import Image from 'next/image';
+import Link from 'next/link';
 
 export default function PostDetail() {
-  const [visibleModal, setVisibleModal] = useState(false);
+  const [visibleModal, setVisibleModal] = useState({
+    image: false,
+    user: false,
+  });
   const { id } = useParams();
   const { data } = useQuery({
     queryKey: ['postDetail'],
@@ -21,7 +25,17 @@ export default function PostDetail() {
   });
 
   const handleImageClick = () => {
-    setVisibleModal(!visibleModal);
+    setVisibleModal({
+      ...visibleModal,
+      image: !visibleModal.image,
+    });
+  };
+
+  const handleUserClick = () => {
+    setVisibleModal({
+      ...visibleModal,
+      user: !visibleModal.user,
+    });
   };
 
   let statusBox = '게시중';
@@ -40,7 +54,14 @@ export default function PostDetail() {
         <div className=" flex flex-col w-[70%]">
           <div className=" mb-6 border-b border-gray-400">
             <div className=" mt-12 ml-2 mr-2 mb-2">
-              <p className=" text-2xl font-bold">{data.title}</p>
+              <div className=" flex justify-between">
+                <p className=" text-2xl font-bold">{data.title}</p>
+                <Link href={`/community/modifiedpost/${id}`}>
+                  <button className="p-1 pl-2 pr-2 rounded-lg bg-blue-300 text-2xl text-white hover:bg-blue-500 transition-all">
+                    수정하기
+                  </button>
+                </Link>
+              </div>
               <div className=" flex w-fit mt-4 pl-2 pr-2 pt-1 pb-1 rounded-lg bg-[#5AC800] bg-opacity-60 ">
                 <p className=" text-[11px] text-[#377008] font-bold">
                   {statusBox}
@@ -59,7 +80,10 @@ export default function PostDetail() {
               </p>
               <p className=" font-bold">
                 <span className=" text-gray-500">작성자 : </span>
-                <span className=" cursor-pointer hover:underline underline-offset-4">
+                <span
+                  className=" cursor-pointer hover:underline underline-offset-4"
+                  onClick={handleUserClick}
+                >
                   {data.authorNickname}
                 </span>
               </p>
@@ -92,7 +116,7 @@ export default function PostDetail() {
             </div>
           </div>
 
-          <div className=" relative flex p-4 min-h-20">
+          <div className=" relative flex p-4 min-h-40">
             <PostDetailImage
               imageUrl={data.imageUrl1}
               onClick={handleImageClick}
@@ -103,7 +127,23 @@ export default function PostDetail() {
           </div>
         </div>
       )}
-      {data && visibleModal && (
+      {visibleModal.user && (
+        <div className=" flex flex-col justify-center items-center absolute top-0 bottom-0 left-0 right-0 bg-gray-600 bg-opacity-30">
+          <div className=" flex justify-end items-center max-w-[1100px] w-[70%] animate-slide-down">
+            <CgCloseO
+              size={48}
+              color="#545454"
+              className=" translate-x-12 cursor-pointer"
+              onClick={handleUserClick}
+            />
+          </div>
+          <div className=" relative bg-white max-w-[1100px] w-[70%] h-[60%] rounded-lg overflow-hidden animate-slide-down">
+            <p>헬린이</p>
+            <p>작성한 게시글</p>
+          </div>
+        </div>
+      )}
+      {data && visibleModal.image && (
         <div className=" flex flex-col justify-center items-center absolute top-0 bottom-0 left-0 right-0 bg-gray-600 bg-opacity-30">
           <div className=" flex justify-between items-center max-w-[1100px] w-[70%] animate-slide-down">
             <p className=" text-white text-xl font-bold">사진 크게보기</p>
