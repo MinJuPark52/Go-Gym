@@ -21,14 +21,13 @@ interface categoryStateType {
   PTCount: 'default' | 'PT_0_10' | 'PT_10_25' | 'PT_25_plus';
 }
 
-export default function Filter() {
-  const [categoryValue, setCategoryValue] = useState<categoryStateType>({
-    postType: 'SELL',
-    postStatus: 'PENDING',
-    membershipType: 'MEMBERSHIP_ONLY',
-    membershipDuration: 'months_0_3',
-    PTCount: 'PT_0_10',
-  });
+export default function Filter({
+  onChangeFilter,
+  filter,
+}: {
+  onChangeFilter: (obj: categoryStateType) => void;
+  filter: categoryStateType;
+}) {
   const [activeFilters, setActiveFilters] = useState({
     postType: {
       id: 1,
@@ -53,7 +52,7 @@ export default function Filter() {
   });
 
   const handleSelectOptions = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    setCategoryValue({ ...categoryValue, [e.target.name]: e.target.value });
+    onChangeFilter({ ...filter, [e.target.name]: e.target.value });
 
     if (e.target.value !== 'default') {
       setActiveFilters({
