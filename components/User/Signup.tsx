@@ -79,12 +79,12 @@ export default function SignupPage() {
     nickname: "",
     phone: "",
     password: "",
-    region1: undefined,
-    region2: undefined,
+    region1: "",
+    region2: "",
     profileImageUrl: "",
   });
 
-  const [signupErrors, setsignupErrors] = useState({
+  const [signupErrors, setsignupErrors] = useState<SignupErrors>({
     name: "",
     email: "",
     nickname: "",
@@ -147,7 +147,6 @@ export default function SignupPage() {
     return valid;
   };
 
-  // 이메일 중복 확인
   const checkEmail = async (email: string) => {
     if (!email) {
       alert("이메일을 입력해주세요.");
@@ -163,7 +162,9 @@ export default function SignupPage() {
     try {
       const response = await axios.get<Signup[]>(
         "/backend/api/auth/check-email",
-        { params: { email } }
+        {
+          params: { email },
+        }
       );
 
       if (response.status === 200) {
@@ -179,7 +180,6 @@ export default function SignupPage() {
     }
   };
 
-  // 닉네임 중복 확인
   const checkNickname = async (nickname: string) => {
     if (!nickname) {
       alert("닉네임을 입력해주세요.");
@@ -201,11 +201,9 @@ export default function SignupPage() {
       console.error("Error checking nickname availability:", error);
       alert("서버 오류가 발생했습니다.");
       setIsNicknameAvailable(false);
-    } finally {
     }
   };
 
-  //회원가입 로직
   const handleSignupSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
@@ -245,6 +243,42 @@ export default function SignupPage() {
     }
   };
 
+  const handleChangeRegion = async (e: ChangeEvent<HTMLSelectElement>) => {
+    const selectedRegion1 = e.target.value;
+    setsignupFormData({ ...signupFormData, region1: selectedRegion1 });
+
+    if (selectedRegion1) {
+      try {
+        const response = await axios.get(
+          `/api/regions?name=${signupFormData.region1}`
+        );
+        if (response.status === 200) {
+          console.log(response.data);
+        }
+      } catch (error) {
+        console.error("API 호출에 실패했습니다.", error);
+      }
+    }
+  };
+
+  const handleChangeRegion2 = async (e: ChangeEvent<HTMLSelectElement>) => {
+    const selectedRegion2 = e.target.value;
+    setsignupFormData({ ...signupFormData, region2: selectedRegion2 });
+
+    if (selectedRegion2) {
+      try {
+        const response = await axios.get(
+          `/api/regions?name=${signupFormData.region2}`
+        );
+        if (response.status === 200) {
+          console.log(response.data);
+        }
+      } catch (error) {
+        console.error("API 호출에 실패했습니다.", error);
+      }
+    }
+  };
+
   return (
     <div className="flex items-center justify-center bg-gray-50 border-r-gray-300 w-full h-[40rem]">
       <form
@@ -252,6 +286,7 @@ export default function SignupPage() {
         className="w-full h-[35rem] max-w-md bg-white p-8 space-y-3 overflow-y-auto"
       >
         <h2 className="text-2xl font-semibold text-center">회원가입</h2>
+
         <div>
           <SignupInput
             type="text"
@@ -302,16 +337,14 @@ export default function SignupPage() {
               errorMessage={signupErrors.nickname}
             />
           </div>
-          <div>
-            <button
-              type="button"
-              onClick={() => checkNickname(signupFormData.nickname)}
-              className="bg-blue-500 text-white px-4 py-2 rounded-md focus:outline-none"
-              disabled={isNicknameAvailable}
-            >
-              {isNicknameAvailable ? "사용 가능" : "중복확인"}
-            </button>
-          </div>
+          <button
+            type="button"
+            onClick={() => checkNickname(signupFormData.nickname)}
+            className="bg-blue-500 text-white px-4 py-2 rounded-md focus:outline-none"
+            disabled={isNicknameAvailable}
+          >
+            {isNicknameAvailable ? "사용 가능" : "중복확인"}
+          </button>
         </div>
 
         <div>
@@ -337,12 +370,12 @@ export default function SignupPage() {
         <div>
           <select
             value={signupFormData.region1}
-            onChange={handleSignupChange("region1")}
+            onChange={handleChangeRegion}
             className="w-full p-2 rounded-md border border-gray-300"
           >
             <option value="">지역 선택1</option>
-            {regions.map((region) => (
-              <option key={region} value={region}>
+            {regions.map((region, index) => (
+              <option key={index} value={region}>
                 {region}
               </option>
             ))}
@@ -352,13 +385,13 @@ export default function SignupPage() {
         <div>
           <select
             value={signupFormData.region2}
-            onChange={handleSignupChange("region2")}
+            onChange={handleChangeRegion2}
             className="w-full p-2 rounded-md border border-gray-300"
           >
             <option value="">지역 선택2</option>
-            {regions.map((region) => (
-              <option key={region} value={region}>
-                {region}
+            {regions.map((near, index) => (
+              <option key={index} value={near}>
+                {near}
               </option>
             ))}
           </select>
