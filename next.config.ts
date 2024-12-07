@@ -1,28 +1,29 @@
-import type { NextConfig } from 'next';
+import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
   async rewrites() {
     return [
       {
-        source: '/api/sigs/:path*', // 클라이언트에서 요청하는 경로
-        destination: 'https://sgisapi.kostat.go.kr/:path*', // 실제 API 요청을 보낼 URL
+        source: "/api/sigs/:path*", // 클라이언트에서 요청하는 경로
+        destination: "https://sgisapi.kostat.go.kr/:path*", // 실제 API 요청을 보낼 URL
       },
       {
         source: '/backend/:path*', // Local API
         destination:
           'https://7eae-2001-2d8-2181-6016-70a4-4d95-c733-9b05.ngrok-free.app/:path*',
+
       },
       {
-        source: '/chat/:path*', // Local API
-        destination: 'https://f98c-1-240-3-56.ngrok-free.app/:path*',
+        source: "/chat/:path*", // Local API
+        destination: "https://f98c-1-240-3-56.ngrok-free.app/:path*",
       },
     ];
   },
   images: {
     remotePatterns: [
       {
-        protocol: 'https',
-        hostname: '**', // 데이터 URI를 허용
+        protocol: "https",
+        hostname: "**", // 데이터 URI를 허용
       },
     ],
   },
