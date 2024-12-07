@@ -17,7 +17,6 @@ import axiosInstance from '@/api/axiosInstance';
 
 interface categoryStateType {
   postType: 'default' | 'SELL' | 'BUY';
-  postStatus: 'default' | 'PENDING' | 'IN_PROGRESS' | 'COMPLETED';
   membershipType:
     | 'default'
     | 'MEMBERSHIP_ONLY'
@@ -30,18 +29,18 @@ export default function EditPost() {
     title: '',
     content: '',
     expirationDate: '',
-    remainingSession: 0,
+    remainingSessions: 0,
     amount: 0,
     city: '',
     district: '',
-    ptType: 'PT_0_10',
-    monthsType: 'MONTHS_0_3',
+    // ptType: 'PT_0_10',
+    // monthsType: 'MONTHS_0_3',
   });
   const [isMapOpen, setIsMapOpen] = useState(false);
   const [mapValue, setMapValue] = useState({
     latitude: 0,
     longitude: 0,
-    gymKaKaoUrl: '',
+    gymKakaoUrl: '',
     gymName: '',
   });
   //<Record<string, string | File | null>> 백엔드 연동시 타입추가
@@ -53,7 +52,6 @@ export default function EditPost() {
 
   const [categoryValue, setCategoryValue] = useState<categoryStateType>({
     postType: 'default',
-    postStatus: 'PENDING',
     membershipType: 'default',
   });
 
@@ -100,7 +98,7 @@ export default function EditPost() {
   const { mutate, isPending } = useMutation({
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     mutationFn: async (jsonData: Record<string, any>) =>
-      await axiosInstance.post(`/backend/api/posts`, jsonData),
+      await axiosInstance.post(`/api/posts`, jsonData),
     onSuccess: (data) => {
       alert('게시글이 작성되었습니다.');
       console.log(data);
@@ -141,13 +139,13 @@ export default function EditPost() {
   const handleClickGym = (
     latitude: number,
     longitude: number,
-    gymKaKaoUrl: string,
+    gymKakaoUrl: string,
     gymName: string
   ) => {
     setMapValue({
       latitude,
       longitude,
-      gymKaKaoUrl,
+      gymKakaoUrl,
       gymName,
     });
     setIsMapOpen(false);
@@ -171,7 +169,7 @@ export default function EditPost() {
       return;
     }
 
-    if (values.remainingSession < 0 || values.amount < 0) {
+    if (values.remainingSessions < 0 || values.amount < 0) {
       alert('가격과 PT횟수는 0 이상으로 입력해주세요');
       return;
     }
@@ -184,11 +182,14 @@ export default function EditPost() {
       return;
     }
 
-    setValues({
-      ...values,
-      monthsType: updateMonthsType(values.expirationDate),
-    });
-    setValues({ ...values, monthsType: updatePtType(values.remainingSession) });
+    // setValues({
+    //   ...values,
+    //   monthsType: updateMonthsType(values.expirationDate),
+    // });
+    // setValues({
+    //   ...values,
+    //   monthsType: updatePtType(values.remainingSessions),
+    // });
 
     // mutate(jsonData);
 
@@ -223,7 +224,7 @@ export default function EditPost() {
     //   data[key] = value as string; // 값이 string 타입으로 추론되도록 처리
     // });
 
-    // mutate(data);
+    mutate({ ...values, ...mapValue, ...images, ...categoryValue });
   };
 
   if (isPending) {
@@ -263,7 +264,7 @@ export default function EditPost() {
           </div>
           <div className=" flex flex-col gap-2">
             <label
-              htmlFor={'remainingSession'}
+              htmlFor={'remainingSessions'}
               className="text-sm text-gray-500"
             >
               PT횟수
@@ -271,9 +272,9 @@ export default function EditPost() {
             <input
               type="number"
               className=" w-48 pl-2 h-12 border border-gray-400 rounded-md focus:outline-blue-400  text-gray-600 cursor-pointer"
-              name={'remainingSession'}
-              id={'remainingSession'}
-              value={values.remainingSession}
+              name={'remainingSessions'}
+              id={'remainingSessions'}
+              value={values.remainingSessions}
               onChange={handleValues}
               placeholder="ex) 25"
             />
@@ -371,11 +372,11 @@ function updateMonthsType(expirationDate: string) {
   return monthsType;
 }
 
-function updatePtType(remainingSession: number) {
+function updatePtType(remainingSessions: number) {
   let type = 'PT_0_10';
-  if (remainingSession <= 10) {
+  if (remainingSessions <= 10) {
     type = 'PT_0_10';
-  } else if (remainingSession > 10 && remainingSession <= 25) {
+  } else if (remainingSessions > 10 && remainingSessions <= 25) {
     type = 'PT_10_25';
   } else {
     type = 'PT_25_PLUS';

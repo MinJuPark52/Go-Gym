@@ -32,7 +32,7 @@ export const FIRST_FILTER_CATEGORY: FILTER_CATEGORY_TYPE[] = [
     categoryName: '회원권 타입',
     options: [
       {
-        value: 'MEMBERSHUP_ONLY',
+        value: 'MEMBERSHIP_ONLY',
         optionName: '회원권',
       },
       {
