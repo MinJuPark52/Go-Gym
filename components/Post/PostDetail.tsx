@@ -129,7 +129,7 @@ export default function PostDetail() {
           </div>
         </div>
       )}
-      {visibleModal.user && <PostUserDetail onUserClick={handleUserClick} />}
+      {!visibleModal.user && <PostUserDetail onUserClick={handleUserClick} />}
       {data && visibleModal.image && (
         <div className=" flex flex-col justify-center items-center absolute top-0 bottom-0 left-0 right-0 bg-gray-600 bg-opacity-30">
           <div className=" flex justify-between items-center max-w-[1100px] w-[70%] animate-slide-down">
