@@ -7,11 +7,11 @@ import axiosInstance from '@/api/axiosInstance';
 import Link from 'next/link';
 
 export default function ChangeProfile() {
-  const {} = useQuery({
-    queryKey: ['user'],
-    queryFn: async () => await axiosInstance.get('/api/members/me'),
-    staleTime: 100000,
-  });
+  // const {} = useQuery({
+  //   queryKey: ['user'],
+  //   queryFn: async () => await axiosInstance.get('/api/members/me'),
+  //   staleTime: 100000,
+  // });
 
   return (
     <div className=" flex items-center mt-4 p-8 min-w-[640px] border-2 border-gray-400 rounded-md">

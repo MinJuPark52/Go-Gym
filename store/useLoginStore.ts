@@ -1,4 +1,4 @@
-import { create } from "zustand";
+import { create } from 'zustand';
 
 interface LoginState {
   loginState: boolean;
@@ -9,41 +9,46 @@ interface LoginState {
   checkTokenExpiration: () => void;
 }
 
-const useLoginStore = create<LoginState>((set) => ({
-  loginState: sessionStorage.getItem("token") ? true : false,
-  token: sessionStorage.getItem("token") || null,
-  expirationTime: 0,
+const useLoginStore = create<LoginState>((set) => {
+  const isBrowser = typeof window !== 'undefined';
+  const initialToken = isBrowser ? sessionStorage.getItem('token') : null;
 
-  login: (token: string) => {
-    // 1시간 후 만료
-    const expirationTime = Date.now() + 3600000;
-    set({
-      loginState: true,
-      token,
-      expirationTime,
-    });
+  return {
+    loginState: !!initialToken,
+    token: initialToken,
+    expirationTime: 0,
 
-    setTimeout(() => {
-      set({ loginState: false, token: null, expirationTime: 0 });
-    }, 3600000);
-  },
+    login: (token: string) => {
+      // 1시간 후 만료
+      const expirationTime = Date.now() + 3600000;
+      set({
+        loginState: true,
+        token,
+        expirationTime,
+      });
 
-  logout: () => {
-    set({
-      loginState: false,
-      token: null,
-      expirationTime: 0,
-    });
-  },
+      setTimeout(() => {
+        set({ loginState: false, token: null, expirationTime: 0 });
+      }, 3600000);
+    },
 
-  checkTokenExpiration: () => {
-    const { expirationTime } = useLoginStore.getState();
-    const currentTime = Date.now();
-    if (currentTime > expirationTime) {
-      set({ loginState: false, token: null });
-      console.log("토큰이 만료되어 자동 로그아웃되었습니다.");
-    }
-  },
-}));
+    logout: () => {
+      set({
+        loginState: false,
+        token: null,
+        expirationTime: 0,
+      });
+    },
+
+    checkTokenExpiration: () => {
+      const { expirationTime } = useLoginStore.getState();
+      const currentTime = Date.now();
+      if (currentTime > expirationTime) {
+        set({ loginState: false, token: null });
+        console.log('토큰이 만료되어 자동 로그아웃되었습니다.');
+      }
+    },
+  };
+});
 
 export default useLoginStore;
