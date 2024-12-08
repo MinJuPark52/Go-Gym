@@ -73,10 +73,10 @@ const Slider = () => {
         return (
           <div key={item.name} className="carousel-slide h-96">
             <div className="carousel-description z-50 absolute left-auto right-auto bottom-1/3 mb-10 text-left w-full lg:container px-4 md:px-10 translate-x-8">
-              <h2 className="text-2xl lg:text-4xl font-bold text-white font-serif">
+              <h2 className="text-2xl lg:text-4xl font-bold text-white">
                 {item.title}
               </h2>
-              <p className="my-2 text-white font-serif">{item.text}</p>
+              <p className="my-2 text-white">{item.text}</p>
               <Link
                 href={`/`}
                 className="btn btn-info text-white bg-blue-500 border-none hover:bg-blue-700"

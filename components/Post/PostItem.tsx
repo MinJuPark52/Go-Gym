@@ -59,7 +59,7 @@ export default function PostItem({
               <p>{title}</p>
               <div className=" flex gap-2 items-center text-gray-500 text-sm font-bold">
                 <div className="avatar">
-                  <DefaultProfile width="8" />
+                  <DefaultProfile width="10" />
                 </div>
                 {authorNickName}
               </div>
