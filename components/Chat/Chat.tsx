@@ -57,9 +57,7 @@ export default function Chat({ onSendMessage }: props) {
         {/* 상대방 채팅 */}
         <div className="chat chat-start">
           <div className="chat-image avatar">
-            <div className="w-10 rounded-full">
-              <Image src={profile} alt="profile" priority />
-            </div>
+            <DefaultProfile width="10" />
           </div>
           <div className="chat-header opacity-50">전민혁</div>
           <div className="chat-bubble bg-white text-gray-600">안녕하세요</div>

@@ -59,7 +59,7 @@ export default function PostDetail() {
               <div className=" flex justify-between">
                 <p className=" text-2xl font-bold">{data.title}</p>
                 <Link href={`/community/modifiedpost/${id}`}>
-                  <button className="p-1 pl-2 pr-2 rounded-lg bg-blue-300 text-2xl text-white hover:bg-blue-500 transition-all">
+                  <button className="btn bg-blue-300  text-white hover:bg-blue-500 ">
                     수정하기
                   </button>
                 </Link>
@@ -123,7 +123,7 @@ export default function PostDetail() {
               imageUrl={data.imageUrl1}
               onClick={handleImageClick}
             />
-            <button className=" absolute bottom-4 right-4 p-1 pl-2 pr-2 rounded-lg bg-blue-300 text-2xl text-white hover:bg-blue-500 transition-all">
+            <button className=" absolute bottom-4 right-4 p-1 pl-2 pr-2 btn bg-blue-300  text-white hover:bg-blue-500 transition-all">
               채팅하기
             </button>
           </div>

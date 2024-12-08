@@ -58,7 +58,9 @@ export default function PostItem({
             <div className=" flex flex-col justify-between items-end">
               <p>{title}</p>
               <div className=" flex gap-2 items-center text-gray-500 text-sm font-bold">
-                <DefaultProfile width="8" />
+                <div className="avatar">
+                  <DefaultProfile width="8" />
+                </div>
                 {authorNickName}
               </div>
             </div>
