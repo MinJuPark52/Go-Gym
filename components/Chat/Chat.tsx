@@ -113,7 +113,7 @@ export default function Chat({ onSendMessage }: props) {
         <div className=" flex flex-[1] justify-center items-center">
           <button
             type="submit"
-            className={` p-1 pl-6 pr-6 rounded-lg ${buttonStyle} text-xl text-white font-bold`}
+            className="btn btn-info bg-blue-500 border-blue-500 text-white"
             disabled={text.trim().length === 0}
           >
             전송
