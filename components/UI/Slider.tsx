@@ -77,7 +77,7 @@ const Slider = () => {
               <p className="my-2 text-white font-serif">{item.text}</p>
               <Link
                 href={`/`}
-                className=" bg-blue-400 p-2 rounded-md text-white text-sm hover:bg-blue-500 transition-all"
+                className="btn btn-info text-white bg-blue-500 border-blue-500"
               >
                 바로가기
               </Link>

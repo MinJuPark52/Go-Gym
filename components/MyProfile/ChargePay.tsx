@@ -7,6 +7,9 @@ import axios from 'axios';
 export default function ChargePay() {
   const [money, setMoney] = useState(0);
 
+  //사전등록시 금액보내고, 주문번호(paymentId) 받고,결제 진행
+  //주문번호 받았을때 sse구독요청
+
   const paymentId = `${crypto.randomUUID()}`;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const data: any = {

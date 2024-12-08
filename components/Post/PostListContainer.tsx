@@ -31,9 +31,12 @@ export default function PostListContainer() {
     console.log(filter);
   };
 
+  //삼항연산자 -> 객체로 연결
   //prettier-ignore
   let query = `${filter.postType !== 'default' ? '' : 'postType=' + filter.postType}&${filter.postStatus !== 'default' ? '' : 'postStatus=' + filter.postStatus}&${filter.membershipType !== 'default' ? '' : 'membershipType=' + filter.membershipType}&${filter.membershipDuration !== 'default' ? '' : 'membershipDuration=' + filter.membershipDuration}&${filter.PTCount !== 'default' ? '' : 'PTCount=' + filter.PTCount}&`
   let url = `/backend/api/filter?${query}`;
+
+  //tanstack-query에서 캐싱해서 처리
 
   return (
     <div className=" flex flex-col mt-12 w-[70%]">

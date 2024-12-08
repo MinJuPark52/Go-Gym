@@ -1,7 +1,6 @@
 import PostList from '@/components/Post/PostList';
 import Slider from '@/components/UI/Slider';
 
-
 export default function HomePage() {
   return (
     <>
