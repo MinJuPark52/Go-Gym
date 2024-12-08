@@ -3,7 +3,7 @@ import Image from 'next/image';
 import { useState } from 'react';
 import profile from '@/public/default_profile.png';
 import useWebSocketStore from '@/store/useSocketStore';
-import DefaultProfile from '../UI/defaultProfile';
+import DefaultProfile from '../UI/DefaultProfile';
 
 interface props {
   onSendMessage: ({

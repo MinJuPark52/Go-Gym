@@ -4,7 +4,7 @@ import { IoChatbubblesOutline } from 'react-icons/io5';
 import profile from '../../public/default_profile.png';
 import Link from 'next/link';
 import useTimeAgo from '@/hooks/useTimeAgo';
-import DefaultProfile from '../UI/defaultProfile';
+import DefaultProfile from '../UI/DefaultProfile';
 
 interface PostType {
   id: string;
