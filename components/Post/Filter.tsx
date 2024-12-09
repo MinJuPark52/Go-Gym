@@ -74,7 +74,7 @@ export default function Filter({
   };
 
   return (
-    <div className=" flex flex-col gap-4">
+    <div className=" flex flex-col gap-4 min-w-[700px]">
       <div className=" flex gap-3">
         {FIRST_FILTER_CATEGORY.map((category: FILTER_CATEGORY_TYPE) => (
           <FilterCategory

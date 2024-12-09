@@ -4,6 +4,7 @@ import { IoChatbubblesOutline } from 'react-icons/io5';
 import profile from '../../public/default_profile.png';
 import Link from 'next/link';
 import useTimeAgo from '@/hooks/useTimeAgo';
+import DefaultProfile from '../UI/DefaultProfile';
 
 interface PostType {
   id: string;
@@ -56,10 +57,12 @@ export default function PostItem({
 
             <div className=" flex flex-col justify-between items-end">
               <p>{title}</p>
-              <p className=" flex gap-2 items-center text-gray-500 text-sm font-bold">
-                <Image src={profile} alt="profile" width={24} priority />
+              <div className=" flex gap-2 items-center text-gray-500 text-sm font-bold">
+                <div className="avatar">
+                  <DefaultProfile width="10" />
+                </div>
                 {authorNickName}
-              </p>
+              </div>
             </div>
           </div>
         </div>

@@ -3,14 +3,15 @@
 import { useState } from 'react';
 import PortOne from '@portone/browser-sdk/v2';
 import axios from 'axios';
+import axiosInstance from '@/api/axiosInstance';
 
 export default function ChargePay() {
   const [money, setMoney] = useState(0);
+  const [paymentId, setPaymentId] = useState('');
 
   //사전등록시 금액보내고, 주문번호(paymentId) 받고,결제 진행
   //주문번호 받았을때 sse구독요청
 
-  const paymentId = `${crypto.randomUUID()}`;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const data: any = {
     storeId: process.env.NEXT_PUBLIC_PORTONE_STORE_ID,
@@ -37,12 +38,35 @@ export default function ChargePay() {
     setMoney(+e.target.value);
   };
 
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (money < 1000) {
       alert('1000원 이상 입력해주세요');
       return;
     }
+
+    //사전 정보
+    const response = await axiosInstance.post('/api/payments/pre-register', {
+      amount: money,
+    });
+
+    if (response) {
+      setPaymentId(response.data.merchantId);
+    }
+
+    //sse구독
+    const eventSource = new EventSource(
+      `/api/payments/sse/subscribe/${paymentId}`
+    );
+
+    eventSource.addEventListener('new_thread', () => {
+      //'new_thread' 이벤트가 오면 할 동작
+    });
+
+    eventSource.onerror = () => {
+      //에러 발생시 할 동작
+      eventSource.close(); //연결 끊기
+    };
 
     async function requestPayment() {
       if (data) {

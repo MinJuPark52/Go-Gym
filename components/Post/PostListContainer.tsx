@@ -43,7 +43,7 @@ export default function PostListContainer() {
       <div className=" flex justify-between items-center">
         <p className=" mb-12 text-2xl font-bold">양도 회원권</p>
         <Link href={'/community/editpost'}>
-          <button className=" p-1 pl-4 pr-4 rounded-lg bg-blue-300 text-2xl text-white hover:bg-blue-500 transition-all">
+          <button className="btn btn-inf0 bg-blue-300 hover:bg-blue-500 text-white">
             글쓰기
           </button>
         </Link>
