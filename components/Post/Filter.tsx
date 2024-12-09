@@ -33,28 +33,20 @@ export default function Filter({
   onChangeFilter: (obj: categoryStateType) => void;
   filter: categoryStateType;
 }) {
+  const obj: any = {};
+
   const [activeFilters, setActiveFilters] = useState({
-    postType: {
-      id: 1,
-      filterValue: '',
-    },
-    postStatus: {
-      id: 2,
-      filterValue: '',
-    },
-    membershipType: {
-      id: 3,
-      filterValue: '',
-    },
-    membershipDuration: {
-      id: 4,
-      filterValue: '',
-    },
-    PTCount: {
-      id: 5,
-      filterValue: '',
-    },
+    postType: '',
+    postStatus: '',
+    membershipType: '',
+    membershipDuration: '',
+    PTCount: '',
   });
+
+  const handleInitFilters = (key: string, value: string) => {
+    obj[key] = value;
+    setActiveFilters({ ...activeFilters, ...obj });
+  };
 
   const handleSelectOptions = (e: React.ChangeEvent<HTMLSelectElement>) => {
     onChangeFilter({ ...filter, [e.target.name]: e.target.value });
@@ -62,18 +54,12 @@ export default function Filter({
     if (e.target.value !== 'default') {
       setActiveFilters({
         ...activeFilters,
-        [e.target.name]: {
-          id: e.target.name,
-          filterValue: e.target.options[e.target.selectedIndex].text,
-        },
+        [e.target.name]: e.target.options[e.target.selectedIndex].text,
       });
     } else {
       setActiveFilters({
         ...activeFilters,
-        [e.target.name]: {
-          id: e.target.name,
-          filterValue: '',
-        },
+        [e.target.name]: '',
       });
     }
   };
@@ -85,6 +71,8 @@ export default function Filter({
           <FilterCategory
             key={category.label}
             {...category}
+            value={filter[category.label]}
+            onInit={handleInitFilters}
             onSelect={handleSelectOptions}
           />
         ))}
@@ -94,13 +82,15 @@ export default function Filter({
           <FilterCategory
             key={category.label}
             {...category}
+            value={filter[category.label]}
+            onInit={handleInitFilters}
             onSelect={handleSelectOptions}
           />
         ))}
       </div>
       <div className=" flex items-center gap-4 pl-4 mt-8 w-[100%] h-16 rounded-lg bg-blue-300">
-        {Object.values(activeFilters).map((value) => (
-          <ActiveFilter key={value.id} filterValue={value.filterValue} />
+        {Object.values(activeFilters).map((value, idx) => (
+          <ActiveFilter key={idx} filterValue={value} />
         ))}
       </div>
     </div>

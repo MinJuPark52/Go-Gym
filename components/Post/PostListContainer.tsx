@@ -3,7 +3,10 @@
 import Link from 'next/link';
 import Filter from './Filter';
 import PostList from './PostList';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
+import { useQuery } from '@tanstack/react-query';
+import axiosInstance from '@/api/axiosInstance';
+import { useRouter, useSearchParams } from 'next/navigation';
 
 interface categoryStateType {
   postType: 'default' | 'SELL' | 'BUY';
@@ -23,25 +26,57 @@ interface categoryStateType {
 }
 
 export default function PostListContainer() {
+  const searchParams = useSearchParams();
+  const router = useRouter();
+
   const [filter, setFilter] = useState<categoryStateType>({
-    postType: 'default',
-    postStatus: 'default',
-    membershipType: 'default',
-    membershipDuration: 'default',
-    PTCount: 'default',
+    postType:
+      (searchParams.get('postType') as categoryStateType['postType']) ||
+      'default',
+    postStatus:
+      (searchParams.get('postStatus') as categoryStateType['postStatus']) ||
+      'default',
+    membershipType:
+      (searchParams.get(
+        'membershipType'
+      ) as categoryStateType['membershipType']) || 'default',
+    membershipDuration:
+      (searchParams.get(
+        'membershipDuration'
+      ) as categoryStateType['membershipDuration']) || 'default',
+    PTCount:
+      (searchParams.get('PTCount') as categoryStateType['PTCount']) ||
+      'default',
   });
+  const [query, setQuery] = useState('');
+
+  useEffect(() => {
+    setQuery(createQuery(filter));
+  }, [filter]);
 
   const handleFilterUrl = (obj: categoryStateType) => {
     setFilter(obj);
-    console.log(filter);
   };
 
-  //삼항연산자 -> 객체로 연결
-  //prettier-ignore
-  let query = `${filter.postType !== 'default' ? '' : 'postType=' + filter.postType}&${filter.postStatus !== 'default' ? '' : 'postStatus=' + filter.postStatus}&${filter.membershipType !== 'default' ? '' : 'membershipType=' + filter.membershipType}&${filter.membershipDuration !== 'default' ? '' : 'membershipDuration=' + filter.membershipDuration}&${filter.PTCount !== 'default' ? '' : 'PTCount=' + filter.PTCount}&`
-  let url = `/backend/api/filter?${query}`;
+  const createQuery = (filter: categoryStateType) => {
+    const params = new URLSearchParams();
+
+    Object.entries(filter).forEach(([key, value]) => {
+      if (value !== 'default') {
+        params.append(key, value);
+      }
+    });
+
+    router.push(`/community?${params.toString()}`);
+    return params.toString();
+  };
 
   //tanstack-query에서 캐싱해서 처리
+  // useQuery({
+  //   queryKey: ['filterPost', url],
+  //   queryFn: async() => (await axiosInstance.get(`/backend/api/filter?${query}`)).data,
+  //   staleTime: 10000,
+  // })
 
   return (
     <div className=" flex flex-col mt-12 w-[70%]">
