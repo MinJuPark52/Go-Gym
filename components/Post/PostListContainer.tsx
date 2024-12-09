@@ -56,7 +56,7 @@ export default function PostListContainer() {
       <div className=" mb-12">
         <Filter onChangeFilter={handleFilterUrl} filter={filter} />
       </div>
-      <PostList />
+      <PostList style="w-[100%] flex-wrap justify-center" />
     </div>
   );
 }

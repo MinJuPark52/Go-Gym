@@ -27,7 +27,7 @@ export default function PostItem({
   title,
   wishCount,
 }: PostType) {
-  const postStatusKo = postStatus === 'PENDING' && '판매중';
+  const postStatusKo = postStatus === 'POSTING' && '게시중';
 
   const timeago = useTimeAgo(created_at);
 
@@ -36,7 +36,9 @@ export default function PostItem({
       <div className=" w-80 h-80 rounded-lg border border-[#ccc] shadow cursor-pointer">
         <div>
           <div className=" flex justify-between m-2">
-            <p className=" text-gray-500 text-sm font-bold">{postStatusKo}</p>
+            <div className="badge pt-3 pb-3 border-none bg-blue-300 text-white text-sm font-bold ">
+              {postStatusKo}
+            </div>
             <p className=" text-gray-500 text-xs">{timeago}</p>
           </div>
           <div className=" flex flex-col justify-between pb-1 h-56 border-b border-[#ccc]">

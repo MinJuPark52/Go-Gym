@@ -46,7 +46,7 @@ export default function PostUserDetail({
             {data.nickname}님의 다른 게시글
           </p>
         </div>
-        <div className=" overflow-x-auto">
+        <div className="m-4 overflow-x-auto">
           <PostList />
         </div>
       </div>
