@@ -11,7 +11,12 @@ import ActiveFilter from './ActiveFilter';
 
 interface categoryStateType {
   postType: 'default' | 'SELL' | 'BUY';
-  postStatus: 'default' | 'PENDING' | 'IN_PROGRESS' | 'COMPLETED';
+  postStatus:
+    | 'default'
+    | 'POSTING'
+    | 'SALE_COMPLETED'
+    | 'PURCHASE_COMPLETED'
+    | 'HIDDEN';
   membershipType:
     | 'default'
     | 'MEMBERSHIP_ONLY'

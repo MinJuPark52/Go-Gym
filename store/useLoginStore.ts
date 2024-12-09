@@ -2,9 +2,12 @@ import { create } from 'zustand';
 
 interface LoginState {
   loginState: boolean;
+  adminLoginState: boolean;
   token: string | null;
   expirationTime: number;
   login: (token: string) => void;
+  adminLogin: () => void;
+  adminLogout: () => void;
   logout: () => void;
   checkTokenExpiration: () => void;
 }
@@ -16,7 +19,20 @@ const useLoginStore = create<LoginState>((set) => {
   return {
     loginState: !!initialToken,
     token: initialToken,
+    adminLoginState: false,
     expirationTime: 0,
+
+    adminLogin: () => {
+      set({
+        adminLoginState: true,
+      });
+    },
+
+    adminLogout: () => {
+      set({
+        adminLoginState: false,
+      });
+    },
 
     login: (token: string) => {
       // 1시간 후 만료

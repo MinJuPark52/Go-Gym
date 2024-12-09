@@ -321,5 +321,35 @@
         }
       ]
     }
+  ],
+  "members": [
+    {
+      "email": "example@example.com",
+      "nickname": "헬린이"
+    },
+    {
+      "email": "example@example.com",
+      "nickname": "헬린이1"
+    },
+    {
+      "email": "example@example.com",
+      "nickname": "헬린이2"
+    }
+  ],
+  "declaration": [
+    {
+      "memberId": "1",
+      "nickname": "헬린이",
+      "email": "example@example.com",
+      "reason": "SCAM",
+      "processedAt": "2024-11-24 10:00:00"
+    },
+    {
+      "memberId": "2",
+      "nickname": "헬린이1",
+      "email": "example@example.com",
+      "reason": "SCAM",
+      "processedAt": "2024-11-24 12:00:00"
+    }
   ]
 }

@@ -82,12 +82,10 @@ export default function PostDetail() {
               </p>
               <p className=" font-bold">
                 <span className=" text-gray-500">작성자 : </span>
-                <span
-                  className=" cursor-pointer hover:underline underline-offset-4"
-                  onClick={handleUserClick}
-                >
+
+                <button className="btn  btn-active" onClick={handleUserClick}>
                   {data.authorNickname}
-                </span>
+                </button>
               </p>
             </div>
             <p className=" font-bold">
