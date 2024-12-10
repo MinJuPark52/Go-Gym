@@ -1,3 +1,4 @@
+//components/notice.tsx
 import { useState, useEffect } from "react";
 import axios from "axios";
 import useLoginStore from "@/store/useLoginStore";
@@ -219,7 +220,6 @@ export default function Notice() {
         <div className="text-red-500 text-sm mt-2 ml-2">
           서버 연결에 문제가 발생했습니다.
         </div>
-
       )}
     </div>
   );
