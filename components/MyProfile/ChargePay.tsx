@@ -2,22 +2,18 @@
 
 import { useState } from 'react';
 import PortOne from '@portone/browser-sdk/v2';
-import axios from 'axios';
 import axiosInstance from '@/api/axiosInstance';
 
+interface PreRegisterResponse {
+  merchantId: string; // 서버 응답에서 merchantId의 타입을 확인 후 정의
+}
+
 export default function ChargePay() {
-  const [money, setMoney] = useState(0);
-  const [paymentId, setPaymentId] = useState('');
-
-  //사전등록시 금액보내고, 주문번호(paymentId) 받고,결제 진행
-  //주문번호 받았을때 sse구독요청
-
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const data: any = {
+  const [data, setData] = useState<any>({
     storeId: process.env.NEXT_PUBLIC_PORTONE_STORE_ID,
-    paymentId,
+    paymentId: '',
     orderName: '짐페이 충전',
-    totalAmount: money,
+    totalAmount: 0,
     currency: 'KRW',
     channelKey: process.env.NEXT_PUBLIC_PORTONE_CHANNAL_KEY,
     payMethod: 'CARD',
@@ -27,62 +23,80 @@ export default function ChargePay() {
       phoneNumber: '010-7634-7212',
       email: 'mari394337@gmail.com',
     },
-  };
+  });
+
+  //사전등록시 금액보내고, 주문번호(paymentId) 받고,결제 진행
+  //주문번호 받았을때 sse구독요청
+
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
 
   const handleButtonClick = (e: React.MouseEvent<HTMLButtonElement>) => {
     const target = e.target as HTMLButtonElement;
-    setMoney((prevMoney) => (prevMoney || 0) + +target.value);
+    setData({
+      ...data,
+      totalAmount: data.totalAmount + +target.value,
+    });
   };
 
   const handleChangeMoney = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setMoney(+e.target.value);
+    setData({
+      ...data,
+      totalAmount: e.target.value,
+    });
   };
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    if (money < 1000) {
+    if (data.totalAmount < 1000) {
       alert('1000원 이상 입력해주세요');
       return;
     }
 
-    //사전 정보
-    const response = await axiosInstance.post('/api/payments/pre-register', {
-      amount: money,
-    });
-
-    if (response) {
-      setPaymentId(response.data.merchantId);
-    }
-
-    //sse구독
-    const eventSource = new EventSource(
-      `/api/payments/sse/subscribe/${paymentId}`
+    const response: { merchantId: string } = await axiosInstance.post(
+      '/api/payments/pre-register',
+      {
+        amount: data.totalAmount,
+      }
     );
 
-    eventSource.addEventListener('new_thread', () => {
-      //'new_thread' 이벤트가 오면 할 동작
-    });
-
-    eventSource.onerror = () => {
-      //에러 발생시 할 동작
-      eventSource.close(); //연결 끊기
-    };
+    if (response) {
+      setData({
+        ...data,
+        paymentId: response.merchantId,
+      });
+    }
 
     async function requestPayment() {
       if (data) {
         const response = await PortOne.requestPayment(data);
 
         //백엔드 엔드포인트
-        const validation = await axios.post('url', {
-          txId: response?.txId,
-          paymentId: response?.paymentId,
-        });
+        // const validation = await axiosInstance.post('/api/payments/webhook', {
+        //   txId: response?.txId,
+        //   paymentId: response?.paymentId,
+        // });
         console.log(response);
-        console.log(validation);
+        // console.log(validation);
       }
     }
 
-    requestPayment();
+    //sse구독
+    if (data.paymentId) {
+      const eventSource = new EventSource(
+        `/api/payments/sse/subscribe/${data.paymentId}`
+      );
+
+      // eventSource.addEventListener('new_thread', () => {
+
+      // });
+
+      eventSource.onerror = () => {
+        //에러 발생시 할 동작
+        eventSource.close(); //연결 끊기
+      };
+
+      requestPayment();
+    }
   };
 
   return (
@@ -98,7 +112,7 @@ export default function ChargePay() {
             placeholder="충전할 금액을 입력해주세요"
             className=" p-2 w-96 border border-gray-300 focus:outline-none"
             onChange={handleChangeMoney}
-            value={money}
+            value={data.totalAmount}
           />
           <div className=" flex justify-between w-[75%] mt-8 mb-8">
             <button

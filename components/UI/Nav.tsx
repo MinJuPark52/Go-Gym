@@ -2,14 +2,18 @@
 
 import Image from 'next/image';
 import logo from '../../public/logo_transparent.png';
-import profile from '../../public/default_profile.png';
 import Link from 'next/link';
 import useLoginStore from '@/store/useLoginStore';
 import { FaBell } from 'react-icons/fa';
 import DefaultProfile from './DefaultProfile';
+import AdminNav from './AdminNav';
 
 export default function Nav() {
-  const { loginState, logout } = useLoginStore();
+  const { loginState, adminLoginState, logout } = useLoginStore();
+
+  if (adminLoginState) {
+    return <AdminNav />;
+  }
 
   return (
     <div className=" flex justify-center border-b border-[#ccc] h-18 shadow-md">

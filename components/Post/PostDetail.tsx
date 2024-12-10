@@ -64,10 +64,8 @@ export default function PostDetail() {
                   </button>
                 </Link>
               </div>
-              <div className=" flex w-fit mt-4 pl-2 pr-2 pt-1 pb-1 rounded-lg bg-[#5AC800] bg-opacity-60 ">
-                <p className=" text-[11px] text-[#377008] font-bold">
-                  {statusBox}
-                </p>
+              <div className="badge pt-3 pb-3 border-none bg-blue-300 text-white text-sm font-bold ">
+                {statusBox}
               </div>
               <p className=" text-right text-sm text-gray-500 font-bold">
                 작성일 : {data.createdAt}
@@ -82,12 +80,13 @@ export default function PostDetail() {
               </p>
               <p className=" font-bold">
                 <span className=" text-gray-500">작성자 : </span>
-                <span
-                  className=" cursor-pointer hover:underline underline-offset-4"
+
+                <button
+                  className="btn btn-active p-2"
                   onClick={handleUserClick}
                 >
                   {data.authorNickname}
-                </span>
+                </button>
               </p>
             </div>
             <p className=" font-bold">

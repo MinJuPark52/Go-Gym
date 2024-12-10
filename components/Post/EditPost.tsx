@@ -11,7 +11,6 @@ import ImageSelect from './ImageSelect';
 import Image from 'next/image';
 import SearchKakaoMap from './SearchKaKaoMap';
 import { useMutation } from '@tanstack/react-query';
-import axios from 'axios';
 import { getAccessToken, getCity } from '@/api/api';
 import axiosInstance from '@/api/axiosInstance';
 
@@ -305,7 +304,7 @@ export default function EditPost() {
         </div>
         <div className=" flex flex-col items-center gap-4">
           <input
-            className=" w-[100%] max-w-[1200px] h-24 mt-4 mb-4 pl-4 border-2 border-blue-300 rounded-lg font-bold text-4xl focus:outline-blue-300"
+            className=" w-[100%] max-w-[1200px] h-12 mt-4 mb-2 pl-4 border-2 border-blue-300 rounded-lg font-bold text-2xl focus:outline-blue-300"
             placeholder="제목을 입력하세요"
             value={values.title}
             name="title"
