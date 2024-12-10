@@ -1,6 +1,7 @@
 //components/notice.tsx
 import { useState, useEffect } from "react";
 import axios from "axios";
+import useLoginStore from "@/store/useLoginStore";
 
 interface Notification {
   id: number;
@@ -19,7 +20,7 @@ export default function Notice() {
   const [dummyReceived, setDummyReceived] = useState(false);
   const [lastEvent, setLastEvent] = useState(Date.now());
   const [error, setError] = useState(false);
-  const [isLoggin, setIsLoggin] = useState(false);
+  const { loginState } = useLoginStore();
 
   // 알림 오면 내려주는 데이터 -> 알림창
   // 알림 실시간 -> 화면에 5초 띄우고 사라지기
@@ -70,8 +71,7 @@ export default function Notice() {
   // 알수없는 데이터 -> error
 
   useEffect(() => {
-    if (isLoggin) {
-      setIsLoggin(true);
+    if (loginState) {
       const fetchSseUrl = async () => {
         try {
           const response = await axios.get(
@@ -86,13 +86,13 @@ export default function Notice() {
     } else {
       setSseUrl(null);
     }
-  }, [isLoggin]);
+  }, [loginState]);
 
   // 구독 시작
   useEffect(() => {
     let eventSource: EventSource | null = null;
 
-    if (sseUrl && isLoggin) {
+    if (sseUrl && loginState) {
       eventSource = new EventSource(sseUrl);
       eventSource.onmessage = (e) => {
         try {
@@ -140,7 +140,7 @@ export default function Notice() {
         console.error("SSE connection error:", error);
         setError(true);
         eventSource?.close();
-        if (sseUrl && isLoggin) {
+        if (sseUrl && loginState) {
           eventSource = new EventSource(sseUrl);
         }
       };
@@ -168,7 +168,7 @@ export default function Notice() {
         eventSource?.close();
       };
     }
-  }, [sseUrl, isLoggin, dummyReceived, lastEvent]);
+  }, [sseUrl, loginState, dummyReceived, lastEvent]);
 
   return (
     <div
