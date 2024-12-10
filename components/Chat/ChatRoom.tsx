@@ -4,12 +4,12 @@ import { useQuery } from '@tanstack/react-query';
 import axios from 'axios';
 import ChatList from './ChatList';
 import Chat from './Chat';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import useWebSocketStore from '@/store/useSocketStore';
 import axiosInstance from '@/api/axiosInstance';
 
 interface ChatItem {
-  chatRoomId: number;
+  chatRoomId: string;
   createdAt: string;
   postId: number;
   counterpartyId: number;
@@ -20,13 +20,15 @@ interface ChatItem {
 }
 
 export default function ChatRoom() {
+  const [currentChatRoom, setCurrentChatRoom] = useState('');
   const { connect, messages, sendMessage, disconnect } = useWebSocketStore();
   //채팅방 목록 가져오기
-  // const { data, isSuccess } = useQuery<ChatItem[]>({
-  //   queryKey: ['chatroom'],
-  //   queryFn: async () => (await axiosInstance.get('/api/chatroom')).data,
-  //   staleTime: 100000,
-  // });
+  const { data: chatList, isSuccess: listSuccess } = useQuery<ChatItem[]>({
+    queryKey: ['chatroom'],
+    queryFn: async () =>
+      (await axios.get('http://localhost:4000/chatList')).data,
+    staleTime: 100000,
+  });
 
   // useEffect(() => {
   //   // 숫자 부분만 chatroomid적어주면 됨
@@ -39,14 +41,19 @@ export default function ChatRoom() {
   //   };
   // }, [connect, disconnect]);
 
-  // const sortedData =
-  //   isSuccess && data?.length
-  //     ? [...data].sort((a, b) => {
-  //         const dateA = new Date(a.lastMessageAt).getTime();
-  //         const dateB = new Date(b.lastMessageAt).getTime();
-  //         return dateB - dateA;
-  //       })
-  //     : [];
+  const sortedData =
+    listSuccess && chatList?.length
+      ? [...chatList].sort((a, b) => {
+          const dateA = new Date(a.lastMessageAt).getTime();
+          const dateB = new Date(b.lastMessageAt).getTime();
+          return dateB - dateA;
+        })
+      : [];
+
+  const handleClickChatRoom = (chatRoomId: string) => {
+    setCurrentChatRoom(chatRoomId);
+    console.log(currentChatRoom);
+  };
 
   const handleSendMessage = ({
     chatRoomId,
@@ -78,17 +85,19 @@ export default function ChatRoom() {
   return (
     <div className=" flex w-[75%] h-[100%] border-l border-gray-400">
       <div className=" flex flex-col w-[30%] h-[100%] border-r border-gray-400">
-        {/* {sortedData.map((list) => (
+        {sortedData.map((list) => (
           <ChatList
             key={list.chatRoomId}
+            chatRoomId={list.chatRoomId}
             counterpartyNickname={list.counterpartyNickname}
             lastMessage={list.lastMessage}
             lastMessageAt={list.lastMessageAt}
+            onClickChatRoom={handleClickChatRoom}
           />
-        ))} */}
+        ))}
         <div></div>
       </div>
-      <Chat onSendMessage={handleSendMessage} />
+      <Chat chatRoomId={currentChatRoom} onSendMessage={handleSendMessage} />
     </div>
   );
 }

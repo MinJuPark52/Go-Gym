@@ -1,11 +1,14 @@
 'use client';
 import Image from 'next/image';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import profile from '@/public/default_profile.png';
 import useWebSocketStore from '@/store/useSocketStore';
 import DefaultProfile from '../UI/DefaultProfile';
+import axiosInstance from '@/api/axiosInstance';
+import { useQuery } from '@tanstack/react-query';
 
 interface props {
+  chatRoomId: string;
   onSendMessage: ({
     chatRoomId,
     senderId,
@@ -17,9 +20,21 @@ interface props {
   }) => void;
 }
 
-export default function Chat({ onSendMessage }: props) {
+export default function Chat({ chatRoomId, onSendMessage }: props) {
   const [text, setText] = useState('');
-  const { messages } = useWebSocketStore();
+  const { messages, setAgoMessage } = useWebSocketStore();
+
+  // const { data: agoMessage } = useQuery({
+  //   queryKey: ['agoMessage', chatRoomId],
+  //   queryFn: async () => await axiosInstance.get(`/api/chatroom/${chatRoomId}`),
+  //   staleTime: 10000,
+  // });
+
+  // useEffect(() => {
+  //   if (agoMessage) {
+  //     setAgoMessage(agoMessage.data);
+  //   }
+  // }, [agoMessage]);
 
   const handleText = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     setText(e.target.value);

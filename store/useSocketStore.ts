@@ -10,6 +10,14 @@ interface WebSocketState {
     content: string;
     createdAt: string;
   }[];
+  setAgoMessage: (
+    agoMessage: {
+      chatRoomId: string;
+      senderId: string;
+      content: string;
+      createdAt: string;
+    }[]
+  ) => void;
   connect: (
     url: string,
     chatroomId: string,
@@ -22,6 +30,10 @@ interface WebSocketState {
 const useWebSocketStore = create<WebSocketState>((set) => ({
   stompClient: null,
   messages: [],
+  setAgoMessage: (agoMessage) =>
+    set(() => ({
+      messages: [...agoMessage],
+    })),
 
   connect: (url, chatroomId, onMessage) => {
     const client = new Client({

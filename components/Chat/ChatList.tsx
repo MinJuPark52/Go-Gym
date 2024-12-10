@@ -5,18 +5,25 @@ import useTimeAgo from '@/hooks/useTimeAgo';
 interface chatListProps {
   counterpartyNickname: string;
   lastMessage: string;
+  chatRoomId: string;
   lastMessageAt: string;
+  onClickChatRoom: (chatRoomId: string) => void;
 }
 
 export default function ChatList({
   counterpartyNickname,
+  chatRoomId,
+  onClickChatRoom,
   lastMessage,
   lastMessageAt,
 }: chatListProps) {
   const timeago = useTimeAgo(lastMessageAt);
 
   return (
-    <div className="flex flex-col justify-center h-[20%] pl-2 pr-2 hover:bg-gray-200 transition-all cursor-pointer">
+    <div
+      onClick={() => onClickChatRoom(chatRoomId)}
+      className="flex flex-col justify-center h-[20%] pl-2 pr-2 hover:bg-gray-200 transition-all cursor-pointer"
+    >
       <div className=" flex flex-col gap-2">
         <p className=" text-bold text-gray-400 text-sm font-bold">
           {counterpartyNickname}
