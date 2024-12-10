@@ -65,7 +65,7 @@ export default function Filter({
   };
 
   return (
-    <div className="flex flex-col gap-4 min-w-[700px]">
+    <div className="flex min-w-[700px] flex-col gap-4">
       <div className="flex gap-3">
         {FIRST_FILTER_CATEGORY.map((category: FILTER_CATEGORY_TYPE) => (
           <FilterCategory
@@ -88,7 +88,7 @@ export default function Filter({
           />
         ))}
       </div>
-      <div className="flex items-center gap-4 pl-4 mt-8 w-[100%] h-16 rounded-lg bg-blue-300">
+      <div className="mt-8 flex h-16 w-[100%] items-center gap-4 rounded-lg bg-blue-300 pl-4">
         {Object.values(activeFilters).map((value, idx) => (
           <ActiveFilter key={idx} filterValue={value} />
         ))}

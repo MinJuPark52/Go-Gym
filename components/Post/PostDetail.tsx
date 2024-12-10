@@ -3,15 +3,16 @@ import { FaHeart } from "react-icons/fa";
 import { CgCloseO } from "react-icons/cg";
 import DOMpurify from "dompurify";
 
-import { useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import axios from "axios";
-import { useParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import PostDetailImage from "./PostDetailImage";
 import { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import PostList from "./PostList";
 import PostUserDetail from "./PostUserDetail";
+import axiosInstance from "@/api/axiosInstance";
 
 export default function PostDetail() {
   const [visibleModal, setVisibleModal] = useState({
@@ -19,11 +20,20 @@ export default function PostDetail() {
     user: false,
   });
   const { id } = useParams();
+  const router = useRouter();
+
   const { data } = useQuery({
     queryKey: ["postDetail"],
     queryFn: async () =>
       (await axios.get(`http://localhost:4000/postDetails/${id}`)).data,
     staleTime: 1000,
+  });
+
+  const { mutate } = useMutation({
+    mutationKey: ["AddChatRoom"],
+    mutationFn: async () => await axiosInstance.post(`/api/chatroom/${id}`),
+    onSuccess: () => router.push("/chat"),
+    onError: () => alert("채팅방 생성이 실패했습니다."),
   });
 
   const handleImageClick = () => {
@@ -53,29 +63,29 @@ export default function PostDetail() {
   return (
     <>
       {data && (
-        <div className="flex flex-col w-[70%]">
+        <div className="flex w-[70%] flex-col">
           <div className="mb-6 border-b border-gray-400">
-            <div className="mt-12 ml-2 mr-2 mb-2">
+            <div className="mb-2 ml-2 mr-2 mt-12">
               <div className="flex justify-between">
                 <p className="text-2xl font-bold">{data.title}</p>
                 <Link href={`/community/modifiedpost/${id}`}>
-                  <button className="btn bg-blue-300  text-white hover:bg-blue-500 ">
+                  <button className="btn bg-blue-300 text-white hover:bg-blue-500">
                     수정하기
                   </button>
                 </Link>
               </div>
-              <div className="badge pt-3 pb-3 border-none bg-blue-300 text-white text-sm font-bold ">
+              <div className="badge border-none bg-blue-300 pb-3 pt-3 text-sm font-bold text-white">
                 {statusBox}
               </div>
-              <p className="text-right text-sm text-gray-500 font-bold">
+              <p className="text-right text-sm font-bold text-gray-500">
                 작성일 : {data.createdAt}
               </p>
             </div>
           </div>
-          <div className="flex flex-col gap-4 p-4 pt-0 mb-4 border-b border-gray-400">
+          <div className="mb-4 flex flex-col gap-4 border-b border-gray-400 p-4 pt-0">
             <div className="flex justify-between">
               <p className="font-bold">
-                <span className="text-gray-500 ">게시글 종류 : </span>
+                <span className="text-gray-500">게시글 종류 : </span>
                 {data.postType === "SELL" ? "팝니다" : "삽니다"}
               </p>
               <p className="font-bold">
@@ -90,12 +100,12 @@ export default function PostDetail() {
               </p>
             </div>
             <p className="font-bold">
-              <span className="text-gray-500 ">헬스장 : </span>
+              <span className="text-gray-500">헬스장 : </span>
               {data.gymName}
             </p>
             <div className="flex justify-between">
               <p className="font-bold">
-                <span className="text-gray-500 ">회원권 마감일 : </span>
+                <span className="text-gray-500">회원권 마감일 : </span>
                 {data.expirationDate}
               </p>
               <p className="font-bold">
@@ -104,25 +114,28 @@ export default function PostDetail() {
               </p>
             </div>
           </div>
-          <div className="relative min-h-[360px] p-4 border-b border-gray-400">
+          <div className="relative min-h-[360px] border-b border-gray-400 p-4">
             <div
               className="overflow-hidden whitespace-pre-wrap"
               dangerouslySetInnerHTML={{
                 __html: DOMpurify.sanitize(data.content),
               }}
             />
-            <div className="flex items-center gap-1 absolute bottom-2 right-2 cursor-pointer">
-              <span className="text-gray-400 text-sm font-bold ">찜</span>
+            <div className="absolute bottom-2 right-2 flex cursor-pointer items-center gap-1">
+              <span className="text-sm font-bold text-gray-400">찜</span>
               <FaHeart color="#DC7D7D" size={24} />
             </div>
           </div>
 
-          <div className="relative flex p-4 min-h-40">
+          <div className="relative flex min-h-40 p-4">
             <PostDetailImage
               imageUrl={data.imageUrl1}
               onClick={handleImageClick}
             />
-            <button className="absolute bottom-4 right-4 p-1 pl-2 pr-2 btn bg-blue-300  text-white hover:bg-blue-500 transition-all">
+            <button
+              onClick={() => mutate()}
+              className="btn absolute bottom-4 right-4 bg-blue-300 p-1 pl-2 pr-2 text-white transition-all hover:bg-blue-500"
+            >
               채팅하기
             </button>
           </div>
@@ -130,9 +143,9 @@ export default function PostDetail() {
       )}
       {visibleModal.user && <PostUserDetail onUserClick={handleUserClick} />}
       {data && visibleModal.image && (
-        <div className="flex flex-col justify-center items-center absolute top-0 bottom-0 left-0 right-0 bg-gray-600 bg-opacity-30">
-          <div className="flex justify-between items-center max-w-[1100px] w-[70%] animate-slide-down">
-            <p className="text-white text-xl font-bold">사진 크게보기</p>
+        <div className="absolute bottom-0 left-0 right-0 top-0 flex flex-col items-center justify-center bg-gray-600 bg-opacity-30">
+          <div className="flex w-[70%] max-w-[1100px] animate-slide-down items-center justify-between">
+            <p className="text-xl font-bold text-white">사진 크게보기</p>
             <CgCloseO
               size={48}
               color="#545454"
@@ -140,7 +153,7 @@ export default function PostDetail() {
               onClick={handleImageClick}
             />
           </div>
-          <div className="relative bg-white max-w-[1100px] w-[70%] h-[60%] rounded-lg overflow-hidden animate-slide-down">
+          <div className="relative h-[60%] w-[70%] max-w-[1100px] animate-slide-down overflow-hidden rounded-lg bg-white">
             <Image src={data.imageUrl1} alt="이미지" layout="fill" />
           </div>
         </div>
