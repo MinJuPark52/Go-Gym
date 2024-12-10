@@ -1,12 +1,12 @@
-'use client';
+"use client";
 
-import { useQuery } from '@tanstack/react-query';
-import axios from 'axios';
-import ChatList from './ChatList';
-import Chat from './Chat';
-import { useEffect, useState } from 'react';
-import useWebSocketStore from '@/store/useSocketStore';
-import axiosInstance from '@/api/axiosInstance';
+import { useQuery } from "@tanstack/react-query";
+import axios from "axios";
+import ChatList from "./ChatList";
+import Chat from "./Chat";
+import { useEffect, useState } from "react";
+import useWebSocketStore from "@/store/useSocketStore";
+import axiosInstance from "@/api/axiosInstance";
 
 interface ChatItem {
   chatRoomId: string;
@@ -20,13 +20,13 @@ interface ChatItem {
 }
 
 export default function ChatRoom() {
-  const [currentChatRoom, setCurrentChatRoom] = useState('');
+  const [currentChatRoom, setCurrentChatRoom] = useState("");
   const { connect, messages, sendMessage, disconnect } = useWebSocketStore();
   //채팅방 목록 가져오기
   const { data: chatList, isSuccess: listSuccess } = useQuery<ChatItem[]>({
-    queryKey: ['chatroom'],
+    queryKey: ["chatroom"],
     queryFn: async () =>
-      (await axios.get('http://localhost:4000/chatList')).data,
+      (await axios.get("http://localhost:4000/chatList")).data,
     staleTime: 100000,
   });
 
@@ -66,25 +66,25 @@ export default function ChatRoom() {
   }) => {
     //송신 경로 등록
     sendMessage(
-      '/app/chatroom/message',
+      "/app/chatroom/message",
       JSON.stringify({
         chatRoomId,
         senderId,
         content,
-      })
+      }),
     );
     console.log(messages);
   };
 
   //게시물 상세보기에 채팅하기
   async function buttonClick() {
-    const response = await axios.post('/chat/api/chatroom/2');
+    const response = await axios.post("/chat/api/chatroom/2");
     console.log(response);
   }
 
   return (
-    <div className=" flex w-[75%] h-[100%] border-l border-gray-400">
-      <div className=" flex flex-col w-[30%] h-[100%] border-r border-gray-400">
+    <div className="flex h-[100%] w-[75%] border-l border-gray-400">
+      <div className="flex h-[100%] w-[30%] flex-col border-r border-gray-400">
         {sortedData.map((list) => (
           <ChatList
             key={list.chatRoomId}

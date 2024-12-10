@@ -9,7 +9,7 @@ export default function useTimeAgo(pastDate: string) {
   if (diffInMinutes < 60) {
     // 분 단위로 표현
     if (diffInMinutes < 1) {
-      return '방금 전';
+      return "방금 전";
     }
     return `${diffInMinutes}분 전`;
   } else if (diffInHours < 24) {

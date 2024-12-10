@@ -1,28 +1,28 @@
-'use client';
+"use client";
 
-import Link from 'next/link';
-import Filter from './Filter';
-import PostList from './PostList';
-import { useEffect, useState } from 'react';
-import { useQuery } from '@tanstack/react-query';
-import axiosInstance from '@/api/axiosInstance';
-import { useRouter, useSearchParams } from 'next/navigation';
+import Link from "next/link";
+import Filter from "./Filter";
+import PostList from "./PostList";
+import { useEffect, useState } from "react";
+import { useQuery } from "@tanstack/react-query";
+import axiosInstance from "@/api/axiosInstance";
+import { useRouter, useSearchParams } from "next/navigation";
 
 interface categoryStateType {
-  postType: 'default' | 'SELL' | 'BUY';
+  postType: "default" | "SELL" | "BUY";
   postStatus:
-    | 'default'
-    | 'POSTING'
-    | 'SALE_COMPLETED'
-    | 'PURCHASE_COMPLETED'
-    | 'HIDDEN';
+    | "default"
+    | "POSTING"
+    | "SALE_COMPLETED"
+    | "PURCHASE_COMPLETED"
+    | "HIDDEN";
   membershipType:
-    | 'default'
-    | 'MEMBERSHIP_ONLY'
-    | 'MEMBERSHIP_WITH_PT'
-    | 'PT_ONLY';
-  membershipDuration: 'default' | 'months_0_3' | 'months_3_6' | 'months_6_plus';
-  PTCount: 'default' | 'PT_0_10' | 'PT_10_25' | 'PT_25_plus';
+    | "default"
+    | "MEMBERSHIP_ONLY"
+    | "MEMBERSHIP_WITH_PT"
+    | "PT_ONLY";
+  membershipDuration: "default" | "months_0_3" | "months_3_6" | "months_6_plus";
+  PTCount: "default" | "PT_0_10" | "PT_10_25" | "PT_25_plus";
 }
 
 export default function PostListContainer() {
@@ -31,24 +31,24 @@ export default function PostListContainer() {
 
   const [filter, setFilter] = useState<categoryStateType>({
     postType:
-      (searchParams.get('postType') as categoryStateType['postType']) ||
-      'default',
+      (searchParams.get("postType") as categoryStateType["postType"]) ||
+      "default",
     postStatus:
-      (searchParams.get('postStatus') as categoryStateType['postStatus']) ||
-      'default',
+      (searchParams.get("postStatus") as categoryStateType["postStatus"]) ||
+      "default",
     membershipType:
       (searchParams.get(
-        'membershipType'
-      ) as categoryStateType['membershipType']) || 'default',
+        "membershipType",
+      ) as categoryStateType["membershipType"]) || "default",
     membershipDuration:
       (searchParams.get(
-        'membershipDuration'
-      ) as categoryStateType['membershipDuration']) || 'default',
+        "membershipDuration",
+      ) as categoryStateType["membershipDuration"]) || "default",
     PTCount:
-      (searchParams.get('PTCount') as categoryStateType['PTCount']) ||
-      'default',
+      (searchParams.get("PTCount") as categoryStateType["PTCount"]) ||
+      "default",
   });
-  const [query, setQuery] = useState('');
+  const [query, setQuery] = useState("");
 
   useEffect(() => {
     setQuery(createQuery(filter));
@@ -62,7 +62,7 @@ export default function PostListContainer() {
     const params = new URLSearchParams();
 
     Object.entries(filter).forEach(([key, value]) => {
-      if (value !== 'default') {
+      if (value !== "default") {
         params.append(key, value);
       }
     });
@@ -79,16 +79,16 @@ export default function PostListContainer() {
   // })
 
   return (
-    <div className=" flex flex-col mt-12 w-[70%]">
-      <div className=" flex justify-between items-center">
-        <p className=" mb-12 text-2xl font-bold">양도 회원권</p>
-        <Link href={'/community/editpost'}>
-          <button className="btn btn-inf0 bg-blue-300 hover:bg-blue-500 text-white">
+    <div className="mt-12 flex w-[70%] flex-col">
+      <div className="flex items-center justify-between">
+        <p className="mb-12 text-2xl font-bold">양도 회원권</p>
+        <Link href={"/community/editpost"}>
+          <button className="btn-inf0 btn bg-blue-300 text-white hover:bg-blue-500">
             글쓰기
           </button>
         </Link>
       </div>
-      <div className=" mb-12">
+      <div className="mb-12">
         <Filter onChangeFilter={handleFilterUrl} filter={filter} />
       </div>
       <PostList style="w-[100%] flex-wrap justify-center" />

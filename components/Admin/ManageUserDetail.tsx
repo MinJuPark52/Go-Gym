@@ -1,13 +1,9 @@
-'use client';
+"use client";
 
-import { useParams } from 'next/navigation';
-import PostList from '../Post/PostList';
-import useLoginStore from '@/store/useLoginStore';
-import { useEffect } from 'react';
-
-interface Params {
-  userId: string;
-}
+import { useParams } from "next/navigation";
+import PostList from "../Post/PostList";
+import useLoginStore from "@/store/useLoginStore";
+import { useEffect } from "react";
 
 export default function ManageUserDetail() {
   const { adminLogin } = useLoginStore();
@@ -20,8 +16,8 @@ export default function ManageUserDetail() {
   }, []);
 
   return (
-    <div className="flex flex-col justify-center items-center ml-72 mt-12">
-      <h2 className="text-3xl font-bold mb-12">
+    <div className="ml-72 mt-12 flex flex-col items-center justify-center">
+      <h2 className="mb-12 text-3xl font-bold">
         {decodeURIComponent(userId)}의 게시글
       </h2>
       <div className="overflow-x-auto">
