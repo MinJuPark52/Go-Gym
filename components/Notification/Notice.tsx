@@ -1,4 +1,3 @@
-//components/notice.tsx
 import { useState, useEffect } from "react";
 import axios from "axios";
 import useLoginStore from "@/store/useLoginStore";
@@ -20,7 +19,7 @@ export default function Notice() {
   const [dummyReceived, setDummyReceived] = useState(false);
   const [lastEvent, setLastEvent] = useState(Date.now());
   const [error, setError] = useState(false);
-  const { loginState } = useLoginStore();
+  const { loginState, token } = useLoginStore();
 
   // 알림 오면 내려주는 데이터 -> 알림창
   // 알림 실시간 -> 화면에 5초 띄우고 사라지기
@@ -35,7 +34,8 @@ export default function Notice() {
         )
       );
       const response = await axios.put(
-        `/backend/api/notification/${notificationId}/read`
+        `/backend/api/notification/${notificationId}/read`,
+        { header: { Authorization: `Bearer ${token}` } }
       );
       console.log("알림 읽음 처리", response.data);
       setMsg((prev: Notification[]) =>
@@ -48,10 +48,11 @@ export default function Notice() {
 
   // 전체 알림 목록 조회 -> 종 아이콘 눌러서 조회 -> 읽지 않은 알림만 저장
   const handleAllNotifications = async () => {
-    // if(isLogin) {}
     try {
       const response = await axios.get(
-        "/backend/api/notifications?page={page}&size={size}"
+        "/backend/api/notifications?page={page}&size={size}",
+        { headers: { Authorization: `:{token}` } }
+
       );
       const noreadNotifications = response.data.notifications.filter(
         (notification: Notification) => !notification.read
@@ -70,105 +71,98 @@ export default function Notice() {
   // heartbeat -> 30초 이벤트 안오면 다시 재연결, 확인 로직 필요
   // 알수없는 데이터 -> error
 
+
+  // 구독 시작
+  // 알림 띄우는거 notification
+  // 연결유지되고 있는지 30초 확인 heartbeat (내말 들리니..)
   useEffect(() => {
+    let eventSource: EventSource | null = null;
+
+    const fetchSseUrl = async () => {
+      try {
+        const response = await axios.get(
+          "/backend/api/notification/subscribe",
+          { headers: { Authorization: `:{token}` } }
+        );
+        console.log("SSE URL:", response.data.sseUrl);
+        setSseUrl(response.data.sseUrl);
+      } catch (error) {
+        console.error("Failed to fetch SSE URL:", error);
+      }
+    };
+
+    const reconnectSse = () => {
+      if (sseUrl && loginState) {
+        console.log("Reconnecting to SSE...");
+        eventSource = new EventSource(sseUrl);
+
+        eventSource.onopen = () => {
+          console.log("SSE connection successfully opened.");
+        };
+
+        eventSource.onmessage = (e) => {
+          try {
+            const data = JSON.parse(e.data);
+            console.log("Received Data:", data);
+
+            const formatTimestamp = new Date(data.timestamp).toLocaleString(
+              "ko-KR",
+              {
+                year: "numeric",
+                month: "2-digit",
+                day: "2-digit",
+                hour: "2-digit",
+                minute: "2-digit",
+              }
+            );
+
+            const formatMessage = `${data.message} <br/> ${formatTimestamp}`;
+
+            if (data.event === "dummy" && !dummyReceived) {
+              setDummyReceived(true);
+              console.log("Dummy data received:", e.data);
+            } else if (data.event === "notification") {
+              setMsg((prev) =>
+                [{ ...data, message: formatMessage }, ...prev].slice(0, 50)
+              );
+              setLastEvent(Date.now());
+              setError(false);
+
+              setTimeout(() => {
+                setMsg((prev) =>
+                  prev.filter((notification) => notification.id !== data.id)
+                );
+              }, 5000);
+            } else if (data.event === "heartbeat") {
+              console.log("Heartbeat received:", e.data);
+            }
+          } catch (error) {
+            console.error("Failed to parse SSE message:", error);
+          }
+        };
+
+        eventSource.onerror = (error) => {
+          console.error("SSE connection error:", error);
+          setError(true);
+          eventSource?.close();
+          console.log("Attempting to reconnect to SSE...");
+          setTimeout(reconnectSse, 5000);
+        };
+      }
+    };
+
     if (loginState) {
-      const fetchSseUrl = async () => {
-        try {
-          const response = await axios.get(
-            "/backend/api/notification/subscribe"
-          );
-          setSseUrl(response.data.sseUrl);
-        } catch (error) {
-          console.error("Failed to fetch SSE URL:", error);
-        }
-      };
       fetchSseUrl();
     } else {
       setSseUrl(null);
     }
-  }, [loginState]);
-
-  // 구독 시작
-  useEffect(() => {
-    let eventSource: EventSource | null = null;
-
     if (sseUrl && loginState) {
-      eventSource = new EventSource(sseUrl);
-      eventSource.onmessage = (e) => {
-        try {
-          const data = JSON.parse(e.data);
-          const formatTimestamp = new Date(data.timestamp).toLocaleString(
-            "ko-KR",
-            {
-              year: "numeric",
-              month: "2-digit",
-              day: "2-digit",
-              hour: "2-digit",
-              minute: "2-digit",
-            }
-          );
-
-          const formatMessage = `${data.message} <br/> ${formatTimestamp}`;
-
-          if (data.event === "dummy") {
-            if (!dummyReceived) {
-              setDummyReceived(true);
-              console.log("Dummy data:", e.data);
-            } // 알림 띄우는거
-          } else if (data.event === "notification") {
-            console.log("Notification:", e.data);
-            setMsg((prev) =>
-              [{ ...data, message: formatMessage }, ...prev].slice(0, 50)
-            );
-            setLastEvent(Date.now());
-            setError(false);
-            setTimeout(() => {
-              setMsg((prev) =>
-                prev.filter((notification) => notification.id !== data.id)
-              );
-            }, 5000);
-            // 연결유지되고 있는지 30초 확인 (내말 들리니..)
-          } else if (data.event === "heartbeat") {
-            console.log("Heartbeat:", e.data);
-          }
-        } catch (error) {
-          console.error("Failed to parse notification data:", error);
-        }
-      };
-
-      eventSource.onerror = (error) => {
-        console.error("SSE connection error:", error);
-        setError(true);
-        eventSource?.close();
-        if (sseUrl && loginState) {
-          eventSource = new EventSource(sseUrl);
-        }
-      };
-
-      const heartbeatInterval = setInterval(() => {
-        const timeElapsed = Date.now() - lastEvent;
-
-        if (timeElapsed >= 30000) {
-          console.log("No events for 30 seconds, attempting to reconnect...");
-        }
-
-        if (timeElapsed >= 60000) {
-          console.error("No events for 1 minute, connection error.");
-          setError(true);
-          clearInterval(heartbeatInterval);
-          eventSource?.close();
-          setTimeout(() => {
-            eventSource = new EventSource(sseUrl);
-          }, 5000);
-        }
-      }, 10000);
-
-      return () => {
-        clearInterval(heartbeatInterval);
-        eventSource?.close();
-      };
+      reconnectSse();
     }
-  }, [sseUrl, loginState, dummyReceived, lastEvent]);
+    return () => {
+      eventSource?.close();
+    };
+  }, [sseUrl, loginState, lastEvent, dummyReceived]);
 
   return (
     <div

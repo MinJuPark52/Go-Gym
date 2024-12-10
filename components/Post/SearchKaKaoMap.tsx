@@ -1,12 +1,12 @@
-'use client';
+"use client";
 
-import React, { useState } from 'react';
+import React, { useState } from "react";
 import {
   Map,
   MapMarker,
   useKakaoLoader,
   CustomOverlayMap,
-} from 'react-kakao-maps-sdk';
+} from "react-kakao-maps-sdk";
 
 export default function SearchKakaoMap({
   onClick,
@@ -22,10 +22,10 @@ export default function SearchKakaoMap({
   const [loading, error] = useKakaoLoader({
     //에러나는거같네요
     appkey: process.env.NEXT_PUBLIC_KAKAO_JAVASCRIPT_KEY!,
-    libraries: ['services'],
+    libraries: ["services"],
   });
 
-  const [keyword, setKeyword] = useState(''); // 검색 키워드
+  const [keyword, setKeyword] = useState(""); // 검색 키워드
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const [places, setPlaces] = useState<any[]>([]); // 검색 결과를 저장할 상태
   const [mapCenter, setMapCenter] = useState({
@@ -87,10 +87,10 @@ export default function SearchKakaoMap({
       </form>
 
       {/* 지도 */}
-      <div className=" flex justify-center w-[70%] h-[60%] translate-y-[-128px]">
+      <div className="flex justify-center w-[70%] h-[60%] translate-y-[-128px]">
         <Map
           center={mapCenter}
-          style={{ width: '100%', height: '100%' }}
+          style={{ width: "100%", height: "100%" }}
           level={3}
         >
           {/* 검색 결과에 따라 마커를 지도에 표시 */}
@@ -106,7 +106,7 @@ export default function SearchKakaoMap({
                   lng: parseFloat(place.x),
                 }}
               >
-                <div className=" bg-white border p-2 border-blue-300 rounded text-gray-600 font-bold translate-y-[-64px]">
+                <div className="bg-white border p-2 border-blue-300 rounded text-gray-600 font-bold translate-y-[-64px]">
                   {place.place_name}
                 </div>
               </CustomOverlayMap>
@@ -116,7 +116,7 @@ export default function SearchKakaoMap({
 
         {/* 검색 결과 목록 */}
         {places.length ? (
-          <ul className=" bg-white w-[30%] max-w-md h-[100%] overflow-y-auto">
+          <ul className="bg-white w-[30%] max-w-md h-[100%] overflow-y-auto">
             {places.map((place, index) => (
               <li
                 key={index}
@@ -138,7 +138,7 @@ export default function SearchKakaoMap({
                   길찾기
                 </a>
                 <button
-                  className=" ml-4 mr-4 p-1 pl-2 pr-2 rounded-xl bg-blue-300 text-white font-bold text-sm hover:bg-blue-500 transition-all"
+                  className="ml-4 mr-4 p-1 pl-2 pr-2 rounded-xl bg-blue-300 text-white font-bold text-sm hover:bg-blue-500 transition-all"
                   onClick={() =>
                     onClick(
                       parseFloat(place.y),
@@ -154,7 +154,7 @@ export default function SearchKakaoMap({
             ))}
           </ul>
         ) : (
-          ''
+          ""
         )}
       </div>
     </div>
