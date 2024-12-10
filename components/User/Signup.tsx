@@ -250,7 +250,7 @@ export default function SignupPage() {
     if (selectedRegion1) {
       try {
         const response = await axios.get(
-          `/api/regions?name=${signupFormData.region1}`
+          `/api/regions?name=${selectedRegion1}`
         );
         if (response.status === 200) {
           console.log(response.data);
@@ -268,7 +268,7 @@ export default function SignupPage() {
     if (selectedRegion2) {
       try {
         const response = await axios.get(
-          `/api/regions?name=${signupFormData.region2}`
+          `/api/regions?name=${selectedRegion2}`
         );
         if (response.status === 200) {
           console.log(response.data);
