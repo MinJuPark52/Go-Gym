@@ -17,7 +17,13 @@ interface PostType {
   wishCount: number;
 }
 
-export default function PostList({ url }: { url?: string }) {
+export default function PostList({
+  url,
+  style,
+}: {
+  url?: string;
+  style?: string;
+}) {
   const { data } = useQuery({
     queryKey: ['post'],
     queryFn: async () =>
@@ -27,7 +33,7 @@ export default function PostList({ url }: { url?: string }) {
   });
 
   return (
-    <div className=" flex flex-wrap justify-center gap-8 mb-12 w-full min-w-[700px] ">
+    <div className={`flex gap-8 mb-12 w-full min-w-[750px] ${style}`}>
       {data &&
         data.map((post: PostType) => <PostItem key={post.id} {...post} />)}
     </div>

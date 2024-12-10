@@ -2,13 +2,18 @@
 
 import Image from 'next/image';
 import logo from '../../public/logo_transparent.png';
-import profile from '../../public/default_profile.png';
-import alarm from '../../public/Alarm.png';
 import Link from 'next/link';
 import useLoginStore from '@/store/useLoginStore';
+import { FaBell } from 'react-icons/fa';
+import DefaultProfile from './DefaultProfile';
+import AdminNav from './AdminNav';
 
 export default function Nav() {
-  const { loginState } = useLoginStore();
+  const { loginState, adminLoginState, logout } = useLoginStore();
+
+  if (adminLoginState) {
+    return <AdminNav />;
+  }
 
   return (
     <div className=" flex justify-center border-b border-[#ccc] h-18 shadow-md">
@@ -35,23 +40,33 @@ export default function Nav() {
           >
             채팅방
           </Link>
-          <Image
-            src={alarm}
-            alt="alarm"
-            width={40}
-            className=" cursor-pointer"
-            priority
-          />
+
+          <FaBell className="w-10 h-6 text-blue-400" />
+
           {loginState ? (
-            <Link href={'/mypage'}>
-              <Image
-                src={profile}
-                alt="profile"
-                width={40}
-                className=" cursor-pointer"
-                priority
-              />
-            </Link>
+            <div className="dropdown dropdown-end">
+              <div
+                tabIndex={0}
+                role="button"
+                className="btn btn-ghost btn-circle avatar"
+              >
+                <DefaultProfile width="10" />
+              </div>
+              <ul
+                tabIndex={0}
+                className="menu menu-sm dropdown-content bg-base-100 rounded-box z-[1] mt-3 w-52 p-2 shadow"
+              >
+                <li>
+                  <Link href={'/mypage'} className="justify-between">
+                    Profile
+                    <span className="badge">New</span>
+                  </Link>
+                </li>
+                <li>
+                  <p onClick={logout}>Logout</p>
+                </li>
+              </ul>
+            </div>
           ) : (
             <Link
               href={'/login'}
