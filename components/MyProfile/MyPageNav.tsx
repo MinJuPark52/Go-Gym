@@ -31,6 +31,7 @@ export default function MyPageNav() {
     } else {
       setVisible({ post: false, trans: false });
     }
+    console.log(params);
   }, [params]);
 
   return (
