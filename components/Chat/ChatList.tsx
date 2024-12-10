@@ -1,6 +1,6 @@
-import Image from 'next/image';
-import profile from '@/public/default_profile.png';
-import useTimeAgo from '@/hooks/useTimeAgo';
+import Image from "next/image";
+import profile from "@/public/default_profile.png";
+import useTimeAgo from "@/hooks/useTimeAgo";
 
 interface chatListProps {
   counterpartyNickname: string;
@@ -17,11 +17,11 @@ export default function ChatList({
 
   return (
     <div className="flex flex-col justify-center h-[20%] pl-2 pr-2 hover:bg-gray-200 transition-all cursor-pointer">
-      <div className=" flex flex-col gap-2">
-        <p className=" text-bold text-gray-400 text-sm font-bold">
+      <div className="flex flex-col gap-2">
+        <p className="text-bold text-gray-400 text-sm font-bold">
           {counterpartyNickname}
         </p>
-        <div className=" flex items-center gap-4">
+        <div className="flex items-center gap-4">
           <Image
             src={profile}
             alt="profile"
@@ -30,11 +30,11 @@ export default function ChatList({
             priority
           />
 
-          <p className=" text-xl">{lastMessage}</p>
+          <p className="text-xl">{lastMessage}</p>
         </div>
       </div>
-      <div className=" flex flex-col items-end">
-        <p className=" text-bold text-gray-400 text-sm font-bold">{timeago}</p>
+      <div className="flex flex-col items-end">
+        <p className="text-bold text-gray-400 text-sm font-bold">{timeago}</p>
       </div>
     </div>
   );

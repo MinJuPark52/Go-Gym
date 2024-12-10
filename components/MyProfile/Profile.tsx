@@ -1,10 +1,10 @@
-'use client';
+"use client";
 
-import Image from 'next/image';
-import profile from '../../public/default_profile.png';
-import { useQuery } from '@tanstack/react-query';
-import axiosInstance from '@/api/axiosInstance';
-import Link from 'next/link';
+import Image from "next/image";
+import profile from "../../public/default_profile.png";
+import { useQuery } from "@tanstack/react-query";
+import axiosInstance from "@/api/axiosInstance";
+import Link from "next/link";
 
 export default function ChangeProfile() {
   // const {} = useQuery({
@@ -35,7 +35,7 @@ export default function ChangeProfile() {
           </div>
         </div>
       </div>
-      <Link href={'/mypage/changeProfile'} className=" ml-auto">
+      <Link href={"/mypage/changeProfile"} className="ml-auto">
         <button className="btn btn-info bg-blue-300 border-none hover:bg-blue-500 text-white">
           프로필 수정
         </button>
