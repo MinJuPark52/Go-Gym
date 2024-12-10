@@ -1,12 +1,12 @@
-'use client';
+"use client";
 
-import { useQuery } from '@tanstack/react-query';
-import axios from 'axios';
-import ChatList from './ChatList';
-import Chat from './Chat';
-import { useEffect } from 'react';
-import useWebSocketStore from '@/store/useSocketStore';
-import axiosInstance from '@/api/axiosInstance';
+import { useQuery } from "@tanstack/react-query";
+import axios from "axios";
+import ChatList from "./ChatList";
+import Chat from "./Chat";
+import { useEffect } from "react";
+import useWebSocketStore from "@/store/useSocketStore";
+import axiosInstance from "@/api/axiosInstance";
 
 interface ChatItem {
   chatRoomId: number;
@@ -59,7 +59,7 @@ export default function ChatRoom() {
   }) => {
     //송신 경로 등록
     sendMessage(
-      '/app/chatroom/message',
+      "/app/chatroom/message",
       JSON.stringify({
         chatRoomId,
         senderId,
@@ -71,13 +71,13 @@ export default function ChatRoom() {
 
   //게시물 상세보기에 채팅하기
   async function buttonClick() {
-    const response = await axios.post('/chat/api/chatroom/2');
+    const response = await axios.post("/chat/api/chatroom/2");
     console.log(response);
   }
 
   return (
-    <div className=" flex w-[75%] h-[100%] border-l border-gray-400">
-      <div className=" flex flex-col w-[30%] h-[100%] border-r border-gray-400">
+    <div className="flex w-[75%] h-[100%] border-l border-gray-400">
+      <div className="flex flex-col w-[30%] h-[100%] border-r border-gray-400">
         {/* {sortedData.map((list) => (
           <ChatList
             key={list.chatRoomId}

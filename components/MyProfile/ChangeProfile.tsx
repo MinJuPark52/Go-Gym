@@ -1,7 +1,7 @@
-'use client';
-import axiosInstance from '@/api/axiosInstance';
-import Image from 'next/image';
-import { useRef, useState } from 'react';
+"use client";
+import axiosInstance from "@/api/axiosInstance";
+import Image from "next/image";
+import { useRef, useState } from "react";
 
 const SignupInput: React.FC<InputProps> = ({
   type,
@@ -33,9 +33,9 @@ interface InputProps {
 export default function ChangeProfile() {
   const [file, setFile] = useState<File>();
   const [values, setValues] = useState({
-    nickname: '',
-    phone: '',
-    password: '',
+    nickname: "",
+    phone: "",
+    password: "",
   });
   const fileInputRef = useRef<HTMLInputElement | null>(null);
 
@@ -64,13 +64,13 @@ export default function ChangeProfile() {
 
     // 파일 추가
     if (file) {
-      formData.append('profileImageUrl', file); // 파일 추가
+      formData.append("profileImageUrl", file); // 파일 추가
     }
 
     try {
-      const response = await axiosInstance.put('/api/members/me', formData, {
+      const response = await axiosInstance.put("/api/members/me", formData, {
         headers: {
-          'Content-Type': 'multipart/form-data',
+          "Content-Type": "multipart/form-data",
         },
       });
 
@@ -88,7 +88,7 @@ export default function ChangeProfile() {
       <h2 className="text-2xl font-semibold text-center">프로필 수정</h2>
       {file ? (
         <>
-          <div className=" relative flex justify-center w-[240px] h-[240px] ml-auto mr-auto border border-gray-300 rounded-[100%] overflow-hidden">
+          <div className="relative flex justify-center w-[240px] h-[240px] ml-auto mr-auto border border-gray-300 rounded-[100%] overflow-hidden">
             <Image
               src={URL.createObjectURL(file as File)}
               alt="헬스장 이미지"
@@ -112,12 +112,12 @@ export default function ChangeProfile() {
               name="file-input"
               onChange={handleFileSelect}
               ref={fileInputRef} // ref 연결
-              style={{ display: 'none' }} // 숨김
+              style={{ display: "none" }} // 숨김
             />
           </div>
         </>
       ) : (
-        <div className=" relative flex justify-center w-[240px] h-[240px] ml-auto mr-auto border border-gray-300 rounded-[100%] overflow-hidden">
+        <div className="relative flex justify-center w-[240px] h-[240px] ml-auto mr-auto border border-gray-300 rounded-[100%] overflow-hidden">
           <div className="flex justify-center items-center w-60 h-56">
             <input
               type="file"
@@ -132,7 +132,7 @@ export default function ChangeProfile() {
             >
               <span className="text-4xl text-green-500">+</span>
               <span className="mt-2 text-sm font-semibold">
-                {'프로필 사진 선택하세요'}
+                {"프로필 사진 선택하세요"}
               </span>
             </label>
           </div>

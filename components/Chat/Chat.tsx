@@ -1,9 +1,9 @@
-'use client';
-import Image from 'next/image';
-import { useState } from 'react';
-import profile from '@/public/default_profile.png';
-import useWebSocketStore from '@/store/useSocketStore';
-import DefaultProfile from '../UI/DefaultProfile';
+"use client";
+import Image from "next/image";
+import { useState } from "react";
+import profile from "@/public/default_profile.png";
+import useWebSocketStore from "@/store/useSocketStore";
+import DefaultProfile from "../UI/DefaultProfile";
 
 interface props {
   onSendMessage: ({
@@ -18,7 +18,7 @@ interface props {
 }
 
 export default function Chat({ onSendMessage }: props) {
-  const [text, setText] = useState('');
+  const [text, setText] = useState("");
   const { messages } = useWebSocketStore();
 
   const handleText = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
@@ -26,7 +26,7 @@ export default function Chat({ onSendMessage }: props) {
   };
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
-    if (e.key === 'Enter' && !e.shiftKey) {
+    if (e.key === "Enter" && !e.shiftKey) {
       e.preventDefault();
       handleSendMessage();
     }
@@ -37,8 +37,8 @@ export default function Chat({ onSendMessage }: props) {
       return;
     }
     //senderId랑 chatRoomId 1번 고정
-    onSendMessage({ chatRoomId: '1', senderId: '1', content: text });
-    setText('');
+    onSendMessage({ chatRoomId: "1", senderId: "1", content: text });
+    setText("");
   };
 
   const handleSubmitMessage = (e: React.FormEvent<HTMLFormElement>) => {
@@ -46,14 +46,14 @@ export default function Chat({ onSendMessage }: props) {
     handleSendMessage();
   };
 
-  const buttonStyle = text.trim().length ? 'bg-blue-300' : 'bg-gray-300';
+  const buttonStyle = text.trim().length ? "bg-blue-300" : "bg-gray-300";
 
   return (
     <form
       onSubmit={handleSubmitMessage}
-      className=" relative flex flex-col w-[70%] h-[100%] p-4 bg-blue-200 bg-opacity-40"
+      className="relative flex flex-col w-[70%] h-[100%] p-4 bg-blue-200 bg-opacity-40"
     >
-      <div className=" flex flex-col h-[calc(100%-10rem)] p-2 overflow-y-auto scrollbar-hide">
+      <div className="flex flex-col h-[calc(100%-10rem)] p-2 overflow-y-auto scrollbar-hide">
         {/* 상대방 채팅 */}
         <div className="chat chat-start">
           <div className="chat-image avatar">
@@ -83,12 +83,9 @@ export default function Chat({ onSendMessage }: props) {
 
         {/* 채팅 데이터 받아오면 위에 코드로 교체 예정 */}
         {messages.map((chat) => (
-          <div
-            className=" flex items-center gap-4 ml-auto"
-            key={chat.createdAt}
-          >
-            <div className=" flex justify-center items-center p-2 rounded-xl bg-blue-200">
-              <p className=" text-base">{chat.content}</p>
+          <div className="flex items-center gap-4 ml-auto" key={chat.createdAt}>
+            <div className="flex justify-center items-center p-2 rounded-xl bg-blue-200">
+              <p className="text-base">{chat.content}</p>
             </div>
             <Image
               src={profile}
@@ -100,15 +97,15 @@ export default function Chat({ onSendMessage }: props) {
           </div>
         ))}
       </div>
-      <div className=" flex absolute bottom-0 left-0 w-full h-40 bg-white p-2">
+      <div className="flex absolute bottom-0 left-0 w-full h-40 bg-white p-2">
         <textarea
-          className=" flex-[4] focus:outline-none"
+          className="flex-[4] focus:outline-none"
           placeholder="메세지를 입력해주세요"
           onChange={handleText}
           onKeyDown={handleKeyDown}
           value={text}
         />
-        <div className=" flex flex-[1] justify-center items-center">
+        <div className="flex flex-[1] justify-center items-center">
           <button
             type="submit"
             className="btn btn-info bg-blue-500 border-blue-500 text-white"

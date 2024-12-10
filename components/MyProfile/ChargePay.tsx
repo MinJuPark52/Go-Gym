@@ -1,8 +1,8 @@
-'use client';
+"use client";
 
-import { useState } from 'react';
-import PortOne from '@portone/browser-sdk/v2';
-import axiosInstance from '@/api/axiosInstance';
+import { useState } from "react";
+import PortOne from "@portone/browser-sdk/v2";
+import axiosInstance from "@/api/axiosInstance";
 
 interface PreRegisterResponse {
   merchantId: string; // 서버 응답에서 merchantId의 타입을 확인 후 정의
@@ -11,17 +11,17 @@ interface PreRegisterResponse {
 export default function ChargePay() {
   const [data, setData] = useState<any>({
     storeId: process.env.NEXT_PUBLIC_PORTONE_STORE_ID,
-    paymentId: '',
-    orderName: '짐페이 충전',
+    paymentId: "",
+    orderName: "짐페이 충전",
     totalAmount: 0,
-    currency: 'KRW',
+    currency: "KRW",
     channelKey: process.env.NEXT_PUBLIC_PORTONE_CHANNAL_KEY,
-    payMethod: 'CARD',
+    payMethod: "CARD",
     //customer는 동적으로 받을 예정
     customer: {
-      fullName: '전민혁',
-      phoneNumber: '010-7634-7212',
-      email: 'mari394337@gmail.com',
+      fullName: "전민혁",
+      phoneNumber: "010-7634-7212",
+      email: "mari394337@gmail.com",
     },
   });
 
@@ -48,12 +48,12 @@ export default function ChargePay() {
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (data.totalAmount < 1000) {
-      alert('1000원 이상 입력해주세요');
+      alert("1000원 이상 입력해주세요");
       return;
     }
 
     const response: { merchantId: string } = await axiosInstance.post(
-      '/api/payments/pre-register',
+      "/api/payments/pre-register",
       {
         amount: data.totalAmount,
       }
@@ -100,24 +100,24 @@ export default function ChargePay() {
   };
 
   return (
-    <div className=" flex justify-center w-[75%]">
+    <div className="flex justify-center w-[75%]">
       <form
         onSubmit={handleSubmit}
-        className=" flex flex-col gap-12 mt-8 p-4 w-[480px] border-2 border-blue-300 rounded-lg"
+        className="flex flex-col gap-12 mt-8 p-4 w-[480px] border-2 border-blue-300 rounded-lg"
       >
-        <p className=" font-bold">Gym Pay 충전하기</p>
-        <div className=" flex flex-col items-center">
+        <p className="font-bold">Gym Pay 충전하기</p>
+        <div className="flex flex-col items-center">
           <input
             type="number"
             placeholder="충전할 금액을 입력해주세요"
-            className=" p-2 w-96 border border-gray-300 focus:outline-none"
+            className="p-2 w-96 border border-gray-300 focus:outline-none"
             onChange={handleChangeMoney}
             value={data.totalAmount}
           />
-          <div className=" flex justify-between w-[75%] mt-8 mb-8">
+          <div className="flex justify-between w-[75%] mt-8 mb-8">
             <button
               type="button"
-              className=" p-1 bg-blue-300 rounded-lg text-white text-sm font-bold"
+              className="p-1 bg-blue-300 rounded-lg text-white text-sm font-bold"
               onClick={handleButtonClick}
               value={1000}
             >
@@ -125,7 +125,7 @@ export default function ChargePay() {
             </button>
             <button
               type="button"
-              className=" p-1 bg-blue-300 rounded-lg text-white text-sm font-bold"
+              className="p-1 bg-blue-300 rounded-lg text-white text-sm font-bold"
               onClick={handleButtonClick}
               value={5000}
             >
@@ -133,7 +133,7 @@ export default function ChargePay() {
             </button>
             <button
               type="button"
-              className=" p-1 bg-blue-300 rounded-lg text-white text-sm font-bold"
+              className="p-1 bg-blue-300 rounded-lg text-white text-sm font-bold"
               onClick={handleButtonClick}
               value={10000}
             >
@@ -143,7 +143,7 @@ export default function ChargePay() {
         </div>
         <button
           type="submit"
-          className=" p-1 bg-blue-400 rounded-lg text-white text-sm font-bold hover:bg-blue-500 transition-all"
+          className="p-1 bg-blue-400 rounded-lg text-white text-sm font-bold hover:bg-blue-500 transition-all"
         >
           충전하기
         </button>
