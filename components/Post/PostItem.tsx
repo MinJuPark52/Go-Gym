@@ -4,6 +4,7 @@ import { IoChatbubblesOutline } from 'react-icons/io5';
 import profile from '../../public/default_profile.png';
 import Link from 'next/link';
 import useTimeAgo from '@/hooks/useTimeAgo';
+import DefaultProfile from '../UI/DefaultProfile';
 
 interface PostType {
   id: string;
@@ -26,44 +27,42 @@ export default function PostItem({
   title,
   wishCount,
 }: PostType) {
-  const postStatusKo = postStatus === 'PENDING' && '판매중';
+  const postStatusKo = postStatus === 'POSTING' && '게시중';
 
   const timeago = useTimeAgo(created_at);
 
   return (
     <Link href={`/community/${id}`}>
-      <div className=" w-80 h-48 rounded-lg border border-[#ccc] shadow cursor-pointer">
+      <div className=" w-80 h-80 rounded-lg border border-[#ccc] shadow cursor-pointer">
         <div>
           <div className=" flex justify-between m-2">
-            <p className=" text-gray-500 text-sm font-bold">{postStatusKo}</p>
+            <div className="badge pt-3 pb-3 border-none bg-blue-300 text-white text-sm font-bold ">
+              {postStatusKo}
+            </div>
             <p className=" text-gray-500 text-xs">{timeago}</p>
           </div>
-          <div className=" flex justify-between ml-1 pb-1 mr-2 h-28 border-b border-[#ccc]">
+          <div className=" flex flex-col justify-between pb-1 h-56 border-b border-[#ccc]">
             {imageUrl1 ? (
               <Image
                 src={imageUrl1}
                 alt="헬스장 사진"
                 width={200}
-                height={64}
-                className=" rounded-md"
+                height={140}
                 priority
               />
             ) : (
-              <div className=" flex justify-center items-center w-[200px] h-[100px] rounded-lg bg-gray-400 bg-opacity-50">
+              <div className=" flex justify-center items-center h-[140px] bg-gray-400 bg-opacity-50">
                 기본 이미지
               </div>
             )}
 
-            <div className=" flex flex-col justify-between items-end">
-              <p>{title}</p>
-              <p className=" flex gap-2 items-center text-gray-500 text-sm font-bold">
-                <Image src={profile} alt="profile" width={24} priority />
-                {authorNickName}
-              </p>
+            <p className="ml-2">{title}</p>
+            <div className=" flex flex-col items-end mr-2">
+              <p className="text-gray-500 text-sm font-bold">{gymName}</p>
             </div>
           </div>
         </div>
-        <div className=" flex justify-between mt-2 ml-2 mr-2">
+        <div className=" flex justify-between items-center mt-2 ml-2 mr-2">
           <div className=" flex items-center gap-4  ">
             <div className=" flex items-center">
               <FaHeart color="#DC7D7D" />{' '}
@@ -78,7 +77,13 @@ export default function PostItem({
               </span>
             </div>
           </div>
-          <p>{gymName}</p>
+
+          <div className=" flex gap-2 items-center text-gray-500 text-sm font-bold">
+            <div className="avatar">
+              <DefaultProfile width="10" />
+            </div>
+            {authorNickName}
+          </div>
         </div>
       </div>
     </Link>

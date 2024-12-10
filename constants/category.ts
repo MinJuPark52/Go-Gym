@@ -1,5 +1,10 @@
 export interface FILTER_CATEGORY_TYPE {
-  label: string;
+  label:
+    | 'postType'
+    | 'postStatus'
+    | 'membershipType'
+    | 'membershipDuration'
+    | 'PTCount';
   categoryName: string;
   options: {
     value: string;
@@ -9,6 +14,8 @@ export interface FILTER_CATEGORY_TYPE {
 
 export interface categoryPropsType extends FILTER_CATEGORY_TYPE {
   onSelect: (e: React.ChangeEvent<HTMLSelectElement>) => void;
+  value?: string;
+  onInit?: (key: string, value: string) => void;
 }
 
 export const FIRST_FILTER_CATEGORY: FILTER_CATEGORY_TYPE[] = [
@@ -32,7 +39,7 @@ export const FIRST_FILTER_CATEGORY: FILTER_CATEGORY_TYPE[] = [
     categoryName: '회원권 타입',
     options: [
       {
-        value: 'MEMBERSHUP_ONLY',
+        value: 'MEMBERSHIP_ONLY',
         optionName: '회원권',
       },
       {
@@ -70,16 +77,16 @@ export const SECOND_FILTER_CATEGORY: FILTER_CATEGORY_TYPE[] = [
     categoryName: '게시글 상태',
     options: [
       {
-        value: 'PENDING',
+        value: 'POSTING',
         optionName: '게시중',
       },
       {
-        value: 'IN_PROGRESS',
-        optionName: '거래중',
+        value: 'SALE_COMPLETED',
+        optionName: '판매완료',
       },
       {
-        value: 'COMPLETE',
-        optionName: '거래 완료',
+        value: 'PURCHASE_COMPLETED',
+        optionName: '구매 완료',
       },
     ],
   },

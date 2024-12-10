@@ -1,4 +1,3 @@
-//components/notice.tsx
 import { useState, useEffect } from "react";
 import axios from "axios";
 import useLoginStore from "@/store/useLoginStore";

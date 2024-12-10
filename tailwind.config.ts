@@ -31,6 +31,7 @@ export default {
     },
   },
   plugins: [
+    require('daisyui'),
     function ({ addComponents }: PluginAPI) {
       addComponents({
         'input[type="number"]::-webkit-outer-spin-button': {
@@ -48,4 +49,11 @@ export default {
     },
     require('tailwind-scrollbar-hide'),
   ],
+  daisyui: {
+    styled: true,
+    base: true,
+    utils: true,
+    logs: true,
+    rtl: false,
+  },
 } satisfies Config;
