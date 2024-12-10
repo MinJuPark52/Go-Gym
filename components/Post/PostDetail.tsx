@@ -3,15 +3,16 @@ import { FaHeart } from 'react-icons/fa';
 import { CgCloseO } from 'react-icons/cg';
 import DOMpurify from 'dompurify';
 
-import { useQuery } from '@tanstack/react-query';
+import { useMutation, useQuery } from '@tanstack/react-query';
 import axios from 'axios';
-import { useParams } from 'next/navigation';
+import { useParams, useRouter } from 'next/navigation';
 import PostDetailImage from './PostDetailImage';
 import { useState } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import PostList from './PostList';
 import PostUserDetail from './PostUserDetail';
+import axiosInstance from '@/api/axiosInstance';
 
 export default function PostDetail() {
   const [visibleModal, setVisibleModal] = useState({
@@ -19,11 +20,20 @@ export default function PostDetail() {
     user: false,
   });
   const { id } = useParams();
+  const router = useRouter();
+
   const { data } = useQuery({
     queryKey: ['postDetail'],
     queryFn: async () =>
       (await axios.get(`http://localhost:4000/postDetails/${id}`)).data,
     staleTime: 1000,
+  });
+
+  const { mutate } = useMutation({
+    mutationKey: ['AddChatRoom'],
+    mutationFn: async () => await axiosInstance.post(`/api/chatroom/${id}`),
+    onSuccess: () => router.push('/chat'),
+    onError: () => alert('채팅방 생성이 실패했습니다.'),
   });
 
   const handleImageClick = () => {
@@ -122,7 +132,10 @@ export default function PostDetail() {
               imageUrl={data.imageUrl1}
               onClick={handleImageClick}
             />
-            <button className=" absolute bottom-4 right-4 p-1 pl-2 pr-2 btn bg-blue-300  text-white hover:bg-blue-500 transition-all">
+            <button
+              onClick={() => mutate()}
+              className="absolute bottom-4 right-4 p-1 pl-2 pr-2 btn bg-blue-300  text-white hover:bg-blue-500 transition-all"
+            >
               채팅하기
             </button>
           </div>

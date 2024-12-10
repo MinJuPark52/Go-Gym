@@ -23,8 +23,8 @@ export default function ChatRoom() {
   const { connect, messages, sendMessage, disconnect } = useWebSocketStore();
   //채팅방 목록 가져오기
   // const { data, isSuccess } = useQuery<ChatItem[]>({
-  //   queryKey: ['chatList'],
-  //   queryFn: async () => (await axiosInstance.get('/chatList')).data,
+  //   queryKey: ['chatroom'],
+  //   queryFn: async () => (await axiosInstance.get('/api/chatroom')).data,
   //   staleTime: 100000,
   // });
 

@@ -1,17 +1,21 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import PortOne from '@portone/browser-sdk/v2';
 import axiosInstance from '@/api/axiosInstance';
+import { useMutation } from '@tanstack/react-query';
+import useLoginStore from '@/store/useLoginStore';
+import { EventSourcePolyfill } from 'event-source-polyfill';
 
 interface PreRegisterResponse {
-  merchantId: string; // 서버 응답에서 merchantId의 타입을 확인 후 정의
+  paymentId: string; // 서버 응답에서 paymentId의 타입을 확인 후 정의
 }
 
 export default function ChargePay() {
+  const { token } = useLoginStore();
+
   const [data, setData] = useState<any>({
     storeId: process.env.NEXT_PUBLIC_PORTONE_STORE_ID,
-    paymentId: '',
     orderName: '짐페이 충전',
     totalAmount: 0,
     currency: 'KRW',
@@ -22,6 +26,52 @@ export default function ChargePay() {
       fullName: '전민혁',
       phoneNumber: '010-7634-7212',
       email: 'mari394337@gmail.com',
+    },
+  });
+
+  async function requestPayment(paymentId: string) {
+    if (data) {
+      const response = await PortOne.requestPayment({ ...data, paymentId });
+
+      //백엔드 엔드포인트
+      // const validation = await axiosInstance.post('/api/payments/webhook', {
+      //   txId: response?.txId,
+      //   paymentId: response?.paymentId,
+      // });
+      console.log(response);
+      // console.log(validation);
+    }
+  }
+
+  const { mutate } = useMutation({
+    mutationKey: ['pre-register'],
+    mutationFn: async () => {
+      const response: { paymentId: string } = await axiosInstance.post(
+        '/api/payments/pre-register',
+        {
+          amount: data.totalAmount,
+        }
+      );
+      return response;
+    },
+    onSuccess: (response) => {
+      const eventSource = new EventSource(
+        `http://localhost:3000/backend/api/payments/sse/subscribe/${response.paymentId}`
+      );
+
+      eventSource.addEventListener('Transaction Paid', (event) => {
+        console.log(event);
+      });
+      eventSource.addEventListener('Transaction Failed', (event) => {
+        console.log(event);
+      });
+
+      eventSource.onerror = () => {
+        //에러 발생시 할 동작
+        eventSource.close(); //연결 끊기
+      };
+
+      requestPayment(response.paymentId);
     },
   });
 
@@ -52,51 +102,42 @@ export default function ChargePay() {
       return;
     }
 
-    const response: { merchantId: string } = await axiosInstance.post(
-      '/api/payments/pre-register',
-      {
-        amount: data.totalAmount,
-      }
-    );
+    mutate();
 
-    if (response) {
-      setData({
-        ...data,
-        paymentId: response.merchantId,
-      });
-    }
+    // const response: { paymentId: string } = await axiosInstance.post(
+    //   '/api/payments/pre-register',
+    //   {
+    //     amount: data.totalAmount,
+    //   }
+    // );
 
-    async function requestPayment() {
-      if (data) {
-        const response = await PortOne.requestPayment(data);
+    // if (response) {
+    //   setData({
+    //     ...data,
+    //     paymentId: response.paymentId,
+    //   });
+    // }
 
-        //백엔드 엔드포인트
-        // const validation = await axiosInstance.post('/api/payments/webhook', {
-        //   txId: response?.txId,
-        //   paymentId: response?.paymentId,
-        // });
-        console.log(response);
-        // console.log(validation);
-      }
-    }
+    // if (data.paymentId) {
+    //   if (data.paymentId) {
+    //     const eventSource = new EventSource(
+    //       `https://ac8c-175-195-104-144.ngrok-free.app/api/payments/sse/subscribe/${data.paymentId}`
+    //     );
 
-    //sse구독
-    if (data.paymentId) {
-      const eventSource = new EventSource(
-        `/api/payments/sse/subscribe/${data.paymentId}`
-      );
+    //     eventSource.addEventListener('Transaction Paid', (event) => {
+    //       console.log(event);
+    //     });
+    //     eventSource.addEventListener('Transaction Failed', (event) => {
+    //       console.log(event);
+    //     });
 
-      // eventSource.addEventListener('new_thread', () => {
-
-      // });
-
-      eventSource.onerror = () => {
-        //에러 발생시 할 동작
-        eventSource.close(); //연결 끊기
-      };
-
-      requestPayment();
-    }
+    //     eventSource.onerror = () => {
+    //       //에러 발생시 할 동작
+    //       eventSource.close(); //연결 끊기
+    //     };
+    //   }
+    //   requestPayment();
+    // }
   };
 
   return (
