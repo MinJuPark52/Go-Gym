@@ -52,6 +52,7 @@ export default function Notice() {
       const response = await axios.get(
         "/backend/api/notifications?page={page}&size={size}",
         { headers: { Authorization: `:{token}` } }
+
       );
       const noreadNotifications = response.data.notifications.filter(
         (notification: Notification) => !notification.read
@@ -69,6 +70,7 @@ export default function Notice() {
   // 더미로 받음. 연결 요청 -> 한번만 console.log
   // heartbeat -> 30초 이벤트 안오면 다시 재연결, 확인 로직 필요
   // 알수없는 데이터 -> error
+
 
   // 구독 시작
   // 알림 띄우는거 notification
