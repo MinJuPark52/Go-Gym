@@ -66,9 +66,9 @@ export default function Chat({ chatRoomId, onSendMessage }: props) {
   return (
     <form
       onSubmit={handleSubmitMessage}
-      className=" relative flex flex-col w-[70%] h-[100%] p-4 bg-blue-200 bg-opacity-40"
+      className="relative flex flex-col w-[70%] h-[100%] p-4 bg-blue-200 bg-opacity-40"
     >
-      <div className=" flex flex-col h-[calc(100%-10rem)] p-2 overflow-y-auto scrollbar-hide">
+      <div className="flex flex-col h-[calc(100%-10rem)] p-2 overflow-y-auto scrollbar-hide">
         {/* 상대방 채팅 */}
         <div className="chat chat-start">
           <div className="chat-image avatar">
