@@ -1,11 +1,23 @@
+'use client';
+
 import { categoryPropsType } from '@/constants/category';
+import { useEffect } from 'react';
 
 export function FilterCategory({
   label,
   categoryName,
   options,
+  value,
+  onInit,
   onSelect,
 }: categoryPropsType) {
+  useEffect(() => {
+    const data = options.filter((option) => option.value === value);
+    if (data.length > 0) {
+      onInit?.(label, data[0].optionName || '');
+    }
+  }, []);
+
   return (
     <div className=" flex flex-col gap-2">
       <label htmlFor={label} className="text-sm text-gray-500">
@@ -16,10 +28,9 @@ export function FilterCategory({
         name={label}
         id={label}
         onChange={onSelect}
+        value={value}
       >
-        <option defaultValue={'default'} value={'default'}>
-          선택 하기
-        </option>
+        <option value={'default'}>선택 하기</option>
         {options.map((option) => (
           <option key={option.value} value={option.value}>
             {option.optionName}

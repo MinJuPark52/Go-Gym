@@ -3,6 +3,7 @@ import Image from 'next/image';
 import { useState } from 'react';
 import profile from '@/public/default_profile.png';
 import useWebSocketStore from '@/store/useSocketStore';
+import DefaultProfile from '../UI/DefaultProfile';
 
 interface props {
   onSendMessage: ({
@@ -50,21 +51,37 @@ export default function Chat({ onSendMessage }: props) {
   return (
     <form
       onSubmit={handleSubmitMessage}
-      className=" relative flex flex-col w-[70%] h-[100%] p-4 bg-blue-100 bg-opacity-40"
+      className=" relative flex flex-col w-[70%] h-[100%] p-4 bg-blue-200 bg-opacity-40"
     >
-      <div className=" flex flex-col gap-4 h-[calc(100%-10rem)] p-2 overflow-y-auto scrollbar-hide">
-        <div className=" flex items-center gap-4">
-          <Image
-            src={profile}
-            alt="profile"
-            width={40}
-            className="cursor-pointer"
-            priority
-          />
-          <div className=" flex justify-center items-center p-2 rounded-xl bg-white">
-            <p className=" text-base">{'안녕하세요'}</p>
+      <div className=" flex flex-col h-[calc(100%-10rem)] p-2 overflow-y-auto scrollbar-hide">
+        {/* 상대방 채팅 */}
+        <div className="chat chat-start">
+          <div className="chat-image avatar">
+            <DefaultProfile width="10" />
           </div>
+          <div className="chat-header opacity-50">전민혁</div>
+          <div className="chat-bubble bg-white text-gray-600">안녕하세요</div>
+          <div className="chat-footer opacity-50">Deliverd</div>
         </div>
+        {/* 내채팅 */}
+        <div className="chat chat-end">
+          <div className="chat-image avatar">
+            <div className="w-10 rounded-full">
+              <img
+                alt="Tailwind CSS chat bubble component"
+                src="https://img.daisyui.com/images/stock/photo-1534528741775-53994a69daeb.webp"
+              />
+            </div>
+          </div>
+          <div className="chat-header">
+            Anakin
+            <time className="text-xs opacity-50">12:46</time>
+          </div>
+          <div className="chat-bubble bg-blue-500 text-white">I hate you!</div>
+          <div className="chat-footer opacity-50">Seen at 12:46</div>
+        </div>
+
+        {/* 채팅 데이터 받아오면 위에 코드로 교체 예정 */}
         {messages.map((chat) => (
           <div
             className=" flex items-center gap-4 ml-auto"
@@ -94,7 +111,7 @@ export default function Chat({ onSendMessage }: props) {
         <div className=" flex flex-[1] justify-center items-center">
           <button
             type="submit"
-            className={` p-1 pl-6 pr-6 rounded-lg ${buttonStyle} text-xl text-white font-bold`}
+            className="btn btn-info bg-blue-500 border-blue-500 text-white"
             disabled={text.trim().length === 0}
           >
             전송
