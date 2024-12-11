@@ -262,10 +262,11 @@ export default function SignupPage() {
   };
 
   const handleChangeSubRegionId1 = async (
-    e: ChangeEvent<HTMLSelectElement>
+    e: ChangeEvent<HTMLSelectElement>,
   ) => {
-    setSelectSubRegion1({ regionId: e.target.value, name: e.target.name });
+    setSelectSubRegion1({ regionId: e.target.value, name: "" });
     setsignupFormData({ ...signupFormData, regionId1: e.target.value });
+    console.log("id:" + selectSubRegion1.regionId);
   };
 
   const handleChangeRegionId1 = async (e: ChangeEvent<HTMLSelectElement>) => {
@@ -274,13 +275,12 @@ export default function SignupPage() {
 
     if (selectedRegionId1) {
       try {
-
-        const response = await axios.get<{ name: string }[]>(
-          `backend/api/regions?name=${selectedRegionId1}`
+        const response = await axios.get<{ regionId: string; name: string }[]>(
+          `backend/api/regions?name=${selectedRegionId1}`,
         );
         if (response) {
           const regionsData = response.data.map((data) => ({
-            id: selectedRegionId1,
+            id: data.regionId,
             name: data.name,
           }));
           setSubRegions1(regionsData);
@@ -298,7 +298,7 @@ export default function SignupPage() {
     if (selectedRegionId2) {
       try {
         const response = await axios.get<{ name: string }[]>(
-          `backend/api/regions?name=${selectedRegionId2}`
+          `backend/api/regions?name=${selectedRegionId2}`,
         );
         if (response) {
           const regionsData = response.data.map((data) => ({
@@ -420,13 +420,13 @@ export default function SignupPage() {
 
           <div className="flex-1">
             <select
-              value={selectSubRegion1.name}
+              value={selectSubRegion1.regionId}
               onChange={handleChangeSubRegionId1}
-              className="w-full p-2 rounded-md border border-gray-300"
+              className="w-full rounded-md border border-gray-300 p-2"
             >
               <option value="">세부 지역 선택1</option>
               {subRegions1?.map((subRegion) => (
-                <option key={subRegion.id} value={subRegion.id}>
+                <option key={subRegion.name} value={subRegion.id}>
                   {subRegion.name}
                 </option>
               ))}
@@ -434,7 +434,7 @@ export default function SignupPage() {
           </div>
         </div>
 
-        <div className="flex space-x-4">
+        {/* <div className="flex space-x-4">
           <div className="flex-1">
             <select
               value={signupFormData.regionId2}
@@ -464,7 +464,7 @@ export default function SignupPage() {
               ))}
             </select>
           </div>
-        </div>
+        </div> */}
         <div>
           <button
             type="submit"
