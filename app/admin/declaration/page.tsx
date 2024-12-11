@@ -1,4 +1,4 @@
-import ManageDeclaration from '@/components/Admin/ManageDeclaration';
+import ManageDeclaration from "@/components/Admin/ManageDeclaration";
 
 export default function AdminPage() {
   return (

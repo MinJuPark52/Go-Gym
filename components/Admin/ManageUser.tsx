@@ -1,18 +1,18 @@
-'use client';
-import { useQuery } from '@tanstack/react-query';
-import axios from 'axios';
-import { useRouter } from 'next/navigation';
-import useLoginStore from '@/store/useLoginStore';
-import { useEffect } from 'react';
+"use client";
+import { useQuery } from "@tanstack/react-query";
+import axios from "axios";
+import { useRouter } from "next/navigation";
+import useLoginStore from "@/store/useLoginStore";
+import { useEffect } from "react";
 
 export default function ManageUser() {
   const { adminLogin } = useLoginStore();
   const router = useRouter();
 
   const { data, isPending } = useQuery({
-    queryKey: ['uesr'],
+    queryKey: ["uesr"],
     queryFn: async () =>
-      (await axios.get('http://localhost:4000/members')).data,
+      (await axios.get("http://localhost:4000/members")).data,
     staleTime: 10000,
   });
 
@@ -29,8 +29,8 @@ export default function ManageUser() {
   }
 
   return (
-    <div className="flex flex-col justify-center items-start ml-72 mt-12">
-      <h2 className="text-3xl font-bold mb-8">고객관리</h2>
+    <div className="ml-72 mt-12 flex flex-col items-start justify-center">
+      <h2 className="mb-8 text-3xl font-bold">고객관리</h2>
       <div className="overflow-x-auto">
         <table className="table">
           {/* head */}
@@ -45,7 +45,7 @@ export default function ManageUser() {
             {data.map(
               (user: { email: string; nickname: string }, index: number) => (
                 <tr
-                  className="hover:bg-base-200 cursor-pointer"
+                  className="cursor-pointer hover:bg-base-200"
                   onClick={handleUserClick.bind(null, user.nickname)}
                   key={user.nickname}
                 >
@@ -53,7 +53,7 @@ export default function ManageUser() {
                   <td>{user.nickname}</td>
                   <td>{user.email}</td>
                 </tr>
-              )
+              ),
             )}
             {/* row 1 */}
           </tbody>

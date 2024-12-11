@@ -24,7 +24,7 @@ export function FilterCategory({
         {categoryName}
       </label>
       <select
-        className="w-48 pl-2 h-12 border border-gray-400 rounded-md focus:outline-blue-400  text-gray-600 cursor-pointer"
+        className="h-12 w-48 cursor-pointer rounded-md border border-gray-400 pl-2 text-gray-600 focus:outline-blue-400"
         name={label}
         id={label}
         onChange={onSelect}

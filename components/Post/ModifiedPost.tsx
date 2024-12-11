@@ -103,7 +103,7 @@ export default function ModifiedPost() {
         const response = await getCity(
           mapValue.latitude.toString(),
           mapValue.longitude.toString(),
-          token
+          token,
         );
 
         if (response) {
@@ -177,7 +177,7 @@ export default function ModifiedPost() {
     latitude: number,
     longitude: number,
     gymKaKaoUrl: string,
-    gymName: string
+    gymName: string,
   ) => {
     setMapValue({
       latitude,
@@ -259,27 +259,27 @@ export default function ModifiedPost() {
   return (
     <>
       <form onSubmit={handleSubmit} className="w-[75%] p-8 pt-12">
-        <div className="flex flex-col gap-2 mb-4">
+        <div className="mb-4 flex flex-col gap-2">
           <label htmlFor={"expirationDate"} className="text-sm text-gray-500">
             헬스장 찾기
           </label>
           <input
             type="button"
-            className="min-w-48 w-fit pl-2 pr-2 h-12 border border-gray-400 rounded-md focus:outline-blue-400  text-gray-500 cursor-pointer"
+            className="h-12 w-fit min-w-48 cursor-pointer rounded-md border border-gray-400 pl-2 pr-2 text-gray-500 focus:outline-blue-400"
             onClick={() => {
               setIsMapOpen(true);
             }}
             value={mapValue.gymName}
           />
         </div>
-        <div className="flex gap-4 mb-4">
+        <div className="mb-4 flex gap-4">
           <div className="flex flex-col gap-2">
             <label htmlFor={"expirationDate"} className="text-sm text-gray-500">
               회원권 마감 날짜
             </label>
             <input
               type="date"
-              className="w-48 pl-2 h-12 border border-gray-400 rounded-md focus:outline-blue-400  text-gray-600 cursor-pointer"
+              className="h-12 w-48 cursor-pointer rounded-md border border-gray-400 pl-2 text-gray-600 focus:outline-blue-400"
               name={"expirationDate"}
               id={"expirationDate"}
               onChange={handleValues}
@@ -296,7 +296,7 @@ export default function ModifiedPost() {
             </label>
             <input
               type="number"
-              className="w-48 pl-2 h-12 border border-gray-400 rounded-md focus:outline-blue-400  text-gray-600 cursor-pointer"
+              className="h-12 w-48 cursor-pointer rounded-md border border-gray-400 pl-2 text-gray-600 focus:outline-blue-400"
               name={"remainingSession"}
               id={"remainingSession"}
               value={values.remainingSession}
@@ -310,7 +310,7 @@ export default function ModifiedPost() {
             </label>
             <input
               type="number"
-              className="w-48 pl-2 h-12 border border-gray-400 rounded-md focus:outline-blue-400  text-gray-600 cursor-pointer"
+              className="h-12 w-48 cursor-pointer rounded-md border border-gray-400 pl-2 text-gray-600 focus:outline-blue-400"
               name={"amount"}
               id={"amount"}
               value={values.amount}
@@ -319,7 +319,7 @@ export default function ModifiedPost() {
             />
           </div>
         </div>
-        <div className="flex gap-4 pb-8 mb-4 border-b border-gray-400">
+        <div className="mb-4 flex gap-4 border-b border-gray-400 pb-8">
           {FIRST_FILTER_CATEGORY.map((category: FILTER_CATEGORY_TYPE) => (
             <FilterCategory
               key={category.label}
@@ -330,16 +330,16 @@ export default function ModifiedPost() {
         </div>
         <div className="flex flex-col items-center gap-4">
           <input
-            className="w-[100%] max-w-[1200px] h-24 mt-4 mb-4 pl-4 border-2 border-blue-300 rounded-lg font-bold text-4xl focus:outline-blue-300"
+            className="mb-4 mt-4 h-24 w-[100%] max-w-[1200px] rounded-lg border-2 border-blue-300 pl-4 text-4xl font-bold focus:outline-blue-300"
             placeholder="제목을 입력하세요"
             value={values.title}
             name="title"
             onChange={handleValues}
           />
-          <div className="w-[100%] max-w-[1200px] h-[400px]">
+          <div className="h-[400px] w-[100%] max-w-[1200px]">
             <QuillEditor onChange={handleContent} />
           </div>
-          <div className="flex justify-between items-center w-[100%] max-w-[1200px]">
+          <div className="flex w-[100%] max-w-[1200px] items-center justify-between">
             {Object.keys(images).map((el) =>
               images[el] ? (
                 <Image
@@ -354,11 +354,11 @@ export default function ModifiedPost() {
                 />
               ) : (
                 <ImageSelect key={el} name={el} onChange={handleFileSelect} />
-              )
+              ),
             )}
             <button
               type="submit"
-              className="p-1 pl-6 pr-6 rounded-lg bg-blue-300 text-xl text-white hover:bg-blue-500 transition-all"
+              className="rounded-lg bg-blue-300 p-1 pl-6 pr-6 text-xl text-white transition-all hover:bg-blue-500"
             >
               수정하기
             </button>

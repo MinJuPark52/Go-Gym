@@ -1,5 +1,5 @@
-import Image from 'next/image';
-import profile from '../../public/default_profile.png';
+import Image from "next/image";
+import profile from "../../public/default_profile.png";
 
 export default function DefaultProfile({ width }: { width: string }) {
   const classWidth = `w-${width}`;

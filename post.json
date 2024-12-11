@@ -273,7 +273,7 @@
   ],
   "chatList": [
     {
-      "chatRoomId": 123,
+      "chatRoomId": "123",
       "createdAt": "2024-10-24 21:15:30",
       "postId": 456,
       "counterpartyId": 789,
@@ -283,7 +283,7 @@
       "lastMessageAt": "2024-10-24 21:20:30"
     },
     {
-      "chatRoomId": 404,
+      "chatRoomId": "404",
       "createdAt": "2024-11-30 13:40:30",
       "postId": 405,
       "counterpartyId": 406,
