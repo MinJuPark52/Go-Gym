@@ -1,30 +1,30 @@
-'use client';
+"use client";
 
-import 'react-responsive-carousel/lib/styles/carousel.min.css';
-import { Carousel } from 'react-responsive-carousel';
-import workoutImg from '../../public/womanworkingout.jpg';
+import "react-responsive-carousel/lib/styles/carousel.min.css";
+import { Carousel } from "react-responsive-carousel";
+import workoutImg from "../../public/womanworkingout.jpg";
 
-import Link from 'next/link';
-import Image from 'next/image';
+import Link from "next/link";
+import Image from "next/image";
 
 const Slider = () => {
   const items = [
     {
-      name: 'workout',
-      title: '최고의 헬스장 멤버십 거래',
-      text: '저렴한 가격으로 다양한 헬스장 멤버십을 거래하고, 더 나은 건강을 시작하세요.',
+      name: "workout",
+      title: "최고의 헬스장 멤버십 거래",
+      text: "저렴한 가격으로 다양한 헬스장 멤버십을 거래하고, 더 나은 건강을 시작하세요.",
       img: workoutImg,
     },
     {
-      name: 'workout',
-      title: '디지털 시대의 스마트한 거래',
-      text: '온라인에서 간편하게 헬스장 회원권을 사고 팔 수 있습니다. 언제 어디서나 쉽고 빠르게!',
+      name: "workout",
+      title: "디지털 시대의 스마트한 거래",
+      text: "온라인에서 간편하게 헬스장 회원권을 사고 팔 수 있습니다. 언제 어디서나 쉽고 빠르게!",
       img: workoutImg,
     },
     {
-      name: 'workout',
-      title: '다양한 선택지, 나에게 맞는 헬스장',
-      text: '여러 헬스장 회원권을 비교하고, 나에게 가장 적합한 헬스장을 찾으세요.',
+      name: "workout",
+      title: "다양한 선택지, 나에게 맞는 헬스장",
+      text: "여러 헬스장 회원권을 비교하고, 나에게 가장 적합한 헬스장을 찾으세요.",
       img: workoutImg,
     },
   ];
@@ -42,7 +42,7 @@ const Slider = () => {
       onClick={onClickHandler}
       className="absolute left-2 top-1/2 z-10"
     >
-      <kbd className="kbd bg-transparent text-white translate-x-4 border-white">
+      <kbd className="kbd translate-x-4 border-white bg-transparent text-white">
         ◀︎
       </kbd>
     </button>
@@ -54,7 +54,7 @@ const Slider = () => {
       onClick={onClickHandler}
       className="absolute right-8 top-1/2 z-10"
     >
-      <kbd className="kbd bg-transparent text-white border-white">▶︎</kbd>
+      <kbd className="kbd border-white bg-transparent text-white">▶︎</kbd>
     </button>
   );
 
@@ -72,14 +72,14 @@ const Slider = () => {
       {items.map((item: ISliderItem) => {
         return (
           <div key={item.name} className="carousel-slide h-96">
-            <div className="carousel-description z-50 absolute left-auto right-auto bottom-1/3 mb-10 text-left w-full lg:container px-4 md:px-10 translate-x-8">
-              <h2 className="text-2xl lg:text-4xl font-bold text-white">
+            <div className="carousel-description absolute bottom-1/3 left-auto right-auto z-50 mb-10 w-full translate-x-8 px-4 text-left lg:container md:px-10">
+              <h2 className="text-2xl font-bold text-white lg:text-4xl">
                 {item.title}
               </h2>
               <p className="my-2 text-white">{item.text}</p>
               <Link
                 href={`/`}
-                className="btn btn-info text-white bg-blue-500 border-none hover:bg-blue-700"
+                className="btn btn-info border-none bg-blue-500 text-white hover:bg-blue-700"
               >
                 바로가기
               </Link>

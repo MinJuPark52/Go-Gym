@@ -77,6 +77,7 @@ export default function Notice() {
   // heartbeat -> 30초 이벤트 안오면 다시 재연결, 확인 로직 필요
   // 알수없는 데이터 -> error
 
+
   // 구독 시작
   // 알림 띄우는거 notification
   // 연결유지되고 있는지 30초 확인 heartbeat (내말 들리니..)

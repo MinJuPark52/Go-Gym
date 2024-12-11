@@ -1,19 +1,19 @@
-'use client';
+"use client";
 
-import { useQuery } from '@tanstack/react-query';
-import axios from 'axios';
-import { useRouter } from 'next/navigation';
-import useLoginStore from '@/store/useLoginStore';
-import { useEffect } from 'react';
+import { useQuery } from "@tanstack/react-query";
+import axios from "axios";
+import { useRouter } from "next/navigation";
+import useLoginStore from "@/store/useLoginStore";
+import { useEffect } from "react";
 
 export default function ManageDeclaration() {
   const { adminLogin } = useLoginStore();
   const router = useRouter();
 
   const { data, isPending } = useQuery({
-    queryKey: ['uesr'],
+    queryKey: ["uesr"],
     queryFn: async () =>
-      (await axios.get('http://localhost:4000/declaration')).data,
+      (await axios.get("http://localhost:4000/declaration")).data,
     staleTime: 10000,
   });
 
@@ -30,8 +30,8 @@ export default function ManageDeclaration() {
   }
 
   return (
-    <div className="flex flex-col justify-center items-start ml-72 mt-12">
-      <h2 className="text-3xl font-bold mb-8">신고관리</h2>
+    <div className="ml-72 mt-12 flex flex-col items-start justify-center">
+      <h2 className="mb-8 text-3xl font-bold">신고관리</h2>
       <div className="overflow-x-auto">
         <table className="table">
           {/* head */}
@@ -53,10 +53,10 @@ export default function ManageDeclaration() {
                   reason: string;
                   processedAt: string;
                 },
-                index: number
+                index: number,
               ) => (
                 <tr
-                  className="hover:bg-base-200 cursor-pointer"
+                  className="cursor-pointer hover:bg-base-200"
                   onClick={handleUserClick.bind(null, user.nickname)}
                   key={user.nickname}
                 >
@@ -66,7 +66,7 @@ export default function ManageDeclaration() {
                   <td>{user.reason}</td>
                   <td>{user.processedAt}</td>
                 </tr>
-              )
+              ),
             )}
             {/* row 1 */}
           </tbody>

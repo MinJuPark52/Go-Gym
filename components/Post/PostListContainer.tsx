@@ -38,11 +38,11 @@ export default function PostListContainer() {
       "default",
     membershipType:
       (searchParams.get(
-        "membershipType"
+        "membershipType",
       ) as categoryStateType["membershipType"]) || "default",
     membershipDuration:
       (searchParams.get(
-        "membershipDuration"
+        "membershipDuration",
       ) as categoryStateType["membershipDuration"]) || "default",
     PTCount:
       (searchParams.get("PTCount") as categoryStateType["PTCount"]) ||
@@ -79,11 +79,11 @@ export default function PostListContainer() {
   // })
 
   return (
-    <div className="flex flex-col mt-12 w-[70%]">
-      <div className="flex justify-between items-center">
+    <div className="mt-12 flex w-[70%] flex-col">
+      <div className="flex items-center justify-between">
         <p className="mb-12 text-2xl font-bold">양도 회원권</p>
         <Link href={"/community/editpost"}>
-          <button className="btn btn-inf0 bg-blue-300 hover:bg-blue-500 text-white">
+          <button className="btn-inf0 btn bg-blue-300 text-white hover:bg-blue-500">
             글쓰기
           </button>
         </Link>
