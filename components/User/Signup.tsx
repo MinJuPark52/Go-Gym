@@ -46,9 +46,9 @@ const SignupInput: React.FC<InputProps> = ({
       placeholder={placeholder}
       value={value}
       onChange={onChange}
-      className="w-full p-2 rounded-md border border-gray-300"
+      className="w-full rounded-md border border-gray-300 p-2"
     />
-    {errorMessage && <p className="text-red-500 text-sm">{errorMessage}</p>}
+    {errorMessage && <p className="text-sm text-red-500">{errorMessage}</p>}
   </div>
 );
 
@@ -169,7 +169,7 @@ export default function SignupPage() {
         "/backend/api/auth/check-email",
         {
           params: { email },
-        }
+        },
       );
 
       if (response.status === 200) {
@@ -221,19 +221,19 @@ export default function SignupPage() {
       try {
         const response = await axios.post<Signup[]>(
           "/backend/api/auth/sign-up",
-          signupFormData
+          signupFormData,
         );
 
         if (response.status === 200) {
           const emailResponse = await axios.post(
             "/backend/api/auth/send-verification-email",
             null,
-            { params: { email: signupFormData.email } }
+            { params: { email: signupFormData.email } },
           );
 
           if (emailResponse.status === 200) {
             alert(
-              "이메일 인증 링크가 전송되었습니다. 이메일을 통해 인증해주세요"
+              "이메일 인증 링크가 전송되었습니다. 이메일을 통해 인증해주세요",
             );
           } else {
             throw new Error("링크 전송 X");
@@ -256,14 +256,14 @@ export default function SignupPage() {
       try {
         const response = await axios.get(
           //아이디랑 이름 같이 받아야함
-          `/api/regions?name=${selectedRegionId1}`
+          `/api/regions?name=${selectedRegionId1}`,
         );
         if (response.status === 200) {
           const regionsData = response.data.districts.map(
             (district: { id: string; name: string }) => ({
               id: district.id,
               name: district.name,
-            })
+            }),
           );
           setSubRegions1(regionsData);
         }
@@ -280,14 +280,14 @@ export default function SignupPage() {
     if (selectedRegionId2) {
       try {
         const response = await axios.get(
-          `/api/regions?name=${selectedRegionId2}`
+          `/api/regions?name=${selectedRegionId2}`,
         );
         if (response.status === 200) {
           const regionsData = response.data.districts.map(
             (district: { id: string; name: string }) => ({
               id: district.id,
               name: district.name,
-            })
+            }),
           );
           setSubRegions2(regionsData);
         }
@@ -298,12 +298,12 @@ export default function SignupPage() {
   };
 
   return (
-    <div className="flex items-center justify-center bg-gray-50 border-r-gray-300 w-full h-[40rem]">
+    <div className="flex h-[40rem] w-full items-center justify-center border-r-gray-300 bg-gray-50">
       <form
         onSubmit={handleSignupSubmit}
-        className="w-full h-[35rem] max-w-md bg-white p-8 space-y-3 overflow-y-auto"
+        className="h-[35rem] w-full max-w-md space-y-3 overflow-y-auto bg-white p-8"
       >
-        <h2 className="text-2xl font-semibold text-center">회원가입</h2>
+        <h2 className="text-center text-2xl font-semibold">회원가입</h2>
 
         <div>
           <SignupInput
@@ -338,7 +338,7 @@ export default function SignupPage() {
           <button
             type="button"
             onClick={() => checkEmail(signupFormData.email)}
-            className="bg-blue-500 text-white px-4 py-2 rounded-md focus:outline-none"
+            className="rounded-md bg-blue-500 px-4 py-2 text-white focus:outline-none"
             disabled={isEmailAvailable}
           >
             {isEmailAvailable ? "사용 가능" : "중복확인"}
@@ -358,7 +358,7 @@ export default function SignupPage() {
           <button
             type="button"
             onClick={() => checkNickname(signupFormData.nickname)}
-            className="bg-blue-500 text-white px-4 py-2 rounded-md focus:outline-none"
+            className="rounded-md bg-blue-500 px-4 py-2 text-white focus:outline-none"
             disabled={isNicknameAvailable}
           >
             {isNicknameAvailable ? "사용 가능" : "중복확인"}
@@ -390,7 +390,7 @@ export default function SignupPage() {
             <select
               value={signupFormData.regionId1}
               onChange={handleChangeRegionId1}
-              className="w-full p-2 rounded-md border border-gray-300"
+              className="w-full rounded-md border border-gray-300 p-2"
             >
               <option value="">지역 선택1</option>
               {regions.map((region) => (
@@ -405,7 +405,7 @@ export default function SignupPage() {
             <select
               value={signupFormData.regionId1}
               onChange={handleChangeRegionId1}
-              className="w-full p-2 rounded-md border border-gray-300"
+              className="w-full rounded-md border border-gray-300 p-2"
             >
               <option value="">세부 지역 선택1</option>
               {subRegions1.map((subRegion) => (
@@ -422,7 +422,7 @@ export default function SignupPage() {
             <select
               value={signupFormData.regionId2}
               onChange={handleChangeRegionId2}
-              className="w-full p-2 rounded-md border border-gray-300"
+              className="w-full rounded-md border border-gray-300 p-2"
             >
               <option value="">지역 선택2</option>
               {regions.map((region) => (
@@ -437,7 +437,7 @@ export default function SignupPage() {
             <select
               value={signupFormData.regionId2}
               onChange={handleChangeRegionId2}
-              className="w-full p-2 rounded-md border border-gray-300"
+              className="w-full rounded-md border border-gray-300 p-2"
             >
               <option value="">세부 지역 선택2</option>
               {subRegions2.map((subRegion) => (
@@ -451,7 +451,7 @@ export default function SignupPage() {
         <div>
           <button
             type="submit"
-            className="w-full bg-blue-500 text-white py-3 rounded-md hover:bg-blue-600 focus:outline-none"
+            className="w-full rounded-md bg-blue-500 py-3 text-white hover:bg-blue-600 focus:outline-none"
           >
             가입하기
           </button>
