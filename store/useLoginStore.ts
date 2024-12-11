@@ -54,6 +54,7 @@ const useLoginStore = create(
             token: null,
             expirationTime: 0,
           });
+          sessionStorage.removeItem("token");
         },
 
         checkTokenExpiration: () => {
