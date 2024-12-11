@@ -72,6 +72,19 @@ const regions: { id: string; name: string }[] = [
 ];
 
 export default function SignupPage() {
+  const [selectSubRegion1, setSelectSubRegion1] = useState({
+    regionId: "",
+    name: "",
+  });
+
+  /*
+  const [selectSubRegion2, setSelectSubRegion2] = useState({
+    regionId: "",
+    name: "",
+  });
+  */
+
+  // 표시 네임, 아이디를 선택
   const [signupFormData, setsignupFormData] = useState({
     name: "",
     email: "",
@@ -248,23 +261,28 @@ export default function SignupPage() {
     }
   };
 
+  const handleChangeSubRegionId1 = async (
+    e: ChangeEvent<HTMLSelectElement>
+  ) => {
+    setSelectSubRegion1({ regionId: e.target.value, name: e.target.name });
+    setsignupFormData({ ...signupFormData, regionId1: e.target.value });
+  };
+
   const handleChangeRegionId1 = async (e: ChangeEvent<HTMLSelectElement>) => {
     const selectedRegionId1 = e.target.value;
     setsignupFormData({ ...signupFormData, regionId1: selectedRegionId1 });
 
     if (selectedRegionId1) {
       try {
-        const response = await axios.get(
-          //아이디랑 이름 같이 받아야함
-          `/api/regions?name=${selectedRegionId1}`,
+
+        const response = await axios.get<{ name: string }[]>(
+          `backend/api/regions?name=${selectedRegionId1}`
         );
-        if (response.status === 200) {
-          const regionsData = response.data.districts.map(
-            (district: { id: string; name: string }) => ({
-              id: district.id,
-              name: district.name,
-            }),
-          );
+        if (response) {
+          const regionsData = response.data.map((data) => ({
+            id: selectedRegionId1,
+            name: data.name,
+          }));
           setSubRegions1(regionsData);
         }
       } catch (error) {
@@ -279,16 +297,14 @@ export default function SignupPage() {
 
     if (selectedRegionId2) {
       try {
-        const response = await axios.get(
-          `/api/regions?name=${selectedRegionId2}`,
+        const response = await axios.get<{ name: string }[]>(
+          `backend/api/regions?name=${selectedRegionId2}`
         );
-        if (response.status === 200) {
-          const regionsData = response.data.districts.map(
-            (district: { id: string; name: string }) => ({
-              id: district.id,
-              name: district.name,
-            }),
-          );
+        if (response) {
+          const regionsData = response.data.map((data) => ({
+            id: selectedRegionId2,
+            name: data.name,
+          }));
           setSubRegions2(regionsData);
         }
       } catch (error) {
@@ -392,8 +408,9 @@ export default function SignupPage() {
               onChange={handleChangeRegionId1}
               className="w-full rounded-md border border-gray-300 p-2"
             >
+              {/* 아이디 값을 보내 */}
               <option value="">지역 선택1</option>
-              {regions.map((region) => (
+              {regions?.map((region) => (
                 <option key={region.id} value={region.name}>
                   {region.name}
                 </option>
@@ -403,12 +420,12 @@ export default function SignupPage() {
 
           <div className="flex-1">
             <select
-              value={signupFormData.regionId1}
-              onChange={handleChangeRegionId1}
-              className="w-full rounded-md border border-gray-300 p-2"
+              value={selectSubRegion1.name}
+              onChange={handleChangeSubRegionId1}
+              className="w-full p-2 rounded-md border border-gray-300"
             >
               <option value="">세부 지역 선택1</option>
-              {subRegions1.map((subRegion) => (
+              {subRegions1?.map((subRegion) => (
                 <option key={subRegion.id} value={subRegion.id}>
                   {subRegion.name}
                 </option>
@@ -425,7 +442,7 @@ export default function SignupPage() {
               className="w-full rounded-md border border-gray-300 p-2"
             >
               <option value="">지역 선택2</option>
-              {regions.map((region) => (
+              {regions?.map((region) => (
                 <option key={region.id} value={region.name}>
                   {region.name}
                 </option>
@@ -440,7 +457,7 @@ export default function SignupPage() {
               className="w-full rounded-md border border-gray-300 p-2"
             >
               <option value="">세부 지역 선택2</option>
-              {subRegions2.map((subRegion) => (
+              {subRegions2?.map((subRegion) => (
                 <option key={subRegion.id} value={subRegion.id}>
                   {subRegion.name}
                 </option>
