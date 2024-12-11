@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
 import useLoginStore from "@/store/useLoginStore";
+import useNotificationStore from "@/store/useNotificationStore";
 
 interface Notification {
   id: number;
@@ -19,7 +20,8 @@ export default function Notice() {
   const [dummyReceived, setDummyReceived] = useState(false);
   const [lastEvent, setLastEvent] = useState(Date.now());
   const [error, setError] = useState(false);
-  const { loginState, token } = useLoginStore();
+  const { loginState } = useLoginStore();
+  const { notice } = useNotificationStore();
 
   // 알림 오면 내려주는 데이터 -> 알림창
   // 알림 실시간 -> 화면에 5초 띄우고 사라지기
@@ -34,13 +36,19 @@ export default function Notice() {
         )
       );
       const response = await axios.put(
-        `/backend/api/notification/${notificationId}/read`,
-        { header: { Authorization: `Bearer ${token}` } }
+        `/backend/api/notification/${notificationId}/read`
       );
       console.log("알림 읽음 처리", response.data);
       setMsg((prev: Notification[]) =>
         prev.filter((notification) => notification.id !== notificationId)
       );
+      const authHeader = response.headers["authorization"];
+      if (authHeader) {
+        const token = authHeader.split(" ")[1];
+        console.log("JWT Token:", token);
+        sessionStorage.setItem("token", token);
+        notice(token);
+      }
     } catch (error) {
       console.error("Error updating read status:", error);
     }
@@ -50,8 +58,7 @@ export default function Notice() {
   const handleAllNotifications = async () => {
     try {
       const response = await axios.get(
-        "/backend/api/notifications?page={page}&size={size}",
-        { headers: { Authorization: `:{token}` } }
+        "/backend/api/notifications?page={page}&size={size}"
       );
       const noreadNotifications = response.data.notifications.filter(
         (notification: Notification) => !notification.read
@@ -78,12 +85,15 @@ export default function Notice() {
 
     const fetchSseUrl = async () => {
       try {
-        const response = await axios.get(
-          "/backend/api/notification/subscribe",
-          { headers: { Authorization: `:{token}` } }
-        );
+        const response = await axios.get("/backend/api/notification/subscribe");
         console.log("SSE URL:", response.data.sseUrl);
         setSseUrl(response.data.sseUrl);
+        const authHeader = response.headers["authorization"];
+        if (authHeader) {
+          const token = authHeader.split(" ")[1];
+          sessionStorage.setItem("token", token);
+          notice(token);
+        }
       } catch (error) {
         console.error("Failed to fetch SSE URL:", error);
       }
@@ -93,11 +103,9 @@ export default function Notice() {
       if (sseUrl && loginState) {
         console.log("Reconnecting to SSE...");
         eventSource = new EventSource(sseUrl);
-
         eventSource.onopen = () => {
           console.log("SSE connection successfully opened.");
         };
-
         eventSource.onmessage = (e) => {
           try {
             const data = JSON.parse(e.data);
@@ -160,7 +168,7 @@ export default function Notice() {
     return () => {
       eventSource?.close();
     };
-  }, [sseUrl, loginState, lastEvent, dummyReceived]);
+  }, [sseUrl, loginState, lastEvent, dummyReceived, notice]);
 
   return (
     <div
