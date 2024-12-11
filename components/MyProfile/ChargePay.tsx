@@ -55,15 +55,17 @@ export default function ChargePay() {
       return response;
     },
     onSuccess: (response) => {
-      const eventSource = new EventSource(
+      const eventSource = new EventSourcePolyfill(
         `http://localhost:3000/backend/api/payments/sse/subscribe/${response.paymentId}`,
+        {
+          headers: {
+            "Content-Type": "text/event-stream",
+          },
+        },
       );
 
-      eventSource.addEventListener("Transaction Paid", (event) => {
-        console.log(event);
-      });
-      eventSource.addEventListener("Transaction Failed", (event) => {
-        console.log(event);
+      eventSource.addEventListener("Init", (event: any) => {
+        console.log(event.data);
       });
 
       eventSource.onerror = () => {
