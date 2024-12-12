@@ -10,20 +10,20 @@ import { useState } from "react";
 import ActiveFilter from "./ActiveFilter";
 
 interface categoryStateType {
-  postType: "default" | "SELL" | "BUY";
-  postStatus:
+  ["post-type"]: "default" | "SELL" | "BUY";
+  status:
     | "default"
     | "POSTING"
     | "SALE_COMPLETED"
     | "PURCHASE_COMPLETED"
     | "HIDDEN";
-  membershipType:
+  ["membership-type"]:
     | "default"
     | "MEMBERSHIP_ONLY"
     | "MEMBERSHIP_WITH_PT"
     | "PT_ONLY";
-  membershipDuration: "default" | "months_0_3" | "months_3_6" | "months_6_plus";
-  PTCount: "default" | "PT_0_10" | "PT_10_25" | "PT_25_plus";
+  ["month-type"]: "default" | "MONTHS_0_3" | "MONTHS_3_6" | "MONTHS_6_PLUS";
+  ["pt-type"]: "default" | "PT_0_10" | "PT_10_25" | "PT_25_PLUS";
 }
 
 export default function Filter({

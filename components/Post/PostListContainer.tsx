@@ -7,45 +7,45 @@ import { useEffect, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import axiosInstance from "@/api/axiosInstance";
 import { useRouter, useSearchParams } from "next/navigation";
+import useLoginStore from "@/store/useLoginStore";
 
 interface categoryStateType {
-  postType: "default" | "SELL" | "BUY";
-  postStatus:
+  ["post-type"]: "default" | "SELL" | "BUY";
+  status:
     | "default"
     | "POSTING"
     | "SALE_COMPLETED"
     | "PURCHASE_COMPLETED"
     | "HIDDEN";
-  membershipType:
+  ["membership-type"]:
     | "default"
     | "MEMBERSHIP_ONLY"
     | "MEMBERSHIP_WITH_PT"
     | "PT_ONLY";
-  membershipDuration: "default" | "months_0_3" | "months_3_6" | "months_6_plus";
-  PTCount: "default" | "PT_0_10" | "PT_10_25" | "PT_25_plus";
+  ["month-type"]: "default" | "MONTHS_0_3" | "MONTHS_3_6" | "MONTHS_6_PLUS";
+  ["pt-type"]: "default" | "PT_0_10" | "PT_10_25" | "PT_25_PLUS";
 }
 
 export default function PostListContainer() {
   const searchParams = useSearchParams();
   const router = useRouter();
+  const { token } = useLoginStore();
 
   const [filter, setFilter] = useState<categoryStateType>({
-    postType:
-      (searchParams.get("postType") as categoryStateType["postType"]) ||
+    ["post-type"]:
+      (searchParams.get("post-type") as categoryStateType["post-type"]) ||
       "default",
-    postStatus:
-      (searchParams.get("postStatus") as categoryStateType["postStatus"]) ||
+    status:
+      (searchParams.get("status") as categoryStateType["status"]) || "default",
+    ["membership-type"]:
+      (searchParams.get(
+        "membership-type",
+      ) as categoryStateType["membership-type"]) || "default",
+    ["month-type"]:
+      (searchParams.get("month-type") as categoryStateType["month-type"]) ||
       "default",
-    membershipType:
-      (searchParams.get(
-        "membershipType",
-      ) as categoryStateType["membershipType"]) || "default",
-    membershipDuration:
-      (searchParams.get(
-        "membershipDuration",
-      ) as categoryStateType["membershipDuration"]) || "default",
-    PTCount:
-      (searchParams.get("PTCount") as categoryStateType["PTCount"]) ||
+    ["pt-type"]:
+      (searchParams.get("pt-type") as categoryStateType["pt-type"]) ||
       "default",
   });
   const [query, setQuery] = useState("");
@@ -72,11 +72,26 @@ export default function PostListContainer() {
   };
 
   //tanstack-query에서 캐싱해서 처리
-  // useQuery({
-  //   queryKey: ['filterPost', url],
-  //   queryFn: async() => (await axiosInstance.get(`/backend/api/filter?${query}`)).data,
-  //   staleTime: 10000,
-  // })
+  const { data } = useQuery({
+    queryKey: ["filterPost", query, token],
+    queryFn: async () =>
+      (await axiosInstance.get(`/api/posts/filters?${query}`)).data,
+    staleTime: 10000,
+    enabled: !!query,
+  });
+
+  const { data: defaultData } = useQuery({
+    queryKey: ["defaultPost"],
+    queryFn: async () =>
+      (await axiosInstance.get("/api/posts/views?page=0&size=10")).data,
+    staleTime: 10000,
+    enabled: !query, // query가 없을 때만 실행
+  });
+
+  useEffect(() => {
+    console.log(defaultData);
+    console.log(data);
+  }, [data, defaultData]);
 
   return (
     <div className="mt-12 flex w-[70%] flex-col">
@@ -91,7 +106,12 @@ export default function PostListContainer() {
       <div className="mb-12">
         <Filter onChangeFilter={handleFilterUrl} filter={filter} />
       </div>
-      <PostList style="w-[100%] flex-wrap justify-center" />
+      {
+        <PostList
+          data={query ? data : defaultData}
+          style="w-[100%] flex-wrap justify-center"
+        />
+      }
     </div>
   );
 }

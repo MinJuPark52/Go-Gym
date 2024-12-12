@@ -13,6 +13,7 @@ import SearchKakaoMap from "./SearchKaKaoMap";
 import { useMutation } from "@tanstack/react-query";
 import { getAccessToken, getCity } from "@/api/api";
 import axiosInstance from "@/api/axiosInstance";
+import { useRouter } from "next/navigation";
 
 interface categoryStateType {
   postType: "default" | "SELL" | "BUY";
@@ -24,6 +25,8 @@ interface categoryStateType {
 }
 
 export default function EditPost() {
+  const router = useRouter();
+
   const [values, setValues] = useState({
     title: "",
     content: "",
@@ -98,9 +101,9 @@ export default function EditPost() {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     mutationFn: async (jsonData: Record<string, any>) =>
       await axiosInstance.post(`/api/posts`, jsonData),
-    onSuccess: (data) => {
+    onSuccess: () => {
       alert("게시글이 작성되었습니다.");
-      console.log(data);
+      router.push("/community");
     },
     onError: () => {
       alert("게시글이 작성되지않았습니다.");
@@ -122,7 +125,11 @@ export default function EditPost() {
   };
 
   const handleSelectOptions = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    setCategoryValue({ ...categoryValue, [e.target.name]: e.target.value });
+    setCategoryValue({
+      ...categoryValue,
+      [e.target.name === "post-type" ? "postType" : "membershipType"]:
+        e.target.value,
+    });
   };
 
   const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {

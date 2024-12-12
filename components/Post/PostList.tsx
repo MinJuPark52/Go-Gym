@@ -18,24 +18,31 @@ interface PostType {
 }
 
 export default function PostList({
-  url,
+  data,
   style,
 }: {
-  url?: string;
+  data?: PostType[];
   style?: string;
 }) {
-  const { data } = useQuery({
-    queryKey: ["post"],
-    queryFn: async () =>
-      // (await axiosInstance.get('url?page=0&size=10')).data, 백엔드 연동시 사용
-      (await axios.get("http://localhost:4000/posts")).data,
-    staleTime: 1000 * 10,
+  const { data: defaultData, isPending } = useQuery({
+    queryKey: ["default"],
+    queryFn: async () => (await axios.get("http://localhost:4000/posts")).data,
+    staleTime: 10000,
   });
+
+  console.log(defaultData);
+
+  if (!data && isPending) {
+    return <p>데이터 로딩중...</p>;
+  }
 
   return (
     <div className={`mb-12 flex w-full min-w-[750px] gap-8 ${style}`}>
-      {data &&
-        data.map((post: PostType) => <PostItem key={post.id} {...post} />)}
+      {data
+        ? data.map((post: PostType) => <PostItem key={post.id} {...post} />)
+        : defaultData.map((post: PostType) => (
+            <PostItem key={post.id} {...post} />
+          ))}
     </div>
   );
 }
