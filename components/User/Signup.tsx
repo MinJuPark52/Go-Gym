@@ -2,6 +2,7 @@
 
 import { ChangeEvent, useState } from "react";
 import axios from "axios";
+import { useRouter } from "next/navigation";
 
 interface Signup {
   email: string;
@@ -72,6 +73,7 @@ const regions: { id: string; name: string }[] = [
 ];
 
 export default function SignupPage() {
+  const router = useRouter();
   const [selectSubRegion1, setSelectSubRegion1] = useState({
     regionId: "",
     name: "",
@@ -248,6 +250,7 @@ export default function SignupPage() {
             alert(
               "이메일 인증 링크가 전송되었습니다. 이메일을 통해 인증해주세요",
             );
+            router.push("/login");
           } else {
             throw new Error("링크 전송 X");
           }
