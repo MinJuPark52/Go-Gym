@@ -13,12 +13,17 @@ import SearchKakaoMap from "./SearchKaKaoMap";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { getAccessToken, getCity } from "@/api/api";
 import axiosInstance from "@/api/axiosInstance";
-import { useParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import axios from "axios";
 
 interface categoryStateType {
   postType: "default" | "SELL" | "BUY";
-  postStatus: "default" | "PENDING" | "IN_PROGRESS" | "COMPLETED";
+  status:
+    | "default"
+    | "POSTING"
+    | "SALE_COMPLETED"
+    | "PURCHASE_COMPLETED"
+    | "HIDDEN";
   membershipType:
     | "default"
     | "MEMBERSHIP_ONLY"
@@ -31,7 +36,7 @@ export default function ModifiedPost() {
     title: "",
     content: "",
     expirationDate: "",
-    remainingSession: 0,
+    remainingSessions: 0,
     amount: 0,
     city: "",
     district: "",
@@ -40,7 +45,7 @@ export default function ModifiedPost() {
   const [mapValue, setMapValue] = useState({
     latitude: 0,
     longitude: 0,
-    gymKaKaoUrl: "",
+    gymKakaoUrl: "",
     gymName: "",
   });
   //<Record<string, string | File | null>> 백엔드 연동시 타입추가
@@ -52,11 +57,12 @@ export default function ModifiedPost() {
 
   const [categoryValue, setCategoryValue] = useState<categoryStateType>({
     postType: "default",
-    postStatus: "PENDING",
+    status: "POSTING",
     membershipType: "default",
   });
 
   const params = useParams();
+  const router = useRouter();
 
   const { data } = useQuery({
     queryKey: ["postDetail", params.postid],
@@ -73,6 +79,7 @@ export default function ModifiedPost() {
     onSuccess: (data) => {
       alert("게시글이 작성되었습니다.");
       console.log(data);
+      router.push("/community");
     },
     onError: () => {
       alert("게시글이 작성되지않았습니다.");
@@ -126,7 +133,7 @@ export default function ModifiedPost() {
         title: data.title,
         content: "",
         expirationDate: data.expirationDate,
-        remainingSession: data.remainingSession,
+        remainingSessions: data.remainingSessions,
         amount: data.amount,
         city: data.city,
         district: data.district,
@@ -134,7 +141,7 @@ export default function ModifiedPost() {
       setMapValue({
         latitude: data.latitude,
         longitude: data.longitude,
-        gymKaKaoUrl: data.gymKaKaoUrl,
+        gymKakaoUrl: data.gymKakaoUrl,
         gymName: data.gymName,
       });
       setImages({
@@ -160,7 +167,11 @@ export default function ModifiedPost() {
   };
 
   const handleSelectOptions = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    setCategoryValue({ ...categoryValue, [e.target.name]: e.target.value });
+    setCategoryValue({
+      ...categoryValue,
+      [e.target.name === "post-type" ? "postType" : "membershipType"]:
+        e.target.value,
+    });
   };
 
   const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -176,13 +187,13 @@ export default function ModifiedPost() {
   const handleClickGym = (
     latitude: number,
     longitude: number,
-    gymKaKaoUrl: string,
+    gymKakaoUrl: string,
     gymName: string,
   ) => {
     setMapValue({
       latitude,
       longitude,
-      gymKaKaoUrl,
+      gymKakaoUrl,
       gymName,
     });
     setIsMapOpen(false);
@@ -206,7 +217,7 @@ export default function ModifiedPost() {
       return;
     }
 
-    if (values.remainingSession < 0 || values.amount < 0) {
+    if (values.remainingSessions < 0 || values.amount < 0) {
       alert("가격과 PT횟수는 0 이상으로 입력해주세요");
       return;
     }
@@ -289,7 +300,7 @@ export default function ModifiedPost() {
           </div>
           <div className="flex flex-col gap-2">
             <label
-              htmlFor={"remainingSession"}
+              htmlFor={"remainingSessions"}
               className="text-sm text-gray-500"
             >
               PT횟수
@@ -297,9 +308,9 @@ export default function ModifiedPost() {
             <input
               type="number"
               className="h-12 w-48 cursor-pointer rounded-md border border-gray-400 pl-2 text-gray-600 focus:outline-blue-400"
-              name={"remainingSession"}
-              id={"remainingSession"}
-              value={values.remainingSession}
+              name={"remainingSessions"}
+              id={"remainingSessions"}
+              value={values.remainingSessions}
               onChange={handleValues}
               placeholder="ex) 25"
             />
