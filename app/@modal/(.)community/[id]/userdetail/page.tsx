@@ -1,5 +1,5 @@
 import PostUserDetail from "@/components/Post/PostUserDetail";
 
-export default function userDetailPage() {
+export default function UserDetailPage() {
   return <PostUserDetail />;
 }

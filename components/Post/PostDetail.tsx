@@ -1,6 +1,5 @@
 "use client";
 import { FaHeart } from "react-icons/fa";
-import { CgCloseO } from "react-icons/cg";
 import DOMpurify from "dompurify";
 
 import { useMutation, useQuery } from "@tanstack/react-query";
@@ -123,32 +122,20 @@ export default function PostDetail() {
           </div>
 
           <div className="relative flex min-h-40 p-4">
-            <PostDetailImage
-              imageUrl={detail.imageUrl1}
-              onClick={handleImageClick}
-            />
+            <Link
+              href={{
+                pathname: `/community/${id}/imagedetail`,
+                query: { imageUrl: detail.imageUrl },
+              }}
+            >
+              <PostDetailImage imageUrl={detail.imageUrl1} />
+            </Link>
             <button
               onClick={() => mutate()}
               className="btn absolute bottom-4 right-4 bg-blue-300 p-1 pl-2 pr-2 text-white transition-all hover:bg-blue-500"
             >
               채팅하기
             </button>
-          </div>
-        </div>
-      )}
-      {detail && visibleModal.image && (
-        <div className="absolute bottom-0 left-0 right-0 top-0 flex flex-col items-center justify-center bg-gray-600 bg-opacity-30">
-          <div className="flex w-[70%] max-w-[1100px] animate-slide-down items-center justify-between">
-            <p className="text-xl font-bold text-white">사진 크게보기</p>
-            <CgCloseO
-              size={48}
-              color="#545454"
-              className="translate-x-12 cursor-pointer"
-              onClick={handleImageClick}
-            />
-          </div>
-          <div className="relative h-[60%] w-[70%] max-w-[1100px] animate-slide-down overflow-hidden rounded-lg bg-white">
-            <Image src={detail.imageUrl1} alt="이미지" layout="fill" />
           </div>
         </div>
       )}
