@@ -176,7 +176,6 @@ export default function LoginForm() {
           <span className="text-center text-sm">카카오 로그인</span>
         </div>
       </div>
-
       <div>
         <Link href="/signup">회원가입</Link>
       </div>
