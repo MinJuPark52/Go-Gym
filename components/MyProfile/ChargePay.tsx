@@ -59,6 +59,7 @@ export default function ChargePay() {
         `http://localhost:3000/backend/api/payments/sse/subscribe/${response.paymentId}`,
       );
 
+      
       eventSource.addEventListener("Transaction Paid", (event) => {
         console.log(event);
       });
