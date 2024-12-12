@@ -18,20 +18,12 @@ interface PostType {
 }
 
 export default function PostList({
-  url,
+  data,
   style,
 }: {
-  url?: string;
+  data: PostType[];
   style?: string;
 }) {
-  const { data } = useQuery({
-    queryKey: ["post"],
-    queryFn: async () =>
-      // (await axiosInstance.get('url?page=0&size=10')).data, 백엔드 연동시 사용
-      (await axios.get("http://localhost:4000/posts")).data,
-    staleTime: 1000 * 10,
-  });
-
   return (
     <div className={`mb-12 flex w-full min-w-[750px] gap-8 ${style}`}>
       {data &&

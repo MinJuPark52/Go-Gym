@@ -74,15 +74,16 @@ export default function PostListContainer() {
   //tanstack-query에서 캐싱해서 처리
   const { data } = useQuery({
     queryKey: ["filterPost", query, token],
-    queryFn: async () => await axiosInstance.get(`/api/posts/filters?${query}`),
+    queryFn: async () =>
+      (await axiosInstance.get(`/api/posts/filters?${query}`)).data,
     staleTime: 10000,
     enabled: !!query,
   });
 
-  const { data: defaultData, isLoading: isDefaultLoading } = useQuery({
+  const { data: defaultData } = useQuery({
     queryKey: ["defaultPost"],
     queryFn: async () =>
-      await axiosInstance.get("/api/posts/views?page=0&size=10"),
+      (await axiosInstance.get("/api/posts/views?page=0&size=10")).data,
     staleTime: 10000,
     enabled: !query, // query가 없을 때만 실행
   });
@@ -105,7 +106,12 @@ export default function PostListContainer() {
       <div className="mb-12">
         <Filter onChangeFilter={handleFilterUrl} filter={filter} />
       </div>
-      <PostList style="w-[100%] flex-wrap justify-center" />
+      {
+        <PostList
+          data={query ? data : defaultData}
+          style="w-[100%] flex-wrap justify-center"
+        />
+      }
     </div>
   );
 }

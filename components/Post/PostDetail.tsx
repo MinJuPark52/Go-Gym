@@ -22,15 +22,10 @@ export default function PostDetail() {
   const { id } = useParams();
   const router = useRouter();
 
-  const { data } = useQuery({
-    queryKey: ["postDetail"],
-    queryFn: async () =>
-      (await axios.get(`http://localhost:4000/postDetails/${id}`)).data,
-    staleTime: 1000,
-  });
   const { data: detail } = useQuery({
     queryKey: ["postDetail", id],
-    queryFn: async () => await axiosInstance.get(`/api/posts/details/${id}`),
+    queryFn: async () =>
+      (await axiosInstance.get(`/api/posts/details/${id}`)).data,
     staleTime: 1000,
   });
 
@@ -52,31 +47,23 @@ export default function PostDetail() {
     });
   };
 
-  const handleUserClick = () => {
-    setVisibleModal({
-      ...visibleModal,
-      user: !visibleModal.user,
-    });
-  };
-
   let statusBox = "게시중";
-
-  if (data && data.postStatus === "PENDING") {
+  if (detail && detail.postStatus === "POSTING") {
     statusBox = "게시중";
-  } else if (data && data.postStatus === "IN_PROGRESS") {
-    statusBox = "거래 중";
-  } else if (data && data.postStatus === "COMPLETED") {
-    statusBox = "거래 완료";
+  } else if (detail && detail.postStatus === "SALE_COMPLETED") {
+    statusBox = "판매 완료";
+  } else if (detail && detail.postStatus === "PURCHASE_COMPLETED") {
+    statusBox = "구매 완료";
   }
 
   return (
     <>
-      {data && (
+      {detail && (
         <div className="flex w-[70%] flex-col">
           <div className="mb-6 border-b border-gray-400">
             <div className="mb-2 ml-2 mr-2 mt-12">
               <div className="flex justify-between">
-                <p className="text-2xl font-bold">{data.title}</p>
+                <p className="text-2xl font-bold">{detail.title}</p>
                 <Link href={`/community/modifiedpost/${id}`}>
                   <button className="btn bg-blue-300 text-white hover:bg-blue-500">
                     수정하기
@@ -87,7 +74,7 @@ export default function PostDetail() {
                 {statusBox}
               </div>
               <p className="text-right text-sm font-bold text-gray-500">
-                작성일 : {data.createdAt}
+                작성일 : {detail.createdAt}
               </p>
             </div>
           </div>
@@ -95,31 +82,30 @@ export default function PostDetail() {
             <div className="flex justify-between">
               <p className="font-bold">
                 <span className="text-gray-500">게시글 종류 : </span>
-                {data.postType === "SELL" ? "팝니다" : "삽니다"}
+                {detail.postType === "SELL" ? "팝니다" : "삽니다"}
               </p>
               <p className="font-bold">
                 <span className="text-gray-500">작성자 : </span>
 
-                <button
-                  className="btn btn-active p-2"
-                  onClick={handleUserClick}
-                >
-                  {data.authorNickname}
-                </button>
+                <Link href={`/community/${id}/userdetail`}>
+                  <button className="btn btn-active p-2">
+                    {detail.authorNickname}
+                  </button>
+                </Link>
               </p>
             </div>
             <p className="font-bold">
               <span className="text-gray-500">헬스장 : </span>
-              {data.gymName}
+              {detail.gymName}
             </p>
             <div className="flex justify-between">
               <p className="font-bold">
                 <span className="text-gray-500">회원권 마감일 : </span>
-                {data.expirationDate}
+                {detail.expirationDate}
               </p>
               <p className="font-bold">
                 <span className="text-gray-500">가격 : </span>
-                {data.amount} {"원"}
+                {detail.amount} {"원"}
               </p>
             </div>
           </div>
@@ -127,7 +113,7 @@ export default function PostDetail() {
             <div
               className="overflow-hidden whitespace-pre-wrap"
               dangerouslySetInnerHTML={{
-                __html: DOMpurify.sanitize(data.content),
+                __html: DOMpurify.sanitize(detail.content),
               }}
             />
             <div className="absolute bottom-2 right-2 flex cursor-pointer items-center gap-1">
@@ -138,7 +124,7 @@ export default function PostDetail() {
 
           <div className="relative flex min-h-40 p-4">
             <PostDetailImage
-              imageUrl={data.imageUrl1}
+              imageUrl={detail.imageUrl1}
               onClick={handleImageClick}
             />
             <button
@@ -150,8 +136,7 @@ export default function PostDetail() {
           </div>
         </div>
       )}
-      {visibleModal.user && <PostUserDetail onUserClick={handleUserClick} />}
-      {data && visibleModal.image && (
+      {detail && visibleModal.image && (
         <div className="absolute bottom-0 left-0 right-0 top-0 flex flex-col items-center justify-center bg-gray-600 bg-opacity-30">
           <div className="flex w-[70%] max-w-[1100px] animate-slide-down items-center justify-between">
             <p className="text-xl font-bold text-white">사진 크게보기</p>
@@ -163,7 +148,7 @@ export default function PostDetail() {
             />
           </div>
           <div className="relative h-[60%] w-[70%] max-w-[1100px] animate-slide-down overflow-hidden rounded-lg bg-white">
-            <Image src={data.imageUrl1} alt="이미지" layout="fill" />
+            <Image src={detail.imageUrl1} alt="이미지" layout="fill" />
           </div>
         </div>
       )}
