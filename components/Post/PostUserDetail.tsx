@@ -6,16 +6,21 @@ import { useQuery } from "@tanstack/react-query";
 import axios from "axios";
 import profile from "../../public/default_profile.png";
 import Image from "next/image";
+import { useParams, useRouter } from "next/navigation";
+import { useEffect } from "react";
 
-export default function PostUserDetail({
-  onUserClick,
-}: {
-  onUserClick: () => void;
-}) {
+export default function PostUserDetail() {
+  const router = useRouter();
+
   const { data, isPending } = useQuery({
     queryKey: ["postDetailUser"],
     queryFn: async () =>
       (await axios.get("http://localhost:4000/userDetail/1")).data,
+    staleTime: 100000,
+  });
+  const { data: post } = useQuery({
+    queryKey: ["posts"],
+    queryFn: async () => (await axios.get("http://localhost:4000/posts")).data,
     staleTime: 100000,
   });
 
@@ -23,14 +28,18 @@ export default function PostUserDetail({
     return <p>데이터 로딩중...</p>;
   }
 
+  const handleBack = () => {
+    router.back();
+  };
+
   return (
-    <div className="absolute bottom-0 left-0 right-0 top-0 flex flex-col items-center justify-center bg-gray-600 bg-opacity-30">
+    <div className="fixed bottom-0 left-0 right-0 top-0 z-50 flex flex-col items-center justify-center bg-gray-600 bg-opacity-30">
       <div className="] flex w-[70%] max-w-[1100px] animate-slide-down items-center justify-end">
         <CgCloseO
           size={48}
           color="#545454"
           className="translate-x-12 cursor-pointer"
-          onClick={onUserClick}
+          onClick={handleBack}
         />
       </div>
       <div className="relative h-[60%] w-[70%] min-w-[900px] max-w-[1100px] animate-slide-down overflow-hidden overflow-y-auto rounded-lg bg-white">
@@ -47,7 +56,7 @@ export default function PostUserDetail({
           </p>
         </div>
         <div className="m-4 overflow-x-auto">
-          <PostList />
+          <PostList data={post} />
         </div>
       </div>
     </div>
