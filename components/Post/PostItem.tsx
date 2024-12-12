@@ -1,9 +1,10 @@
-import Image from 'next/image';
-import { FaHeart } from 'react-icons/fa';
-import { IoChatbubblesOutline } from 'react-icons/io5';
-import profile from '../../public/default_profile.png';
-import Link from 'next/link';
-import useTimeAgo from '@/hooks/useTimeAgo';
+import Image from "next/image";
+import { FaHeart } from "react-icons/fa";
+import { IoChatbubblesOutline } from "react-icons/io5";
+import profile from "../../public/default_profile.png";
+import Link from "next/link";
+import useTimeAgo from "@/hooks/useTimeAgo";
+import DefaultProfile from "../UI/DefaultProfile";
 
 interface PostType {
   id: string;
@@ -26,59 +27,63 @@ export default function PostItem({
   title,
   wishCount,
 }: PostType) {
-  const postStatusKo = postStatus === 'PENDING' && '판매중';
+  const postStatusKo = postStatus === "POSTING" && "게시중";
 
   const timeago = useTimeAgo(created_at);
 
   return (
     <Link href={`/community/${id}`}>
-      <div className=" w-80 h-48 rounded-lg border border-[#ccc] shadow cursor-pointer">
+      <div className="h-80 w-80 cursor-pointer rounded-lg border border-[#ccc] shadow">
         <div>
-          <div className=" flex justify-between m-2">
-            <p className=" text-gray-500 text-sm font-bold">{postStatusKo}</p>
-            <p className=" text-gray-500 text-xs">{timeago}</p>
+          <div className="m-2 flex justify-between">
+            <div className="badge border-none bg-blue-300 pb-3 pt-3 text-sm font-bold text-white">
+              {postStatusKo}
+            </div>
+            <p className="text-xs text-gray-500">{timeago}</p>
           </div>
-          <div className=" flex justify-between ml-1 pb-1 mr-2 h-28 border-b border-[#ccc]">
+          <div className="flex h-56 flex-col justify-between border-b border-[#ccc] pb-1">
             {imageUrl1 ? (
               <Image
                 src={imageUrl1}
                 alt="헬스장 사진"
                 width={200}
-                height={64}
-                className=" rounded-md"
+                height={140}
                 priority
               />
             ) : (
-              <div className=" flex justify-center items-center w-[200px] h-[100px] rounded-lg bg-gray-400 bg-opacity-50">
+              <div className="flex h-[140px] items-center justify-center bg-gray-400 bg-opacity-50">
                 기본 이미지
               </div>
             )}
 
-            <div className=" flex flex-col justify-between items-end">
-              <p>{title}</p>
-              <p className=" flex gap-2 items-center text-gray-500 text-sm font-bold">
-                <Image src={profile} alt="profile" width={24} priority />
-                {authorNickName}
-              </p>
+            <p className="ml-2">{title}</p>
+            <div className="mr-2 flex flex-col items-end">
+              <p className="text-sm font-bold text-gray-500">{gymName}</p>
             </div>
           </div>
         </div>
-        <div className=" flex justify-between mt-2 ml-2 mr-2">
-          <div className=" flex items-center gap-4  ">
-            <div className=" flex items-center">
-              <FaHeart color="#DC7D7D" />{' '}
-              <span className=" ml-1 text-gray-500 text-sm font-normal">
+        <div className="ml-2 mr-2 mt-2 flex items-center justify-between">
+          <div className="flex items-center gap-4">
+            <div className="flex items-center">
+              <FaHeart color="#DC7D7D" />{" "}
+              <span className="ml-1 text-sm font-normal text-gray-500">
                 {wishCount}
               </span>
             </div>
-            <div className=" flex items-center">
-              <IoChatbubblesOutline size={24} />{' '}
-              <span className=" ml-1 text-gray-500 text-sm font-normal">
+            <div className="flex items-center">
+              <IoChatbubblesOutline size={24} />{" "}
+              <span className="ml-1 text-sm font-normal text-gray-500">
                 100
               </span>
             </div>
           </div>
-          <p>{gymName}</p>
+
+          <div className="flex items-center gap-2 text-sm font-bold text-gray-500">
+            <div className="avatar">
+              <DefaultProfile width="10" />
+            </div>
+            {authorNickName}
+          </div>
         </div>
       </div>
     </Link>

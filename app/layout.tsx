@@ -1,26 +1,26 @@
-import type { Metadata } from 'next';
-import localFont from 'next/font/local';
-import './globals.css';
-import Nav from '@/components/UI/Nav';
-import ClientLayout from './layout-client';
-import Footer from '@/components/UI/Footer';
+import type { Metadata } from "next";
+import localFont from "next/font/local";
+import "./globals.css";
+import Nav from "@/components/UI/Nav";
+import ClientLayout from "./layout-client";
+import Footer from "@/components/UI/Footer";
 
 const geistSans = localFont({
-  src: './fonts/GeistVF.woff',
-  variable: '--font-geist-sans',
-  weight: '100 900',
+  src: "./fonts/GeistVF.woff",
+  variable: "--font-geist-sans",
+  weight: "100 900",
 });
 const geistMono = localFont({
-  src: './fonts/GeistMonoVF.woff',
-  variable: '--font-geist-mono',
-  weight: '100 900',
+  src: "./fonts/GeistMonoVF.woff",
+  variable: "--font-geist-mono",
+  weight: "100 900",
 });
 
 export const metadata: Metadata = {
-  title: 'Go GYM',
-  description: 'GO GO',
+  title: "Go GYM",
+  description: "GO GO",
   icons: {
-    icon: '/favicon.png',
+    icon: "/favicon.png",
   },
 };
 
@@ -32,7 +32,7 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased min-w-[800px]`}
+        className={`${geistSans.variable} ${geistMono.variable} min-w-[800px] antialiased`}
       >
         <ClientLayout>
           <Nav />

@@ -3,7 +3,7 @@
     {
       "id": "1",
       "title": "제목입니다~",
-      "postStatus": "PENDING",
+      "postStatus": "POSTING",
       "amount": 10000,
       "content": "내용입니다",
       "gymName": "헬스장1!",
@@ -15,7 +15,7 @@
     {
       "id": "2",
       "title": "제목입니다~",
-      "postStatus": "PENDING",
+      "postStatus": "POSTING",
       "amount": 10000,
       "content": "내용입니다",
       "imageUrl1": "",
@@ -27,7 +27,7 @@
     {
       "id": "3",
       "title": "제목입니다~",
-      "postStatus": "PENDING",
+      "postStatus": "POSTING",
       "amount": 10000,
       "content": "내용입니다",
       "imageUrl1": "",
@@ -39,7 +39,7 @@
     {
       "id": "4",
       "title": "제목입니다~",
-      "postStatus": "PENDING",
+      "postStatus": "POSTING",
       "amount": 10000,
       "content": "내용입니다",
       "imageUrl1": "",
@@ -51,7 +51,7 @@
     {
       "id": "5",
       "title": "제목입니다~",
-      "postStatus": "PENDING",
+      "postStatus": "POSTING",
       "amount": 10000,
       "content": "내용입니다",
       "imageUrl1": "",
@@ -63,7 +63,7 @@
     {
       "id": "6",
       "title": "제목입니다~",
-      "postStatus": "PENDING",
+      "postStatus": "POSTING",
       "amount": 10000,
       "content": "내용입니다",
       "imageUrl1": "",
@@ -83,7 +83,7 @@
       "expirationDate": "2025-03-23",
       "remainingSessions": "12",
       "amount": 250000,
-      "postStatus": "PENDING",
+      "postStatus": "POSTING",
       "imageUrl1": "",
       "imageUrl2": "",
       "imageUrl3": "",
@@ -106,7 +106,7 @@
       "expirationDate": "2025-03-23",
       "remainingSessions": "12",
       "amount": 250000,
-      "postStatus": "PENDING",
+      "postStatus": "POSTING",
       "imageUrl1": "",
       "imageUrl2": "",
       "imageUrl3": "",
@@ -129,7 +129,7 @@
       "expirationDate": "2025-03-23",
       "remainingSessions": "12",
       "amount": 250000,
-      "postStatus": "PENDING",
+      "postStatus": "POSTING",
       "imageUrl1": "",
       "imageUrl2": "",
       "imageUrl3": "",
@@ -152,7 +152,7 @@
       "expirationDate": "2025-03-23",
       "remainingSessions": "12",
       "amount": 250000,
-      "postStatus": "PENDING",
+      "postStatus": "POSTING",
       "imageUrl1": "",
       "imageUrl2": "",
       "imageUrl3": "",
@@ -175,7 +175,7 @@
       "expirationDate": "2025-03-23",
       "remainingSessions": "12",
       "amount": 250000,
-      "postStatus": "PENDING",
+      "postStatus": "POSTING",
       "imageUrl1": "",
       "imageUrl2": "",
       "imageUrl3": "",
@@ -198,7 +198,7 @@
       "expirationDate": "2025-03-23",
       "remainingSessions": "12",
       "amount": 250000,
-      "postStatus": "PENDING",
+      "postStatus": "POSTING",
       "imageUrl1": "",
       "imageUrl2": "",
       "imageUrl3": "",
@@ -227,7 +227,7 @@
       "imageUrl2": "",
       "imageUrl3": "",
       "postType": "SELL",
-      "postStatus": "PENDING",
+      "postStatus": "POSTING",
       "membershipType": "MEMBERSHUP_ONLY"
     },
     {
@@ -247,7 +247,7 @@
       "imageUrl2": "",
       "imageUrl3": "",
       "postType": "SELL",
-      "postStatus": "PENDING",
+      "postStatus": "POSTING",
       "membershipType": "MEMBERSHIP_WITH_PT"
     },
     {
@@ -267,13 +267,13 @@
       "imageUrl2": "",
       "imageUrl3": "",
       "postType": "SELL",
-      "postStatus": "PENDING",
+      "postStatus": "POSTING",
       "membershipType": "MEMBERSHIP_WITH_PT"
     }
   ],
   "chatList": [
     {
-      "chatRoomId": 123,
+      "chatRoomId": "123",
       "createdAt": "2024-10-24 21:15:30",
       "postId": 456,
       "counterpartyId": 789,
@@ -283,7 +283,7 @@
       "lastMessageAt": "2024-10-24 21:20:30"
     },
     {
-      "chatRoomId": 404,
+      "chatRoomId": "404",
       "createdAt": "2024-11-30 13:40:30",
       "postId": 405,
       "counterpartyId": 406,
@@ -295,7 +295,7 @@
   ],
   "userDetail": [
     {
-      "id": 1,
+      "id": "1",
       "nickname": "김철수",
       "profileImageUrl": "https://s3.amazon.com/bucket/profile-images/member2.jpg",
       "posts": [
@@ -306,7 +306,7 @@
           "postType": "SELL",
           "membershipType": "MEMBERSHIP_WITH_PT",
           "amount": "250000",
-          "postStatus": "PENDING (거래 대기)",
+          "postStatus": "POSTING (거래 대기)",
           "imageUrl1": "~~~~",
           "createdAt": "2024/11/17",
           "updatedAt": "2024/11/22",
@@ -320,6 +320,36 @@
           "district": "강남구"
         }
       ]
+    }
+  ],
+  "members": [
+    {
+      "email": "example@example.com",
+      "nickname": "헬린이"
+    },
+    {
+      "email": "example@example.com",
+      "nickname": "헬린이1"
+    },
+    {
+      "email": "example@example.com",
+      "nickname": "헬린이2"
+    }
+  ],
+  "declaration": [
+    {
+      "memberId": "1",
+      "nickname": "헬린이",
+      "email": "example@example.com",
+      "reason": "SCAM",
+      "processedAt": "2024-11-24 10:00:00"
+    },
+    {
+      "memberId": "2",
+      "nickname": "헬린이1",
+      "email": "example@example.com",
+      "reason": "SCAM",
+      "processedAt": "2024-11-24 12:00:00"
     }
   ]
 }

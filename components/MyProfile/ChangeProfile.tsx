@@ -1,7 +1,7 @@
-'use client';
-import axiosInstance from '@/api/axiosInstance';
-import Image from 'next/image';
-import { useRef, useState } from 'react';
+"use client";
+import axiosInstance from "@/api/axiosInstance";
+import Image from "next/image";
+import { useRef, useState } from "react";
 
 const SignupInput: React.FC<InputProps> = ({
   type,
@@ -15,7 +15,7 @@ const SignupInput: React.FC<InputProps> = ({
       type={type}
       name={name}
       placeholder={placeholder}
-      className="w-full p-2 rounded-md border border-gray-300"
+      className="w-full rounded-md border border-gray-300 p-2"
       onChange={onChange}
       disabled={disabled}
     />
@@ -33,9 +33,9 @@ interface InputProps {
 export default function ChangeProfile() {
   const [file, setFile] = useState<File>();
   const [values, setValues] = useState({
-    nickname: '',
-    phone: '',
-    password: '',
+    nickname: "",
+    phone: "",
+    password: "",
   });
   const fileInputRef = useRef<HTMLInputElement | null>(null);
 
@@ -64,13 +64,13 @@ export default function ChangeProfile() {
 
     // 파일 추가
     if (file) {
-      formData.append('profileImageUrl', file); // 파일 추가
+      formData.append("profileImageUrl", file); // 파일 추가
     }
 
     try {
-      const response = await axiosInstance.put('/api/members/me', formData, {
+      const response = await axiosInstance.put("/api/members/me", formData, {
         headers: {
-          'Content-Type': 'multipart/form-data',
+          "Content-Type": "multipart/form-data",
         },
       });
 
@@ -83,12 +83,12 @@ export default function ChangeProfile() {
   return (
     <form
       onSubmit={handleSubmit}
-      className="w-full max-w-md p-8 space-y-3 overflow-y-auto"
+      className="w-full max-w-md space-y-3 overflow-y-auto p-8"
     >
-      <h2 className="text-2xl font-semibold text-center">프로필 수정</h2>
+      <h2 className="text-center text-2xl font-semibold">프로필 수정</h2>
       {file ? (
         <>
-          <div className=" relative flex justify-center w-[240px] h-[240px] ml-auto mr-auto border border-gray-300 rounded-[100%] overflow-hidden">
+          <div className="relative ml-auto mr-auto flex h-[240px] w-[240px] justify-center overflow-hidden rounded-[100%] border border-gray-300">
             <Image
               src={URL.createObjectURL(file as File)}
               alt="헬스장 이미지"
@@ -100,7 +100,7 @@ export default function ChangeProfile() {
             <button
               type="button"
               onClick={handleButtonClick} // 클릭 핸들러 호출
-              className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
+              className="rounded bg-blue-500 px-4 py-2 text-white hover:bg-blue-600"
             >
               다시 선택
             </button>
@@ -112,27 +112,27 @@ export default function ChangeProfile() {
               name="file-input"
               onChange={handleFileSelect}
               ref={fileInputRef} // ref 연결
-              style={{ display: 'none' }} // 숨김
+              style={{ display: "none" }} // 숨김
             />
           </div>
         </>
       ) : (
-        <div className=" relative flex justify-center w-[240px] h-[240px] ml-auto mr-auto border border-gray-300 rounded-[100%] overflow-hidden">
-          <div className="flex justify-center items-center w-60 h-56">
+        <div className="relative ml-auto mr-auto flex h-[240px] w-[240px] justify-center overflow-hidden rounded-[100%] border border-gray-300">
+          <div className="flex h-56 w-60 items-center justify-center">
             <input
               type="file"
               accept="image/*"
               id="file-input"
-              className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+              className="absolute inset-0 h-full w-full cursor-pointer opacity-0"
               onChange={handleFileSelect}
             />
             <label
               htmlFor="file-input"
-              className="flex flex-col items-center justify-center cursor-pointer text-gray-600"
+              className="flex cursor-pointer flex-col items-center justify-center text-gray-600"
             >
               <span className="text-4xl text-green-500">+</span>
               <span className="mt-2 text-sm font-semibold">
-                {'프로필 사진 선택하세요'}
+                {"프로필 사진 선택하세요"}
               </span>
             </label>
           </div>
@@ -183,13 +183,13 @@ export default function ChangeProfile() {
 
       <div className="flex space-x-4">
         <div className="w-full">
-          <select className="w-full p-3 border border-gray-300 rounded-md focus:outline-none">
+          <select className="w-full rounded-md border border-gray-300 p-3 focus:outline-none">
             <option value="">관심지역</option>
           </select>
         </div>
 
         <div className="w-full">
-          <select className="w-full p-3 border border-gray-300 rounded-md focus:outline-none mb-3">
+          <select className="mb-3 w-full rounded-md border border-gray-300 p-3 focus:outline-none">
             <option value="">관심지역2</option>
           </select>
         </div>
@@ -198,7 +198,7 @@ export default function ChangeProfile() {
       <div>
         <button
           type="submit"
-          className="w-full bg-blue-500 text-white py-3 rounded-md hover:bg-blue-600 focus:outline-none"
+          className="w-full rounded-md bg-blue-500 py-3 text-white hover:bg-blue-600 focus:outline-none"
         >
           수정하기
         </button>
