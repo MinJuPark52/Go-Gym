@@ -33,9 +33,9 @@ const LoginInput = ({
       placeholder={placeholder}
       value={value}
       onChange={onChange}
-      className="w-full p-2 rounded-md border border-gray-300 mb-3"
+      className="mb-3 w-full rounded-md border border-gray-300 p-2"
     />
-    {errorMessage && <p className="text-red-500 text-sm">{errorMessage}</p>}
+    {errorMessage && <p className="text-sm text-red-500">{errorMessage}</p>}
   </div>
 );
 
@@ -127,9 +127,9 @@ export default function LoginForm() {
   return (
     <form
       onSubmit={handleLoginSubmit}
-      className="w-full h-[25rem] max-w-md bg-white p-8 space-y-3"
+      className="h-[25rem] w-full max-w-md space-y-3 bg-white p-8"
     >
-      <h2 className="text-2xl font-semibold text-center mt-2">로그인</h2>
+      <h2 className="mt-2 text-center text-2xl font-semibold">로그인</h2>
 
       <LoginInput
         type="email"
@@ -146,15 +146,15 @@ export default function LoginForm() {
           onChange={handleLoginChange("password")}
           errorMessage={loginErrors.password}
         />
-        <div className="flex items-center mb-3">
+        <div className="mb-3 flex items-center">
           <input
             type="checkbox"
             id="showPassword"
             checked={showPw}
             onChange={() => setShowPw(!showPw)}
-            className="w-4 h-4"
+            className="h-4 w-4"
           />
-          <label htmlFor="showPassword" className="text-sm ml-1">
+          <label htmlFor="showPassword" className="ml-1 text-sm">
             비밀번호 표시
           </label>
         </div>
@@ -162,17 +162,17 @@ export default function LoginForm() {
 
       <button
         type="submit"
-        className="w-full bg-blue-500 text-white py-2 rounded-md hover:bg-blue-600 focus:outline-none mt-4"
+        className="mt-4 w-full rounded-md bg-blue-500 py-2 text-white hover:bg-blue-600 focus:outline-none"
       >
         로그인
       </button>
 
       <div
         onClick={handleKakaoLogin}
-        className="flex items-center justify-center cursor-pointer mt-2"
+        className="mt-2 flex cursor-pointer items-center justify-center"
       >
-        <div className="inline-flex items-center justify-center bg-yellow-300 w-[150px] h-[40px] shadow-sm rounded-md">
-          <BiSolidMessageRounded className="w-[20px] h-[20px] mr-2" />
+        <div className="inline-flex h-[40px] w-[150px] items-center justify-center rounded-md bg-yellow-300 shadow-sm">
+          <BiSolidMessageRounded className="mr-2 h-[20px] w-[20px]" />
           <span className="text-center text-sm">카카오 로그인</span>
         </div>
       </div>
