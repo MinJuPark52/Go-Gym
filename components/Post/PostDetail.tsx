@@ -7,7 +7,7 @@ import { useMutation, useQuery } from "@tanstack/react-query";
 import axios from "axios";
 import { useParams, useRouter } from "next/navigation";
 import PostDetailImage from "./PostDetailImage";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import PostList from "./PostList";
@@ -28,6 +28,15 @@ export default function PostDetail() {
       (await axios.get(`http://localhost:4000/postDetails/${id}`)).data,
     staleTime: 1000,
   });
+  const { data: detail } = useQuery({
+    queryKey: ["postDetail", id],
+    queryFn: async () => await axiosInstance.get(`/api/posts/details/${id}`),
+    staleTime: 1000,
+  });
+
+  useEffect(() => {
+    console.log(detail);
+  }, [detail]);
 
   const { mutate } = useMutation({
     mutationKey: ["AddChatRoom"],
