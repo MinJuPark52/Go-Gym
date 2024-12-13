@@ -76,17 +76,24 @@ const regions: { id: string; name: string }[] = [
 export default function SignupPage() {
   const [loading, setLoading] = useState(false);
   const router = useRouter();
+  const [isEmailAvailable, setIsEmailAvailable] = useState(false);
+  const [isNicknameAvailable, setIsNicknameAvailable] = useState(false);
+
+  const [subRegion1, setSubRegion1] = useState<{ id: string; name: string }[]>(
+    [],
+  );
+  const [subRegion2, setSubRegion2] = useState<{ id: string; name: string }[]>(
+    [],
+  );
+
   const [selectSubRegion1, setSelectSubRegion1] = useState({
     regionId: "",
     name: "",
   });
-
-  /*
   const [selectSubRegion2, setSelectSubRegion2] = useState({
     regionId: "",
     name: "",
   });
-  */
 
   // 표시 네임, 아이디를 선택
   const [signupFormData, setsignupFormData] = useState({
@@ -110,15 +117,6 @@ export default function SignupPage() {
     regionId2: "",
     profileImageUrl: "",
   });
-
-  const [isEmailAvailable, setIsEmailAvailable] = useState(false);
-  const [isNicknameAvailable, setIsNicknameAvailable] = useState(false);
-  const [subRegions1, setSubRegions1] = useState<
-    { id: string; name: string }[]
-  >([]);
-  const [subRegions2, setSubRegions2] = useState<
-    { id: string; name: string }[]
-  >([]);
 
   const handleSignupChange =
     (field: keyof typeof signupFormData) =>
@@ -297,7 +295,7 @@ export default function SignupPage() {
             id: data.regionId,
             name: data.name,
           }));
-          setSubRegions1(regionsData);
+          setSubRegion1(regionsData);
         }
       } catch (error) {
         console.error("API 호출에 실패했습니다.", error);
@@ -306,21 +304,29 @@ export default function SignupPage() {
   };
 
   // 관심지역2
+  const handleChangeSubRegionId2 = async (
+    e: ChangeEvent<HTMLSelectElement>,
+  ) => {
+    setSelectSubRegion2({ regionId: e.target.value, name: "" });
+    setsignupFormData({ ...signupFormData, regionId2: e.target.value });
+    console.log("id:" + selectSubRegion2.regionId);
+  };
+
   const handleChangeRegionId2 = async (e: ChangeEvent<HTMLSelectElement>) => {
     const selectedRegionId2 = e.target.value;
     setsignupFormData({ ...signupFormData, regionId2: selectedRegionId2 });
 
     if (selectedRegionId2) {
       try {
-        const response = await axios.get<{ name: string }[]>(
+        const response = await axios.get<{ regionId: string; name: string }[]>(
           `backend/api/regions?name=${selectedRegionId2}`,
         );
         if (response) {
           const regionsData = response.data.map((data) => ({
-            id: selectedRegionId2,
+            id: data.regionId,
             name: data.name,
           }));
-          setSubRegions2(regionsData);
+          setSubRegion2(regionsData);
         }
       } catch (error) {
         console.error("API 호출에 실패했습니다.", error);
@@ -429,7 +435,7 @@ export default function SignupPage() {
               onChange={handleChangeRegionId1}
               className="w-full rounded-md border border-gray-300 p-2"
             >
-              {/* 아이디 값을 보내 */}
+              {/* 아이디 값을 보냄 */}
               <option value="">지역 선택1</option>
               {regions?.map((region) => (
                 <option key={region.id} value={region.name}>
@@ -446,7 +452,7 @@ export default function SignupPage() {
               className="w-full rounded-md border border-gray-300 p-2"
             >
               <option value="">세부 지역 선택1</option>
-              {subRegions1?.map((subRegion) => (
+              {subRegion1?.map((subRegion) => (
                 <option key={subRegion.name} value={subRegion.id}>
                   {subRegion.name}
                 </option>
@@ -455,13 +461,14 @@ export default function SignupPage() {
           </div>
         </div>
 
-        {/* <div className="flex space-x-4">
+        <div className="flex space-x-4">
           <div className="flex-1">
             <select
               value={signupFormData.regionId2}
               onChange={handleChangeRegionId2}
               className="w-full rounded-md border border-gray-300 p-2"
             >
+              {/* 아이디 값을 보냄 */}
               <option value="">지역 선택2</option>
               {regions?.map((region) => (
                 <option key={region.id} value={region.name}>
@@ -473,25 +480,25 @@ export default function SignupPage() {
 
           <div className="flex-1">
             <select
-              value={signupFormData.regionId2}
-              onChange={handleChangeRegionId2}
+              value={selectSubRegion2.regionId}
+              onChange={handleChangeSubRegionId2}
               className="w-full rounded-md border border-gray-300 p-2"
             >
               <option value="">세부 지역 선택2</option>
-              {subRegions2?.map((subRegion) => (
-                <option key={subRegion.id} value={subRegion.id}>
+              {subRegion2?.map((subRegion) => (
+                <option key={subRegion.name} value={subRegion.id}>
                   {subRegion.name}
                 </option>
               ))}
             </select>
           </div>
-        </div> */}
+        </div>
         <div>
           <button
             type="submit"
-            className="w-full rounded-md bg-blue-500 py-3 text-white hover:bg-blue-600 focus:outline-none"
+            className="w-full rounded-md bg-blue-500 py-2 text-white"
           >
-            가입하기
+            회원가입
           </button>
         </div>
       </form>
