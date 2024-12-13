@@ -80,18 +80,35 @@ export default function PostListContainer() {
     enabled: !!query,
   });
 
-  const { data: defaultData } = useQuery({
+  const {
+    data: defaultData,
+    error,
+    isPending: defaultDataPending,
+  } = useQuery({
     queryKey: ["defaultPost"],
-    queryFn: async () =>
-      (await axiosInstance.get("/api/posts/views?page=0&size=10")).data,
-    staleTime: 10000,
+    queryFn: async () => {
+      const response: any = await axiosInstance.get(
+        "/api/posts/views?page=0&size=10",
+      );
+      return response;
+    },
+    staleTime: 0,
     enabled: !query, // query가 없을 때만 실행
   });
 
   useEffect(() => {
     console.log(defaultData);
     console.log(data);
+    if (error) {
+      console.log(error);
+    }
   }, [data, defaultData]);
+
+  if (defaultDataPending) {
+    return <p>로딩중</p>;
+  }
+
+  let posts = query ? data : defaultData.content;
 
   return (
     <div className="mt-12 flex w-[70%] flex-col">
@@ -106,12 +123,7 @@ export default function PostListContainer() {
       <div className="mb-12">
         <Filter onChangeFilter={handleFilterUrl} filter={filter} />
       </div>
-      {
-        <PostList
-          data={query ? data : defaultData}
-          style="w-[100%] flex-wrap justify-center"
-        />
-      }
+      {<PostList data={posts} style="w-[100%] flex-wrap justify-center" />}
     </div>
   );
 }

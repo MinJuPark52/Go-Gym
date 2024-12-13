@@ -6,6 +6,8 @@ import useTimeAgo from "@/hooks/useTimeAgo";
 import { IoTrashBinOutline } from "react-icons/io5";
 import { useMutation } from "@tanstack/react-query";
 import axiosInstance from "@/api/axiosInstance";
+import { useEffect } from "react";
+import useWebSocketStore from "@/store/useSocketStore";
 
 interface chatListProps {
   counterpartyNickname: string;
@@ -23,6 +25,7 @@ export default function ChatList({
   lastMessageAt,
 }: chatListProps) {
   const timeago = useTimeAgo(lastMessageAt);
+
   const handleDelete = () => {
     const ans = confirm("이 채팅방을 삭제하시겠습니까?");
     if (ans) {

@@ -11,21 +11,32 @@ interface props {
   chatRoomId: string;
   onSendMessage: ({
     chatRoomId,
-    senderId,
     content,
   }: {
     chatRoomId: string;
-    senderId: string;
     content: string;
   }) => void;
 }
 
 export default function Chat({ chatRoomId, onSendMessage }: props) {
   const [text, setText] = useState("");
-  const { messages, setAgoMessage } = useWebSocketStore();
+  const { connect, messages, setAgoMessage, disconnect } = useWebSocketStore();
+
+  useEffect(() => {
+    // 숫자 부분만 chatroomid적어주면 됨
+    if (chatRoomId) {
+      connect("/backend" + "/ws", chatRoomId, (message) => {
+        console.log("New message:", message.body);
+      });
+    }
+
+    return () => {
+      disconnect();
+    };
+  }, [chatRoomId]);
 
   // const { data: agoMessage } = useQuery({
-  //   queryKey: ['agoMessage', chatRoomId],
+  //   queryKey: ["agoMessage", chatRoomId],
   //   queryFn: async () => await axiosInstance.get(`/api/chatroom/${chatRoomId}`),
   //   staleTime: 10000,
   // });
@@ -52,7 +63,7 @@ export default function Chat({ chatRoomId, onSendMessage }: props) {
       return;
     }
     //senderId랑 chatRoomId 1번 고정
-    onSendMessage({ chatRoomId: "1", senderId: "1", content: text });
+    onSendMessage({ chatRoomId, content: text });
     setText("");
   };
 
@@ -69,48 +80,40 @@ export default function Chat({ chatRoomId, onSendMessage }: props) {
       className="relative flex h-[100%] w-[70%] flex-col bg-blue-200 bg-opacity-40 p-4"
     >
       <div className="flex h-[calc(100%-10rem)] flex-col overflow-y-auto p-2 scrollbar-hide">
-        {/* 상대방 채팅 */}
-        <div className="chat chat-start">
-          <div className="avatar chat-image">
-            <DefaultProfile width="10" />
-          </div>
-          <div className="chat-header opacity-50">전민혁</div>
-          <div className="chat-bubble bg-white text-gray-600">안녕하세요</div>
-          <div className="chat-footer opacity-50">Deliverd</div>
-        </div>
-        {/* 내채팅 */}
-        <div className="chat chat-end">
-          <div className="avatar chat-image">
-            <div className="w-10 rounded-full">
-              <img
-                alt="Tailwind CSS chat bubble component"
-                src="https://img.daisyui.com/images/stock/photo-1534528741775-53994a69daeb.webp"
-              />
-            </div>
-          </div>
-          <div className="chat-header">
-            Anakin
-            <time className="text-xs opacity-50">12:46</time>
-          </div>
-          <div className="chat-bubble bg-blue-500 text-white">I hate you!</div>
-          <div className="chat-footer opacity-50">Seen at 12:46</div>
-        </div>
-
         {/* 채팅 데이터 받아오면 위에 코드로 교체 예정 */}
-        {messages.map((chat) => (
-          <div className="ml-auto flex items-center gap-4" key={chat.createdAt}>
-            <div className="flex items-center justify-center rounded-xl bg-blue-200 p-2">
-              <p className="text-base">{chat.content}</p>
+        {messages.map((chat) => {
+          return chat.senderId === 1 ? (
+            <div className="chat chat-start" key={chat.createdAt}>
+              <div className="avatar chat-image">
+                <DefaultProfile width="10" />
+              </div>
+              <div className="chat-header opacity-50">전민혁</div>
+              <div className="chat-bubble bg-white text-gray-600">
+                {chat.content}
+              </div>
+              <div className="chat-footer opacity-50">Deliverd</div>
             </div>
-            <Image
-              src={profile}
-              alt="profile"
-              width={40}
-              className="cursor-pointer"
-              priority
-            />
-          </div>
-        ))}
+          ) : (
+            <div className="chat chat-end" key={chat.createdAt}>
+              <div className="avatar chat-image">
+                <div className="w-10 rounded-full">
+                  <img
+                    alt="Tailwind CSS chat bubble component"
+                    src="https://img.daisyui.com/images/stock/photo-1534528741775-53994a69daeb.webp"
+                  />
+                </div>
+              </div>
+              <div className="chat-header">
+                Anakin
+                <time className="text-xs opacity-50">12:46</time>
+              </div>
+              <div className="chat-bubble bg-blue-500 text-white">
+                {chat.content}
+              </div>
+              <div className="chat-footer opacity-50">Seen at 12:46</div>
+            </div>
+          );
+        })}
       </div>
       <div className="absolute bottom-0 left-0 flex h-40 w-full bg-white p-2">
         <textarea

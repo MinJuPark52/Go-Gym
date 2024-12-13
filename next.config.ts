@@ -9,7 +9,7 @@ const nextConfig: NextConfig = {
       },
       {
         source: "/backend/:path*", // Local API
-        destination: "https://4bcf-211-202-41-148.ngrok-free.app/:path*",
+        destination: "https://f0b5-1-240-3-56.ngrok-free.app/:path*",
       },
       {
         source: "/chat/:path*", // Local API
