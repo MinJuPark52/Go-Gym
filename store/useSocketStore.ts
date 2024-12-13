@@ -6,14 +6,15 @@ interface WebSocketState {
   stompClient: Client | null;
   messages: {
     chatRoomId: string;
-    senderId: string;
+    senderId: number;
     content: string;
     createdAt: string;
   }[];
+
   setAgoMessage: (
     agoMessage: {
       chatRoomId: string;
-      senderId: string;
+      senderId: number;
       content: string;
       createdAt: string;
     }[],
@@ -30,6 +31,7 @@ interface WebSocketState {
 const useWebSocketStore = create<WebSocketState>((set) => ({
   stompClient: null,
   messages: [],
+
   setAgoMessage: (agoMessage) =>
     set(() => ({
       messages: [...agoMessage],
@@ -39,6 +41,9 @@ const useWebSocketStore = create<WebSocketState>((set) => ({
     const client = new Client({
       brokerURL: url,
       webSocketFactory: () => new SockJS(url),
+      connectHeaders: {
+        Authorization: `Bearer ${sessionStorage.getItem("token")}`,
+      },
       onConnect: () => {
         console.log("웹소켓 연결 성공");
         if (onMessage) {

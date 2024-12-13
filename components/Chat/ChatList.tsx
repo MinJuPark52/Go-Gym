@@ -1,6 +1,13 @@
+"use client";
+
 import Image from "next/image";
 import profile from "@/public/default_profile.png";
 import useTimeAgo from "@/hooks/useTimeAgo";
+import { IoTrashBinOutline } from "react-icons/io5";
+import { useMutation } from "@tanstack/react-query";
+import axiosInstance from "@/api/axiosInstance";
+import { useEffect } from "react";
+import useWebSocketStore from "@/store/useSocketStore";
 
 interface chatListProps {
   counterpartyNickname: string;
@@ -19,29 +26,50 @@ export default function ChatList({
 }: chatListProps) {
   const timeago = useTimeAgo(lastMessageAt);
 
-  return (
-    <div
-      onClick={() => onClickChatRoom(chatRoomId)}
-      className="flex h-[20%] cursor-pointer flex-col justify-center pl-2 pr-2 transition-all hover:bg-gray-200"
-    >
-      <div className="flex flex-col gap-2">
-        <p className="text-bold text-sm font-bold text-gray-400">
-          {counterpartyNickname}
-        </p>
-        <div className="flex items-center gap-4">
-          <Image
-            src={profile}
-            alt="profile"
-            width={40}
-            className="cursor-pointer"
-            priority
-          />
+  const handleDelete = () => {
+    const ans = confirm("이 채팅방을 삭제하시겠습니까?");
+    if (ans) {
+      mutate();
+    }
+  };
 
-          <p className="text-xl">{lastMessage}</p>
+  const { mutate } = useMutation({
+    mutationKey: ["chatList", chatRoomId],
+    mutationFn: async () =>
+      await axiosInstance.delete(`/api/chatroom/${chatRoomId}`),
+    onSuccess: () => {
+      alert("채팅방을 삭제했습니다.");
+    },
+  });
+
+  return (
+    <div className="flex h-[20%] flex-col justify-center pl-2 pr-2 transition-all hover:bg-gray-200">
+      <IoTrashBinOutline
+        className="ml-auto cursor-pointer text-xl text-red-400 transition-all hover:text-3xl"
+        onClick={handleDelete}
+      />
+      <div onClick={() => onClickChatRoom(chatRoomId)}>
+        <div className="flex flex-col gap-2">
+          <div className="flex justify-between">
+            <p className="text-bold text-sm font-bold text-gray-400">
+              {counterpartyNickname}
+            </p>
+          </div>
+          <div className="flex items-center gap-4">
+            <Image
+              src={profile}
+              alt="profile"
+              width={40}
+              className="cursor-pointer"
+              priority
+            />
+
+            <p className="text-xl">{lastMessage}</p>
+          </div>
         </div>
-      </div>
-      <div className="flex flex-col items-end">
-        <p className="text-bold text-sm font-bold text-gray-400">{timeago}</p>
+        <div className="flex flex-col items-end">
+          <p className="text-bold text-sm font-bold text-gray-400">{timeago}</p>
+        </div>
       </div>
     </div>
   );

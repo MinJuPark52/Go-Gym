@@ -31,6 +31,8 @@ export default function MyPageNav() {
     } else {
       setVisible({ post: false, trans: false });
     }
+
+    console.log(params);
   }, [params]);
 
   return (
@@ -40,7 +42,11 @@ export default function MyPageNav() {
       </h2>
       <div className="flex flex-col items-start gap-2 p-3">
         <Link href={"/mypage"}>
-          <button className="cursor-pointer text-sm font-bold text-gray-600 hover:text-blue-400">
+          <button
+            className={`cursor-pointer text-sm font-bold hover:text-blue-400 ${
+              !params.category ? "text-blue-400" : "text-gray-600"
+            }`}
+          >
             프로필
           </button>
         </Link>
@@ -54,8 +60,10 @@ export default function MyPageNav() {
           <div className="flex animate-slide-down flex-col items-start gap-2 p-2">
             <Link href={"/mypage/postLook/my-posts"}>
               <button
-                className={`cursor-pointer text-sm font-bold text-gray-600 hover:text-blue-400 ${
-                  params.category === "my-posts" ? "text-blue-400" : ""
+                className={`cursor-pointer text-sm font-bold hover:text-blue-400 ${
+                  params.category === "my-posts"
+                    ? "text-blue-400"
+                    : "text-gray-600"
                 }`}
               >
                 작성한 게시글
@@ -63,8 +71,10 @@ export default function MyPageNav() {
             </Link>
             <Link href={"/mypage/postLook/wishlist"}>
               <button
-                className={`cursor-pointer text-sm font-bold text-gray-600 hover:text-blue-400 ${
-                  params.category === "wishlist" ? "text-blue-400" : ""
+                className={`cursor-pointer text-sm font-bold hover:text-blue-400 ${
+                  params.category === "wishlist"
+                    ? "text-blue-400"
+                    : "text-gray-600"
                 }`}
               >
                 찜한 게시글
@@ -72,8 +82,10 @@ export default function MyPageNav() {
             </Link>
             <Link href={"/mypage/postLook/recent-view"}>
               <button
-                className={`cursor-pointer text-sm font-bold text-gray-600 hover:text-blue-400 ${
-                  params.category === "recent-view" ? "text-blue-400" : ""
+                className={`cursor-pointer text-sm font-bold hover:text-blue-400 ${
+                  params.category === "recent-view"
+                    ? "text-blue-400"
+                    : "text-gray-600"
                 }`}
               >
                 최근 본 게시글

@@ -11,35 +11,35 @@ import axiosInstance from "@/api/axiosInstance";
 interface ChatItem {
   chatRoomId: string;
   createdAt: string;
-  postId: number;
-  counterpartyId: number;
+  postId: string;
+  counterpartyId: string;
   counterpartyNickname: string;
-  unreadMessageCount: number;
+  unreadMessageCount: string;
   lastMessage: string;
   lastMessageAt: string;
+  postAuthorActive: boolean;
+  requestorActive: boolean;
 }
 
 export default function ChatRoom() {
   const [currentChatRoom, setCurrentChatRoom] = useState("");
-  const { connect, messages, sendMessage, disconnect } = useWebSocketStore();
+  const { messages, sendMessage } = useWebSocketStore();
   //채팅방 목록 가져오기
   const { data: chatList, isSuccess: listSuccess } = useQuery<ChatItem[]>({
     queryKey: ["chatroom"],
-    queryFn: async () =>
-      (await axios.get("http://localhost:4000/chatList")).data,
-    staleTime: 100000,
+    queryFn: async () => {
+      const response: { content: ChatItem[] } = await axiosInstance.get(
+        "/api/chatroom?page=0&size=5",
+      );
+      return response.content;
+    },
+    staleTime: 0,
+    placeholderData: [],
   });
 
-  // useEffect(() => {
-  //   // 숫자 부분만 chatroomid적어주면 됨
-  //   connect('/chat' + '/ws', '1', (message) => {
-  //     console.log('New message:', message.body);
-  //   });
-
-  //   return () => {
-  //     disconnect();
-  //   };
-  // }, [connect, disconnect]);
+  useEffect(() => {
+    console.log(chatList);
+  }, [chatList]);
 
   const sortedData =
     listSuccess && chatList?.length
@@ -57,11 +57,9 @@ export default function ChatRoom() {
 
   const handleSendMessage = ({
     chatRoomId,
-    senderId,
     content,
   }: {
     chatRoomId: string;
-    senderId: string;
     content: string;
   }) => {
     //송신 경로 등록
@@ -69,7 +67,6 @@ export default function ChatRoom() {
       "/app/chatroom/message",
       JSON.stringify({
         chatRoomId,
-        senderId,
         content,
       }),
     );
@@ -78,12 +75,13 @@ export default function ChatRoom() {
 
   //게시물 상세보기에 채팅하기
   async function buttonClick() {
-    const response = await axios.post("/chat/api/chatroom/2");
+    const response: any = await axiosInstance.post("/api/chatroom/1");
     console.log(response);
   }
 
   return (
     <div className="flex h-[100%] w-[75%] border-l border-gray-400">
+      <button onClick={buttonClick}>채팅방 생성</button>
       <div className="flex h-[100%] w-[30%] flex-col border-r border-gray-400">
         {sortedData.map((list) => (
           <ChatList
@@ -95,7 +93,6 @@ export default function ChatRoom() {
             onClickChatRoom={handleClickChatRoom}
           />
         ))}
-        <div></div>
       </div>
       <Chat chatRoomId={currentChatRoom} onSendMessage={handleSendMessage} />
     </div>
