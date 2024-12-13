@@ -1,74 +1,70 @@
-import { useState, useEffect } from "react";
-import axios from "axios";
+import { useEffect, useState } from "react";
 import useLoginStore from "@/store/useLoginStore";
-import useNotificationStore from "@/store/useNotificationStore";
-
-interface Notification {
-  id: number;
-  message: string;
-  name: string;
-  data: number;
-  read: boolean;
-  type: "ADD_WISHLIST_MY_POST" | "CHANGE_MEMBER_STATUS";
-  timestamp: string;
-}
+import { EventSourcePolyfill, NativeEventSource } from "event-source-polyfill";
 
 export default function Notice() {
-  const [msg, setMsg] = useState<Notification[]>([]);
-  const [sseUrl, setSseUrl] = useState<string | null>(null);
-  const [isViewingAll, setIsViewingAll] = useState(false);
-  const [dummyReceived, setDummyReceived] = useState(false);
-  const [lastEvent, setLastEvent] = useState(Date.now());
-  const [error, setError] = useState(false);
-  const { loginState } = useLoginStore();
-  const { notice } = useNotificationStore();
+  const { loginState, token } = useLoginStore();
+  const [error, setError] = useState<string | null>(null);
+  // 구독 SSE
+  // 알림 띄우는거 notification
+  // 연결유지되고 있는지 30초 확인 heartbeat
 
-  // 알림 오면 내려주는 데이터 -> 알림창
-  // 알림 실시간 -> 화면에 5초 띄우고 사라지기
-  // 알림 읽음 상태 변경
-  const handleMarkAsRead = async (notificationId: number) => {
-    try {
-      setMsg((prev) =>
-        prev.map((notification) =>
-          notification.id === notificationId
-            ? { ...notification, read: true }
-            : notification
-        )
+  useEffect(() => {
+    if (loginState && token) {
+      const EventSource = EventSourcePolyfill || NativeEventSource;
+      const eventSource = new EventSource(
+        "/backend/api/notification/subscribe",
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            Connection: "keep-alive",
+            Accept: "text/event-stream",
+          },
+        },
       );
-      const response = await axios.put(
-        `/backend/api/notification/${notificationId}/read`
-      );
-      console.log("알림 읽음 처리", response.data);
-      setMsg((prev: Notification[]) =>
-        prev.filter((notification) => notification.id !== notificationId)
-      );
-      const authHeader = response.headers["authorization"];
-      if (authHeader) {
-        const token = authHeader.split(" ")[1];
-        console.log("JWT Token:", token);
-        sessionStorage.setItem("token", token);
-        notice(token);
-      }
-    } catch (error) {
-      console.error("Error updating read status:", error);
+
+      eventSource.addEventListener("open", () => {
+        console.log("connect");
+      });
+
+      eventSource.addEventListener("message", (event) => {
+        const data = JSON.parse(event.data);
+        if (data.event === "dummy") {
+          console.log("Dummy data:", event.data);
+        } else if (data.event === "notification") {
+          console.log("Notification:", event.data);
+        } else if (data.event === "heartbeat") {
+          console.log("Heartbeat:", event.data);
+        }
+      });
+
+      eventSource.onerror = () => {
+        setError("SSE connection error");
+        eventSource.close();
+      };
+
+      return () => {
+        console.log("Closing connection.");
+        eventSource.close();
+      };
     }
-  };
+  }, [loginState, token, error]);
+
+  return <div>1</div>;
+
+  // eventSource.onopen
+  // eventSoure.onerror
+
+  //      eventSource.onerror = (error) => {
+  //        console.error('EventSource failed:', error);
+  //        eventSource.close();
+  //      };
+
+  // 알림 읽음 상태 변경
 
   // 전체 알림 목록 조회 -> 종 아이콘 눌러서 조회 -> 읽지 않은 알림만 저장
-  const handleAllNotifications = async () => {
-    try {
-      const response = await axios.get(
-        "/backend/api/notifications?page={page}&size={size}"
-      );
-      const noreadNotifications = response.data.notifications.filter(
-        (notification: Notification) => !notification.read
-      );
-      setMsg(noreadNotifications);
-      setIsViewingAll(true);
-    } catch (error) {
-      console.error("Error fetching all notifications:", error);
-    }
-  };
+  // const response = await axios.get(
+  // "/backend/api/notifications?page={page}&size={size}"
 
   // SSE 구독 요청
   // 구독 요청 일치하는지 확인 if문
@@ -77,100 +73,7 @@ export default function Notice() {
   // heartbeat -> 30초 이벤트 안오면 다시 재연결, 확인 로직 필요
   // 알수없는 데이터 -> error
 
-
-  // 구독 시작
-  // 알림 띄우는거 notification
-  // 연결유지되고 있는지 30초 확인 heartbeat (내말 들리니..)
-  useEffect(() => {
-    let eventSource: EventSource | null = null;
-
-    const fetchSseUrl = async () => {
-      try {
-        const response = await axios.get("/backend/api/notification/subscribe");
-        console.log("SSE URL:", response.data.sseUrl);
-        setSseUrl(response.data.sseUrl);
-        const authHeader = response.headers["authorization"];
-        if (authHeader) {
-          const token = authHeader.split(" ")[1];
-          sessionStorage.setItem("token", token);
-          notice(token);
-        }
-      } catch (error) {
-        console.error("Failed to fetch SSE URL:", error);
-      }
-    };
-
-    const reconnectSse = () => {
-      if (sseUrl && loginState) {
-        console.log("Reconnecting to SSE...");
-        eventSource = new EventSource(sseUrl);
-        eventSource.onopen = () => {
-          console.log("SSE connection successfully opened.");
-        };
-        eventSource.onmessage = (e) => {
-          try {
-            const data = JSON.parse(e.data);
-            console.log("Received Data:", data);
-
-            const formatTimestamp = new Date(data.timestamp).toLocaleString(
-              "ko-KR",
-              {
-                year: "numeric",
-                month: "2-digit",
-                day: "2-digit",
-                hour: "2-digit",
-                minute: "2-digit",
-              }
-            );
-
-            const formatMessage = `${data.message} <br/> ${formatTimestamp}`;
-
-            if (data.event === "dummy" && !dummyReceived) {
-              setDummyReceived(true);
-              console.log("Dummy data received:", e.data);
-            } else if (data.event === "notification") {
-              setMsg((prev) =>
-                [{ ...data, message: formatMessage }, ...prev].slice(0, 50)
-              );
-              setLastEvent(Date.now());
-              setError(false);
-
-              setTimeout(() => {
-                setMsg((prev) =>
-                  prev.filter((notification) => notification.id !== data.id)
-                );
-              }, 5000);
-            } else if (data.event === "heartbeat") {
-              console.log("Heartbeat received:", e.data);
-            }
-          } catch (error) {
-            console.error("Failed to parse SSE message:", error);
-          }
-        };
-
-        eventSource.onerror = (error) => {
-          console.error("SSE connection error:", error);
-          setError(true);
-          eventSource?.close();
-          console.log("Attempting to reconnect to SSE...");
-          setTimeout(reconnectSse, 5000);
-        };
-      }
-    };
-
-    if (loginState) {
-      fetchSseUrl();
-    } else {
-      setSseUrl(null);
-    }
-    if (sseUrl && loginState) {
-      reconnectSse();
-    }
-    return () => {
-      eventSource?.close();
-    };
-  }, [sseUrl, loginState, lastEvent, dummyReceived, notice]);
-
+  /*
   return (
     <div
       className="absolute end-0 z-10 w-80 h-72 rounded-md border border-gray-300 bg-white shadow-lg"
@@ -180,6 +83,8 @@ export default function Notice() {
         <strong className="text-md font-medium uppercase text-gray-700">
           알림📢
         </strong>
+      )
+      </div>
         {!isViewingAll && (
           <button
             className="text-sm text-gray-700 mr-1"
@@ -223,5 +128,5 @@ export default function Notice() {
         </div>
       )}
     </div>
-  );
+    */
 }

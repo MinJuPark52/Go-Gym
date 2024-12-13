@@ -5,6 +5,7 @@ import Link from "next/link";
 import axios from "axios";
 import { BiSolidMessageRounded } from "react-icons/bi";
 import useLoginStore from "@/store/useLoginStore";
+import { useRouter } from "next/navigation";
 
 interface User {
   email: string;
@@ -39,6 +40,7 @@ const LoginInput = ({
 );
 
 export default function LoginForm() {
+  const [showPw, setShowPw] = useState(false);
   const [loginFormData, setLoginFormData] = useState({
     email: "",
     password: "",
@@ -64,6 +66,7 @@ export default function LoginForm() {
     window.location.href = kakaoURL;
   };
 
+  const router = useRouter();
   const handleLoginSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
@@ -107,6 +110,7 @@ export default function LoginForm() {
             sessionStorage.setItem("token", token);
 
             login(token);
+            router.push("/");
           }
         }
       } catch (error) {
@@ -134,14 +138,27 @@ export default function LoginForm() {
         onChange={handleLoginChange("email")}
         errorMessage={loginErrors.email}
       />
-
-      <LoginInput
-        type="password"
-        placeholder="비밀번호"
-        value={loginFormData.password}
-        onChange={handleLoginChange("password")}
-        errorMessage={loginErrors.password}
-      />
+      <div>
+        <LoginInput
+          type={showPw ? "text" : "password"}
+          placeholder="비밀번호"
+          value={loginFormData.password}
+          onChange={handleLoginChange("password")}
+          errorMessage={loginErrors.password}
+        />
+        <div className="mb-3 flex items-center">
+          <input
+            type="checkbox"
+            id="showPassword"
+            checked={showPw}
+            onChange={() => setShowPw(!showPw)}
+            className="h-4 w-4"
+          />
+          <label htmlFor="showPassword" className="ml-1 text-sm">
+            비밀번호 표시
+          </label>
+        </div>
+      </div>
 
       <button
         type="submit"
@@ -159,7 +176,6 @@ export default function LoginForm() {
           <span className="text-center text-sm">카카오 로그인</span>
         </div>
       </div>
-
       <div>
         <Link href="/signup">회원가입</Link>
       </div>

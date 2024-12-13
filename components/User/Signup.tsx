@@ -2,6 +2,7 @@
 
 import { ChangeEvent, useState } from "react";
 import axios from "axios";
+import { useRouter } from "next/navigation";
 
 interface Signup {
   email: string;
@@ -52,6 +53,7 @@ const SignupInput: React.FC<InputProps> = ({
   </div>
 );
 
+// 관심지역
 const regions: { id: string; name: string }[] = [
   { id: "1", name: "서울특별시" },
   { id: "2", name: "부산광역시" },
@@ -72,6 +74,8 @@ const regions: { id: string; name: string }[] = [
 ];
 
 export default function SignupPage() {
+  const [loading, setLoading] = useState(false);
+  const router = useRouter();
   const [selectSubRegion1, setSelectSubRegion1] = useState({
     regionId: "",
     name: "",
@@ -123,6 +127,7 @@ export default function SignupPage() {
       setsignupFormData({ ...signupFormData, [field]: value });
     };
 
+  // 폼 필수
   const validateForm = () => {
     let valid = true;
     const newErrors: SignupErrors = { ...signupErrors };
@@ -165,6 +170,7 @@ export default function SignupPage() {
     return valid;
   };
 
+  // 이메일 입력
   const checkEmail = async (email: string) => {
     if (!email) {
       alert("이메일을 입력해주세요.");
@@ -177,6 +183,7 @@ export default function SignupPage() {
       return;
     }
 
+    // 이메일 중복확인
     try {
       const response = await axios.get<Signup[]>(
         "/backend/api/auth/check-email",
@@ -198,17 +205,18 @@ export default function SignupPage() {
     }
   };
 
+  // 닉네임
   const checkNickname = async (nickname: string) => {
     if (!nickname) {
       alert("닉네임을 입력해주세요.");
       return;
     }
 
+    // 닉네임 중복확인
     try {
       const response = await axios.get("/backend/api/auth/check-nickname", {
         params: { nickname },
       });
-
       if (response.status === 200) {
         setIsNicknameAvailable(true);
         alert("닉네임 사용 가능합니다.");
@@ -222,6 +230,7 @@ export default function SignupPage() {
     }
   };
 
+  // 회원가입
   const handleSignupSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
@@ -231,6 +240,7 @@ export default function SignupPage() {
     }
 
     if (validateForm()) {
+      setLoading(true);
       try {
         const response = await axios.post<Signup[]>(
           "/backend/api/auth/sign-up",
@@ -248,6 +258,7 @@ export default function SignupPage() {
             alert(
               "이메일 인증 링크가 전송되었습니다. 이메일을 통해 인증해주세요",
             );
+            router.push("/login");
           } else {
             throw new Error("링크 전송 X");
           }
@@ -257,10 +268,13 @@ export default function SignupPage() {
       } catch (error) {
         console.error("오류:", error);
         alert("회원가입에 실패했습니다.");
+      } finally {
+        setLoading(false);
       }
     }
   };
 
+  // 관심지역 1
   const handleChangeSubRegionId1 = async (
     e: ChangeEvent<HTMLSelectElement>,
   ) => {
@@ -291,6 +305,7 @@ export default function SignupPage() {
     }
   };
 
+  // 관심지역2
   const handleChangeRegionId2 = async (e: ChangeEvent<HTMLSelectElement>) => {
     const selectedRegionId2 = e.target.value;
     setsignupFormData({ ...signupFormData, regionId2: selectedRegionId2 });
@@ -320,6 +335,12 @@ export default function SignupPage() {
         className="h-[35rem] w-full max-w-md space-y-3 overflow-y-auto bg-white p-8"
       >
         <h2 className="text-center text-2xl font-semibold">회원가입</h2>
+
+        {loading && (
+          <div className="absolute inset-0 flex items-center justify-center bg-white bg-opacity-90">
+            <div className="text-3xl text-gray-700">Loading..</div>
+          </div>
+        )}
 
         <div>
           <SignupInput

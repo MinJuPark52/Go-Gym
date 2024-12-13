@@ -18,7 +18,7 @@ const useLoginStore = create(
     (set) => {
       return {
         loginState: false,
-        token: "",
+        token: null,
         adminLoginState: false,
         expirationTime: 0,
 
