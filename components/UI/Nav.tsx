@@ -7,6 +7,7 @@ import useLoginStore from "@/store/useLoginStore";
 import { FaBell } from "react-icons/fa";
 import DefaultProfile from "./DefaultProfile";
 import AdminNav from "./AdminNav";
+import Notice from "../Notification/Notice";
 
 export default function Nav() {
   const { loginState, adminLoginState, logout } = useLoginStore();
@@ -42,6 +43,7 @@ export default function Nav() {
           </Link>
 
           <FaBell className="h-6 w-10 text-blue-400" />
+          <Notice />
 
           {loginState ? (
             <div className="dropdown dropdown-end">
