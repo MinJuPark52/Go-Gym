@@ -7,7 +7,7 @@ import useTimeAgo from "@/hooks/useTimeAgo";
 import DefaultProfile from "../UI/DefaultProfile";
 
 interface PostType {
-  id: string;
+  postId: string;
   authorNickname: string;
   createdAt: string;
   gymName: string;
@@ -18,7 +18,7 @@ interface PostType {
 }
 
 export default function PostItem({
-  id,
+  postId,
   authorNickname,
   createdAt,
   gymName,
@@ -32,7 +32,7 @@ export default function PostItem({
   const timeago = useTimeAgo(createdAt);
 
   return (
-    <Link href={`/community/${id}`}>
+    <Link href={`/community/${postId}`}>
       <div className="h-80 w-80 cursor-pointer rounded-lg border border-[#ccc] shadow">
         <div>
           <div className="m-2 flex justify-between">

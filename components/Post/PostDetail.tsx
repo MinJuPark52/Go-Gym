@@ -3,15 +3,28 @@ import { FaHeart } from "react-icons/fa";
 import DOMpurify from "dompurify";
 
 import { useMutation, useQuery } from "@tanstack/react-query";
-import axios from "axios";
 import { useParams, useRouter } from "next/navigation";
 import PostDetailImage from "./PostDetailImage";
 import { useEffect, useState } from "react";
-import Image from "next/image";
 import Link from "next/link";
-import PostList from "./PostList";
-import PostUserDetail from "./PostUserDetail";
 import axiosInstance from "@/api/axiosInstance";
+
+interface PostType {
+  postId: string;
+  authorNickname: string;
+  authorId: number;
+  amount: string;
+  createdAt: string;
+  gymName: string;
+  imageUrl1: string;
+  postType: string;
+  expirationDate: string;
+  status: string;
+  title: string;
+  wishCount: number;
+  content: string;
+  imageUrl: string;
+}
 
 export default function PostDetail() {
   const [visibleModal, setVisibleModal] = useState({
@@ -23,8 +36,12 @@ export default function PostDetail() {
 
   const { data: detail } = useQuery({
     queryKey: ["postDetail", id],
-    queryFn: async () =>
-      (await axiosInstance.get(`/api/posts/details/${id}`)).data,
+    queryFn: async () => {
+      const response: PostType = await axiosInstance.get(
+        `/api/posts/details/${id}`,
+      );
+      return response;
+    },
     staleTime: 1000,
   });
 
@@ -39,19 +56,12 @@ export default function PostDetail() {
     onError: () => alert("채팅방 생성이 실패했습니다."),
   });
 
-  const handleImageClick = () => {
-    setVisibleModal({
-      ...visibleModal,
-      image: !visibleModal.image,
-    });
-  };
-
   let statusBox = "게시중";
-  if (detail && detail.postStatus === "POSTING") {
+  if (detail && detail.status === "POSTING") {
     statusBox = "게시중";
-  } else if (detail && detail.postStatus === "SALE_COMPLETED") {
+  } else if (detail && detail.status === "SALE_COMPLETED") {
     statusBox = "판매 완료";
-  } else if (detail && detail.postStatus === "PURCHASE_COMPLETED") {
+  } else if (detail && detail.status === "PURCHASE_COMPLETED") {
     statusBox = "구매 완료";
   }
 

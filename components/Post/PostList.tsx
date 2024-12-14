@@ -10,7 +10,7 @@ interface PostType {
   authorNickname: string;
   createdAt: string;
   gymName: string;
-  id: string;
+  postId: string;
   imageUrl1: string;
   status: string;
   title: string;
@@ -35,13 +35,42 @@ export default function PostList({
   // if (!data && isPending) {
   //   return <p>데이터 로딩중...</p>;
   // }
+  const {
+    data: defaultData,
+    error,
+    isPending: defaultDataPending,
+  } = useQuery({
+    queryKey: ["defaultPost"],
+    queryFn: async () => {
+      const response: any = await axiosInstance.get(
+        "/api/posts/views?page=0&size=10",
+      );
+      return response.content;
+    },
+    placeholderData: [],
+    staleTime: 0,
+  });
+  if (defaultDataPending) {
+    return <p>로딩중....</p>;
+  }
+  if (error) {
+    return <p>에러</p>;
+  }
+
+  if (defaultData.length === 0) {
+    return <p>게시물이 없습니다</p>;
+  }
 
   return (
     <div className={`mb-12 flex w-full min-w-[750px] gap-8 ${style}`}>
       {
         data
-          ? data.map((post: PostType) => <PostItem key={post.id} {...post} />)
-          : ""
+          ? data.map((post: PostType) => (
+              <PostItem key={post.postId} {...post} />
+            ))
+          : defaultData.map((post: PostType) => (
+              <PostItem key={post.postId} {...post} />
+            ))
         // : defaultData.map((post: PostType) => (
         //     <PostItem key={post.id} {...post} />
         //   ))}
