@@ -60,21 +60,20 @@ export default function ChargePay() {
         {
           headers: {
             "Content-Type": "text/event-stream",
+            "Cache-Control": "no-cache",
+            Connection: "keep-alive",
           },
         },
       );
 
-<<<<<<< HEAD
-      
-      eventSource.addEventListener("Transaction Paid", (event) => {
-        console.log(event);
+      eventSource.addEventListener("open", (event: any) => {
+        console.log(event.data);
+        console.log("연결");
       });
-      eventSource.addEventListener("Transaction Failed", (event) => {
-        console.log(event);
-=======
+
       eventSource.addEventListener("Init", (event: any) => {
         console.log(event.data);
->>>>>>> 2bf7201be59bf25ee02b17ed45bbd744dcd35cf7
+        console.log("11");
       });
 
       eventSource.onerror = () => {

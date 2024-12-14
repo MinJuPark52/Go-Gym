@@ -31,6 +31,7 @@ export default function PostListContainer() {
   const router = useRouter();
   const { token } = useLoginStore();
 
+  const [page, setPage] = useState(1);
   const [filter, setFilter] = useState<categoryStateType>({
     ["post-type"]:
       (searchParams.get("post-type") as categoryStateType["post-type"]) ||
@@ -85,10 +86,11 @@ export default function PostListContainer() {
     error,
     isPending: defaultDataPending,
   } = useQuery({
-    queryKey: ["defaultPost"],
+    queryKey: ["defaultPost", page],
     queryFn: async () => {
       const response: any = await axiosInstance.get(
-        "/api/posts/views?page=0&size=10",
+        // `/api/posts/views?page=${page}&size=10`,
+        "http://localhost:4000/posts",
       );
       return response;
     },
@@ -96,13 +98,9 @@ export default function PostListContainer() {
     enabled: !query, // query가 없을 때만 실행
   });
 
-  useEffect(() => {
-    console.log(defaultData);
-    console.log(data);
-    if (error) {
-      console.log(error);
-    }
-  }, [data, defaultData]);
+  const handlePageClick = (page: number) => {
+    setPage(page);
+  };
 
   if (defaultDataPending) {
     return <p>로딩중</p>;
@@ -124,6 +122,42 @@ export default function PostListContainer() {
         <Filter onChangeFilter={handleFilterUrl} filter={filter} />
       </div>
       {<PostList data={posts} style="w-[100%] flex-wrap justify-center" />}
+      <div className="mb-12 flex justify-center">
+        <div className="join">
+          <input
+            className="btn btn-square join-item"
+            type="radio"
+            name="options"
+            aria-label="1"
+            value={0}
+            onClick={() => handlePageClick(0)}
+            checked={page === 0}
+          />
+          <input
+            className="btn btn-square join-item"
+            type="radio"
+            name="options"
+            value={1}
+            checked={page === 1}
+            onClick={() => handlePageClick(1)}
+            aria-label="2"
+          />
+          <input
+            className="btn btn-square join-item"
+            type="radio"
+            name="options"
+            value={2}
+            aria-label="3"
+          />
+          <input
+            className="btn btn-square join-item"
+            type="radio"
+            name="options"
+            value={3}
+            aria-label="4"
+          />
+        </div>
+      </div>
     </div>
   );
 }
