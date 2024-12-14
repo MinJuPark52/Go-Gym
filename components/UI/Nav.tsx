@@ -8,9 +8,16 @@ import { FaBell } from "react-icons/fa";
 import DefaultProfile from "./DefaultProfile";
 import AdminNav from "./AdminNav";
 import Notice from "../Notification/Notice";
+import { useSearchParams } from "next/navigation";
+import { useState } from "react";
 
 export default function Nav() {
   const { loginState, adminLoginState, logout } = useLoginStore();
+  const [modal, setModal] = useState(false);
+
+  const toggleModal = () => {
+    setModal((prev) => !prev);
+  };
 
   if (adminLoginState) {
     return <AdminNav />;
@@ -42,8 +49,8 @@ export default function Nav() {
             채팅방
           </Link>
 
-          <FaBell className="h-6 w-10 text-blue-400" />
-          <Notice />
+          <FaBell className="h-6 w-10 text-blue-400" onClick={toggleModal} />
+          {modal && <Notice />}
 
           {loginState ? (
             <div className="dropdown dropdown-end">
