@@ -31,7 +31,7 @@ export default function PostListContainer() {
   const router = useRouter();
   const { token } = useLoginStore();
 
-  const [page, setPage] = useState(1);
+  const [page, setPage] = useState(0);
   const [filter, setFilter] = useState<categoryStateType>({
     ["post-type"]:
       (searchParams.get("post-type") as categoryStateType["post-type"]) ||
@@ -75,8 +75,12 @@ export default function PostListContainer() {
   //tanstack-query에서 캐싱해서 처리
   const { data } = useQuery({
     queryKey: ["filterPost", query, token],
-    queryFn: async () =>
-      (await axiosInstance.get(`/api/posts/filters?${query}`)).data,
+    queryFn: async () => {
+      const response: any = await axiosInstance.get(
+        `/api/posts/filters?${query}`,
+      );
+      return response.content;
+    },
     staleTime: 10000,
     enabled: !!query,
   });
@@ -89,31 +93,32 @@ export default function PostListContainer() {
     queryKey: ["defaultPost", page],
     queryFn: async () => {
       const response: any = await axiosInstance.get(
-        // `/api/posts/views?page=${page}&size=10`,
-        "http://localhost:4000/posts",
+        `/api/posts/views?page=${page}&size=10`,
+        // "http://localhost:4000/posts",
       );
-      return response;
+      return response.content;
     },
     staleTime: 0,
     enabled: !query, // query가 없을 때만 실행
   });
 
-  const handlePageClick = (page: number) => {
-    setPage(page);
+  const handleRadioChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setPage(Number(event.target.value)); // 상태 업데이트
   };
 
   if (defaultDataPending) {
     return <p>로딩중</p>;
   }
-
-  let posts = query ? data : defaultData.content;
+  if (defaultData) {
+    console.log(defaultData);
+  }
 
   return (
     <div className="mt-12 flex w-[70%] flex-col">
       <div className="flex items-center justify-between">
         <p className="mb-12 text-2xl font-bold">양도 회원권</p>
         <Link href={"/community/editpost"}>
-          <button className="btn-inf0 btn bg-blue-300 text-white hover:bg-blue-500">
+          <button className="btn-inf0 btn bg-blue-500 text-white hover:bg-blue-700">
             글쓰기
           </button>
         </Link>
@@ -121,41 +126,25 @@ export default function PostListContainer() {
       <div className="mb-12">
         <Filter onChangeFilter={handleFilterUrl} filter={filter} />
       </div>
-      {<PostList data={posts} style="w-[100%] flex-wrap justify-center" />}
+
+      <PostList
+        data={query !== "" ? data : defaultData}
+        style="w-[100%] flex-wrap justify-center"
+      />
+
       <div className="mb-12 flex justify-center">
         <div className="join">
-          <input
-            className="btn btn-square join-item"
-            type="radio"
-            name="options"
-            aria-label="1"
-            value={0}
-            onClick={() => handlePageClick(0)}
-            checked={page === 0}
-          />
-          <input
-            className="btn btn-square join-item"
-            type="radio"
-            name="options"
-            value={1}
-            checked={page === 1}
-            onClick={() => handlePageClick(1)}
-            aria-label="2"
-          />
-          <input
-            className="btn btn-square join-item"
-            type="radio"
-            name="options"
-            value={2}
-            aria-label="3"
-          />
-          <input
-            className="btn btn-square join-item"
-            type="radio"
-            name="options"
-            value={3}
-            aria-label="4"
-          />
+          {[...Array(5).keys()].map((num) => (
+            <input
+              key={num}
+              className="btn btn-square join-item checked:!border-blue-500 checked:!bg-blue-500"
+              type="radio"
+              name="options"
+              aria-label={`${num + 1}`}
+              value={num}
+              onChange={handleRadioChange}
+            />
+          ))}
         </div>
       </div>
     </div>

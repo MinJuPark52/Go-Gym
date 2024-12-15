@@ -43,13 +43,14 @@ export default function PostList({
     queryKey: ["defaultPost"],
     queryFn: async () => {
       const response: any = await axiosInstance.get(
-        "/api/posts/views?page=0&size=10",
+        "/api/posts/views?page=0&size=5",
       );
       return response.content;
     },
     placeholderData: [],
     staleTime: 0,
   });
+
   if (defaultDataPending) {
     return <p>로딩중....</p>;
   }
@@ -63,18 +64,11 @@ export default function PostList({
 
   return (
     <div className={`mb-12 flex w-full min-w-[750px] gap-8 ${style}`}>
-      {
-        data
-          ? data.map((post: PostType) => (
-              <PostItem key={post.postId} {...post} />
-            ))
-          : defaultData.map((post: PostType) => (
-              <PostItem key={post.postId} {...post} />
-            ))
-        // : defaultData.map((post: PostType) => (
-        //     <PostItem key={post.id} {...post} />
-        //   ))}
-      }
+      {data
+        ? data.map((post: PostType) => <PostItem key={post.postId} {...post} />)
+        : defaultData.map((post: PostType) => (
+            <PostItem key={post.postId} {...post} />
+          ))}
     </div>
   );
 }

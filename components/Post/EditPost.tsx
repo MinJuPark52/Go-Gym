@@ -246,7 +246,7 @@ export default function EditPost() {
           </label>
           <input
             type="button"
-            className="h-12 w-fit min-w-48 cursor-pointer rounded-md border border-gray-400 pl-2 pr-2 text-gray-500 focus:outline-blue-400"
+            className="h-12 w-fit min-w-48 cursor-pointer rounded-md border border-gray-400 pl-2 text-left text-gray-500 focus:outline-blue-400"
             onClick={() => {
               setIsMapOpen(true);
             }}

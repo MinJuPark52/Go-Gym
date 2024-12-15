@@ -25,7 +25,7 @@ export default function ChargePay() {
     customer: {
       fullName: "전민혁",
       phoneNumber: "010-7634-7212",
-      email: "mari394337@gmail.com",
+      email: "cwhite7230@gmail.com",
     },
   });
 
@@ -55,31 +55,31 @@ export default function ChargePay() {
       return response;
     },
     onSuccess: (response) => {
-      const eventSource = new EventSourcePolyfill(
-        `http://localhost:3000/backend/api/payments/sse/subscribe/${response.paymentId}`,
-        {
-          headers: {
-            "Content-Type": "text/event-stream",
-            "Cache-Control": "no-cache",
-            Connection: "keep-alive",
-          },
-        },
-      );
+      // const eventSource = new EventSourcePolyfill(
+      //   `http://localhost:3000/backend/api/payments/sse/subscribe/${response.paymentId}`,
+      //   {
+      //     headers: {
+      //       "Content-Type": "text/event-stream",
+      //       "Cache-Control": "no-cache",
+      //       Connection: "keep-alive",
+      //     },
+      //   },
+      // );
 
-      eventSource.addEventListener("open", (event: any) => {
-        console.log(event.data);
-        console.log("연결");
-      });
+      // eventSource.addEventListener("open", (event: any) => {
+      //   console.log(event.data);
+      //   console.log("연결");
+      // });
 
-      eventSource.addEventListener("Init", (event: any) => {
-        console.log(event.data);
-        console.log("11");
-      });
+      // eventSource.addEventListener("Init", (event: any) => {
+      //   console.log(event.data);
+      //   console.log("11");
+      // });
 
-      eventSource.onerror = () => {
-        //에러 발생시 할 동작
-        eventSource.close(); //연결 끊기
-      };
+      // eventSource.onerror = () => {
+      //   //에러 발생시 할 동작
+      //   eventSource.close(); //연결 끊기
+      // };
 
       requestPayment(response.paymentId);
     },
@@ -148,6 +148,11 @@ export default function ChargePay() {
     //   }
     //   requestPayment();
     // }
+  };
+
+  const pay = async () => {
+    const response = await axiosInstance.post("/api/gym-pays");
+    console.log(response);
   };
 
   return (

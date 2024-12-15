@@ -88,7 +88,7 @@ export default function Filter({
           />
         ))}
       </div>
-      <div className="mt-8 flex h-16 w-[100%] items-center gap-4 rounded-lg bg-blue-300 pl-4">
+      <div className="mt-8 flex h-16 w-[100%] items-center gap-4 rounded-lg bg-blue-500 pl-4">
         {Object.values(activeFilters).map((value, idx) => (
           <ActiveFilter key={idx} filterValue={value} />
         ))}
