@@ -338,7 +338,7 @@ export default function SignupPage() {
     <div className="flex h-[40rem] w-full items-center justify-center border-r-gray-300 bg-gray-50">
       <form
         onSubmit={handleSignupSubmit}
-        className="h-[35rem] w-full max-w-md space-y-3 overflow-y-auto bg-white p-8"
+        className="h-[35rem] w-full max-w-md space-y-2.5 bg-white p-8"
       >
         <h2 className="text-center text-2xl font-semibold">회원가입</h2>
 
@@ -369,7 +369,7 @@ export default function SignupPage() {
         </div>
 
         <div className="flex items-center space-x-2">
-          <div>
+          <div className="flex-1">
             <SignupInput
               type="text"
               placeholder="이메일"
@@ -389,7 +389,7 @@ export default function SignupPage() {
         </div>
 
         <div className="flex items-center space-x-2">
-          <div>
+          <div className="flex-1">
             <SignupInput
               type="text"
               placeholder="닉네임"
