@@ -49,7 +49,9 @@ export default function Nav() {
             채팅방
           </Link>
 
-          <FaBell className="h-6 w-10 text-blue-400" onClick={toggleModal} />
+          <button>
+            <FaBell className="h-6 w-10 text-blue-400" onClick={toggleModal} />
+          </button>
           {modal && <Notice />}
 
           {loginState ? (
