@@ -114,7 +114,7 @@ export default function PostDetail() {
               </p>
               <p className="font-bold">
                 <span className="text-gray-500">가격 : </span>
-                {detail.amount} {"원"}
+                {formatNumber(detail.amount)} {"원"}
               </p>
             </div>
           </div>
@@ -152,3 +152,8 @@ export default function PostDetail() {
     </>
   );
 }
+
+const formatNumber = (input: string) => {
+  const numericValue = input.replace(/,/g, "");
+  return numericValue.replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+};

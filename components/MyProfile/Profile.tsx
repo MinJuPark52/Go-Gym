@@ -36,7 +36,7 @@ export default function ChangeProfile() {
         </div>
       </div>
       <Link href={"/mypage/changeProfile"} className="ml-auto">
-        <button className="btn btn-info border-none bg-blue-300 text-white hover:bg-blue-500">
+        <button className="btn btn-info border-none bg-blue-500 text-white hover:bg-blue-700">
           프로필 수정
         </button>
       </Link>

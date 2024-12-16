@@ -43,8 +43,8 @@ export default function MyPageNav() {
       <div className="flex flex-col items-start gap-2 p-3">
         <Link href={"/mypage"}>
           <button
-            className={`cursor-pointer text-sm font-bold hover:text-blue-400 ${
-              !params.category ? "text-blue-400" : "text-gray-600"
+            className={`cursor-pointer text-sm font-bold hover:text-blue-500 ${
+              !params.category ? "text-blue-500" : "text-gray-600"
             }`}
           >
             프로필
@@ -52,7 +52,7 @@ export default function MyPageNav() {
         </Link>
         <button
           onClick={handlePostVisible}
-          className="cursor-pointer text-sm font-bold text-gray-600 hover:text-blue-400"
+          className="cursor-pointer text-sm font-bold text-gray-600 hover:text-blue-500"
         >
           게시글
         </button>
@@ -60,9 +60,9 @@ export default function MyPageNav() {
           <div className="flex animate-slide-down flex-col items-start gap-2 p-2">
             <Link href={"/mypage/postLook/my-posts"}>
               <button
-                className={`cursor-pointer text-sm font-bold hover:text-blue-400 ${
+                className={`cursor-pointer text-sm font-bold hover:text-blue-500 ${
                   params.category === "my-posts"
-                    ? "text-blue-400"
+                    ? "text-blue-500"
                     : "text-gray-600"
                 }`}
               >
@@ -71,9 +71,9 @@ export default function MyPageNav() {
             </Link>
             <Link href={"/mypage/postLook/wishlist"}>
               <button
-                className={`cursor-pointer text-sm font-bold hover:text-blue-400 ${
+                className={`cursor-pointer text-sm font-bold hover:text-blue-500 ${
                   params.category === "wishlist"
-                    ? "text-blue-400"
+                    ? "text-blue-500"
                     : "text-gray-600"
                 }`}
               >
@@ -82,9 +82,9 @@ export default function MyPageNav() {
             </Link>
             <Link href={"/mypage/postLook/recent-view"}>
               <button
-                className={`cursor-pointer text-sm font-bold hover:text-blue-400 ${
+                className={`cursor-pointer text-sm font-bold hover:text-blue-500 ${
                   params.category === "recent-view"
-                    ? "text-blue-400"
+                    ? "text-blue-500"
                     : "text-gray-600"
                 }`}
               >
@@ -95,19 +95,19 @@ export default function MyPageNav() {
         )}
         <button
           onClick={handleTransVisible}
-          className="cursor-pointer text-sm font-bold text-gray-600 hover:text-blue-400"
+          className="cursor-pointer text-sm font-bold text-gray-600 hover:text-blue-500"
         >
           거래내역
         </button>
         {visible.trans && (
           <div className="flex animate-slide-down flex-col items-start gap-2 p-2">
             <button
-              className={`cursor-pointer text-sm font-bold text-gray-600 hover:text-blue-400`}
+              className={`cursor-pointer text-sm font-bold text-gray-600 hover:text-blue-500`}
             >
               구매 목록
             </button>
             <button
-              className={`cursor-pointer text-sm font-bold text-gray-600 hover:text-blue-400`}
+              className={`cursor-pointer text-sm font-bold text-gray-600 hover:text-blue-500`}
             >
               판매 목록
             </button>

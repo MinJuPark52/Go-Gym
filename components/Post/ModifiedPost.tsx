@@ -184,14 +184,12 @@ export default function ModifiedPost() {
     });
   };
 
-  const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files && e.target.files[0]) {
-      // 백엔드 연동시 파일자체 보내기
-      setImages({
-        ...images,
-        [e.target.name]: URL.createObjectURL(e.target.files[0]),
-      });
-    }
+  const handleFileSelect = (key: string, img: File) => {
+    // 백엔드 연동시 파일자체 보내기
+    setImages({
+      ...images,
+      [key]: img,
+    });
   };
 
   const handleClickGym = (
@@ -363,16 +361,20 @@ export default function ModifiedPost() {
           <div className="flex w-[100%] max-w-[1200px] items-center justify-between">
             {Object.keys(images).map((el) =>
               images[el] ? (
-                <Image
+                <div
                   key={el}
-                  // json서버 사용시까진 blob url  src={URL.createObjectURL(images[el] as File)}
-                  src={URL.createObjectURL(images[el] as File)}
-                  alt="헬스장 이미지"
-                  className="rounded-lg"
-                  width={240}
-                  height={240}
-                  layout="intrinsic"
-                />
+                  className="relative flex h-56 w-60 items-center justify-center"
+                >
+                  <Image
+                    // json서버 사용시까진 blob url
+                    // src={images[el] as string}
+                    src={URL.createObjectURL(images[el] as File)}
+                    alt="헬스장 이미지"
+                    className="rounded-lg"
+                    fill
+                    style={{ objectFit: "cover" }}
+                  />
+                </div>
               ) : (
                 <ImageSelect key={el} name={el} onChange={handleFileSelect} />
               ),

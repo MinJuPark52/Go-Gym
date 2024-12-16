@@ -24,7 +24,7 @@ export default function Nav() {
   }
 
   return (
-    <div className="h-18 flex justify-center border-b border-[#ccc] shadow-md">
+    <div className="h-18 flex min-w-[920px] justify-center border-b border-[#ccc] shadow-md">
       <div className="flex w-[80%] items-center justify-between">
         <Link href={"/"}>
           <Image

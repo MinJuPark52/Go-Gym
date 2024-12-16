@@ -46,7 +46,7 @@ export default function EditPost() {
     gymName: "",
   });
   //<Record<string, string | File | null>> 백엔드 연동시 타입추가
-  const [images, setImages] = useState<Record<string, string | null>>({
+  const [images, setImages] = useState<Record<string, string | File | null>>({
     imageUrl1: "",
     imageUrl2: "",
     imageUrl3: "",
@@ -132,14 +132,16 @@ export default function EditPost() {
     });
   };
 
-  const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files && e.target.files[0]) {
-      // 백엔드 연동시 파일자체 보내기
-      setImages({
-        ...images,
-        [e.target.name]: URL.createObjectURL(e.target.files[0]),
-      });
-    }
+  const handleFileSelect = (key: string, img: File) => {
+    // 백엔드 연동시 파일자체 보내기
+    setImages({
+      ...images,
+      [key]: img,
+    });
+  };
+
+  const handleDeleteImage = (el: string) => {
+    setImages({ ...images, [el]: "" });
   };
 
   const handleClickGym = (
@@ -241,17 +243,26 @@ export default function EditPost() {
     <>
       <form onSubmit={handleSubmit} className="w-[75%] p-8 pt-12">
         <div className="mb-4 flex flex-col gap-2">
-          <label htmlFor={"expirationDate"} className="text-sm text-gray-500">
-            헬스장 찾기
-          </label>
-          <input
-            type="button"
-            className="h-12 w-fit min-w-48 cursor-pointer rounded-md border border-gray-400 pl-2 pr-2 text-gray-500 focus:outline-blue-400"
-            onClick={() => {
-              setIsMapOpen(true);
-            }}
-            value={mapValue.gymName}
-          />
+          {mapValue.gymName ? (
+            <div
+              onClick={() => {
+                setIsMapOpen(true);
+              }}
+              className="flex h-12 w-fit min-w-48 cursor-pointer items-center rounded-md border border-gray-400 pl-2 text-left text-gray-500 focus:outline-blue-400"
+            >
+              {mapValue.gymName}
+            </div>
+          ) : (
+            <button
+              type="button"
+              className="btn btn-active h-12 w-48 border-none bg-blue-500 text-white hover:bg-blue-700"
+              onClick={() => {
+                setIsMapOpen(true);
+              }}
+            >
+              헬스장 찾기
+            </button>
+          )}
         </div>
         <div className="mb-4 flex gap-4">
           <div className="flex flex-col gap-2">
@@ -290,11 +301,11 @@ export default function EditPost() {
               가격
             </label>
             <input
-              type="number"
+              type="text"
               className="h-12 w-48 cursor-pointer rounded-md border border-gray-400 pl-2 text-gray-600 focus:outline-blue-400"
               name={"amount"}
               id={"amount"}
-              value={values.amount}
+              value={formatNumber(values.amount.toString())}
               onChange={handleValues}
               placeholder="ex) 250000"
             />
@@ -320,30 +331,42 @@ export default function EditPost() {
           <div className="h-[400px] w-[100%] max-w-[1200px]">
             <QuillEditor onChange={handleContent} />
           </div>
-          <div className="flex w-[100%] max-w-[1200px] items-center justify-between">
+          <div className="mt-4 flex w-[100%] max-w-[1200px] items-center justify-between gap-4">
             {Object.keys(images).map((el) =>
               images[el] ? (
-                <Image
+                <div
                   key={el}
-                  // json서버 사용시까진 blob url  src={URL.createObjectURL(images[el] as File)}
-                  src={images[el] as string}
-                  alt="헬스장 이미지"
-                  className="rounded-lg"
-                  width={240}
-                  height={240}
-                  layout="intrinsic"
-                />
+                  className="relative flex h-56 min-w-60 items-center justify-center"
+                >
+                  <button
+                    className="absolute right-0 top-[-30px]"
+                    onClick={() => handleDeleteImage(el)}
+                  >
+                    ❌
+                  </button>
+                  <Image
+                    // json서버 사용시까진 blob url
+                    // src={images[el] as string}
+                    src={URL.createObjectURL(images[el] as File)}
+                    alt="헬스장 이미지"
+                    className="rounded-lg"
+                    fill
+                    style={{ objectFit: "cover" }}
+                  />
+                </div>
               ) : (
                 <ImageSelect key={el} name={el} onChange={handleFileSelect} />
               ),
             )}
-            <button
-              type="submit"
-              className="rounded-lg bg-blue-300 p-1 pl-6 pr-6 text-xl text-white transition-all hover:bg-blue-500"
-            >
-              작성하기
-            </button>
           </div>
+        </div>
+        <div className="mt-4 flex justify-end">
+          <button
+            type="submit"
+            className="bt-active btn bg-blue-500 text-white hover:bg-blue-700"
+          >
+            작성하기
+          </button>
         </div>
       </form>
       {isMapOpen && (
@@ -357,3 +380,8 @@ export default function EditPost() {
     </>
   );
 }
+
+const formatNumber = (input: string) => {
+  const numericValue = input.replace(/,/g, "");
+  return numericValue.replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+};

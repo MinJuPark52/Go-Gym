@@ -73,15 +73,8 @@ export default function ChatRoom() {
     console.log(messages);
   };
 
-  //게시물 상세보기에 채팅하기
-  async function buttonClick() {
-    const response: any = await axiosInstance.post("/api/chatroom/1");
-    console.log(response);
-  }
-
   return (
     <div className="flex h-[100%] w-[75%] border-l border-gray-400">
-      <button onClick={buttonClick}>채팅방 생성</button>
       <div className="flex h-[100%] w-[30%] flex-col border-r border-gray-400">
         {sortedData.map((list) => (
           <ChatList
