@@ -71,7 +71,7 @@ export default function Notice() {
         eventSource.close();
       };
     }
-  }, [loginState, token]);
+  }, [loginState, token, error]);
 
   // 2. 알림 읽음 상태 변경
   const notificationsRead = async (notificationId: number) => {
