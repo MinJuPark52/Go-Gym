@@ -8,15 +8,20 @@ import { FaBell } from "react-icons/fa";
 import DefaultProfile from "./DefaultProfile";
 import AdminNav from "./AdminNav";
 import Notice from "../Notification/Notice";
-import { useSearchParams } from "next/navigation";
+import { RxHamburgerMenu } from "react-icons/rx";
 import { useState } from "react";
+import MobileMenu from "./MoblieMenu";
 
 export default function Nav() {
   const { loginState, adminLoginState, logout } = useLoginStore();
   const [modal, setModal] = useState(false);
+  const [menuModal, setMenuModal] = useState(false);
 
   const toggleModal = () => {
     setModal((prev) => !prev);
+  };
+  const handleToggleMenuModal = () => {
+    setMenuModal((prev) => !prev);
   };
 
   if (adminLoginState) {
@@ -24,32 +29,40 @@ export default function Nav() {
   }
 
   return (
-    <div className="h-18 flex min-w-[920px] justify-center border-b border-[#ccc] shadow-md">
+    <div className="h-18 flex justify-center border-b border-[#ccc] shadow-md">
       <div className="flex w-[80%] items-center justify-between">
-        <Link href={"/"}>
-          <Image
-            src={logo}
-            alt="Go GYM Logo"
-            width={120}
-            className="m-2 ml-8 cursor-pointer"
-            priority
-          />
-        </Link>
+        <div className="flex items-center">
+          <button className="sm:hidden" onClick={handleToggleMenuModal}>
+            <RxHamburgerMenu size={24} />
+          </button>
+          {menuModal && (
+            <MobileMenu onToggleMenuModal={handleToggleMenuModal} />
+          )}
+          <Link href={"/"}>
+            <Image
+              src={logo}
+              alt="Go GYM Logo"
+              width={120}
+              className="m-2 ml-8 cursor-pointer"
+              priority
+            />
+          </Link>
+        </div>
         <div className="mr-8 flex items-center gap-4">
           <Link
             href={"/community"}
-            className="font-semibold transition-all hover:text-blue-400"
+            className="hidden font-semibold transition-all hover:text-blue-500 sm:block"
           >
             양도 게시판
           </Link>
           <Link
             href={"/chat"}
-            className="font-semibold transition-all hover:text-blue-400"
+            className="hidden font-semibold transition-all hover:text-blue-500 sm:block"
           >
             채팅방
           </Link>
 
-          <FaBell className="h-6 w-10 text-blue-400" onClick={toggleModal} />
+          <FaBell className="h-6 w-10 text-blue-500" onClick={toggleModal} />
           {modal && <Notice />}
 
           {loginState ? (
@@ -79,7 +92,7 @@ export default function Nav() {
           ) : (
             <Link
               href={"/login"}
-              className="font-semibold transition-all hover:text-blue-400"
+              className="font-semibold transition-all hover:text-blue-500"
             >
               로그인
             </Link>

@@ -4,6 +4,7 @@ import { useQuery } from "@tanstack/react-query";
 import PostItem from "./PostItem";
 import axiosInstance from "@/api/axiosInstance";
 import axios from "axios";
+import PostItemSkeleton from "../SkeletonUI/PostItemSkeleton";
 
 interface PostType {
   amount: number;
@@ -40,11 +41,9 @@ export default function PostList({
     error,
     isPending: defaultDataPending,
   } = useQuery({
-    queryKey: ["defaultPost"],
+    queryKey: ["defaultPost1"],
     queryFn: async () => {
-      const response: any = await axiosInstance.get(
-        "/api/posts/views?page=0&size=5",
-      );
+      const response: any = await axios.get("/api/posts/views?page=0&size=5");
       return response.content;
     },
     placeholderData: [],
@@ -52,14 +51,14 @@ export default function PostList({
   });
 
   if (defaultDataPending) {
-    return <p>로딩중....</p>;
+    return [...Array(6).keys()].map(() => <PostItemSkeleton />);
   }
   if (error) {
-    return <p>에러</p>;
+    return <p>게시글을 불러오는데 문제가 있습니다.</p>;
   }
 
   if (defaultData.length === 0) {
-    return <p>게시물이 없습니다</p>;
+    return <p>작성된 게시글이 없습니다.</p>;
   }
 
   return (

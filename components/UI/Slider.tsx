@@ -44,7 +44,7 @@ const Slider = () => {
       onClick={onClickHandler}
       className="absolute left-2 top-1/2 z-10"
     >
-      <kbd className="kbd translate-x-4 border-white bg-transparent text-white">
+      <kbd className="kbd translate-x-4 translate-y-8 border-white bg-transparent text-white md:translate-y-0">
         ◀︎
       </kbd>
     </button>
@@ -56,7 +56,9 @@ const Slider = () => {
       onClick={onClickHandler}
       className="absolute right-8 top-1/2 z-10"
     >
-      <kbd className="kbd border-white bg-transparent text-white">▶︎</kbd>
+      <kbd className="kbd translate-y-8 border-white bg-transparent text-white md:translate-y-0">
+        ▶︎
+      </kbd>
     </button>
   );
 

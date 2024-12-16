@@ -264,7 +264,7 @@ export default function EditPost() {
             </button>
           )}
         </div>
-        <div className="mb-4 flex gap-4">
+        <div className="grid max-w-[406px] grid-cols-2 gap-3 md:min-w-[604px] md:max-w-[605px] md:grid-cols-3">
           <div className="flex flex-col gap-2">
             <label htmlFor={"expirationDate"} className="text-sm text-gray-500">
               회원권 마감 날짜
@@ -311,7 +311,7 @@ export default function EditPost() {
             />
           </div>
         </div>
-        <div className="mb-4 flex gap-4 border-b border-gray-400 pb-8">
+        <div className="mb-4 mt-4 flex gap-4 border-b border-gray-400 pb-8">
           {FIRST_FILTER_CATEGORY.map((category: FILTER_CATEGORY_TYPE) => (
             <FilterCategory
               key={category.label}
@@ -331,7 +331,7 @@ export default function EditPost() {
           <div className="h-[400px] w-[100%] max-w-[1200px]">
             <QuillEditor onChange={handleContent} />
           </div>
-          <div className="mt-4 flex w-[100%] max-w-[1200px] items-center justify-between gap-4">
+          <div className="mt-4 flex w-[100%] max-w-[1200px] flex-col items-center justify-between gap-4 lg:flex-row">
             {Object.keys(images).map((el) =>
               images[el] ? (
                 <div

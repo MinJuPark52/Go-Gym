@@ -1,6 +1,6 @@
 export default function Footer() {
   return (
-    <footer className="relative z-10 min-w-[920px] bg-gray-900 py-8 text-white">
+    <footer className="relative z-10 bg-gray-900 py-8 text-white">
       <div className="container mx-auto px-4">
         <div className="grid grid-cols-1 gap-8 md:grid-cols-3">
           {/* 팀 정보 */}
