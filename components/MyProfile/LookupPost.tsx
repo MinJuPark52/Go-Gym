@@ -18,9 +18,9 @@ export default function LookupPost() {
   }
 
   return (
-    <div className="flex flex-col gap-16 mt-8">
+    <div className="mt-8 flex flex-col gap-16">
       <h1 className="text-3xl">{content}</h1>
-      <PostList url={url} />
+      <PostList style="flex-wrap" />
     </div>
   );
 }

@@ -1,14 +1,13 @@
-import Image from 'next/image';
+import Image from "next/image";
 
 interface propsType {
   imageUrl: string;
-  onClick: () => void;
 }
-export default function PostDetailImage({ imageUrl, onClick }: propsType) {
+export default function PostDetailImage({ imageUrl }: propsType) {
   return (
     <>
       {imageUrl ? (
-        <div className="cursor-pointer" onClick={onClick}>
+        <div className="cursor-pointer">
           <Image
             src={imageUrl}
             alt="헬스장 이미지"

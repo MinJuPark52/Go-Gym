@@ -31,32 +31,39 @@ export default function MyPageNav() {
     } else {
       setVisible({ post: false, trans: false });
     }
+
     console.log(params);
   }, [params]);
 
   return (
-    <div className="flex flex-col mt-16 min-w-48">
-      <h2 className="p-2 border-b-2 border-b-gray-600 text-xl text-gray-600 font-bold ">
+    <div className="mt-16 flex min-w-48 flex-col">
+      <h2 className="border-b-2 border-b-gray-600 p-2 text-xl font-bold text-gray-600">
         마이페이지
       </h2>
-      <div className="flex flex-col items-start p-3 gap-2">
+      <div className="flex flex-col items-start gap-2 p-3">
         <Link href={"/mypage"}>
-          <button className="text-sm text-gray-600 font-bold hover:text-blue-400 cursor-pointer">
+          <button
+            className={`cursor-pointer text-sm font-bold hover:text-blue-500 ${
+              !params.category ? "text-blue-500" : "text-gray-600"
+            }`}
+          >
             프로필
           </button>
         </Link>
         <button
           onClick={handlePostVisible}
-          className="text-sm text-gray-600 font-bold hover:text-blue-400 cursor-pointer"
+          className="cursor-pointer text-sm font-bold text-gray-600 hover:text-blue-500"
         >
           게시글
         </button>
         {visible.post && (
-          <div className="flex flex-col p-2 gap-2 items-start animate-slide-down">
+          <div className="flex animate-slide-down flex-col items-start gap-2 p-2">
             <Link href={"/mypage/postLook/my-posts"}>
               <button
-                className={`text-sm text-gray-600 font-bold hover:text-blue-400 cursor-pointer ${
-                  params.category === "my-posts" ? "text-blue-400" : ""
+                className={`cursor-pointer text-sm font-bold hover:text-blue-500 ${
+                  params.category === "my-posts"
+                    ? "text-blue-500"
+                    : "text-gray-600"
                 }`}
               >
                 작성한 게시글
@@ -64,8 +71,10 @@ export default function MyPageNav() {
             </Link>
             <Link href={"/mypage/postLook/wishlist"}>
               <button
-                className={`text-sm text-gray-600 font-bold hover:text-blue-400 cursor-pointer ${
-                  params.category === "wishlist" ? "text-blue-400" : ""
+                className={`cursor-pointer text-sm font-bold hover:text-blue-500 ${
+                  params.category === "wishlist"
+                    ? "text-blue-500"
+                    : "text-gray-600"
                 }`}
               >
                 찜한 게시글
@@ -73,8 +82,10 @@ export default function MyPageNav() {
             </Link>
             <Link href={"/mypage/postLook/recent-view"}>
               <button
-                className={`text-sm text-gray-600 font-bold hover:text-blue-400 cursor-pointer ${
-                  params.category === "recent-view" ? "text-blue-400" : ""
+                className={`cursor-pointer text-sm font-bold hover:text-blue-500 ${
+                  params.category === "recent-view"
+                    ? "text-blue-500"
+                    : "text-gray-600"
                 }`}
               >
                 최근 본 게시글
@@ -84,19 +95,19 @@ export default function MyPageNav() {
         )}
         <button
           onClick={handleTransVisible}
-          className="text-sm text-gray-600 font-bold hover:text-blue-400 cursor-pointer"
+          className="cursor-pointer text-sm font-bold text-gray-600 hover:text-blue-500"
         >
           거래내역
         </button>
         {visible.trans && (
-          <div className="flex flex-col p-2 gap-2 items-start animate-slide-down">
+          <div className="flex animate-slide-down flex-col items-start gap-2 p-2">
             <button
-              className={`text-sm text-gray-600 font-bold hover:text-blue-400 cursor-pointer `}
+              className={`cursor-pointer text-sm font-bold text-gray-600 hover:text-blue-500`}
             >
               구매 목록
             </button>
             <button
-              className={`text-sm text-gray-600 font-bold hover:text-blue-400 cursor-pointer `}
+              className={`cursor-pointer text-sm font-bold text-gray-600 hover:text-blue-500`}
             >
               판매 목록
             </button>

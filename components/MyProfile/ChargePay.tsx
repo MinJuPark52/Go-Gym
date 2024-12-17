@@ -1,17 +1,21 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import PortOne from "@portone/browser-sdk/v2";
 import axiosInstance from "@/api/axiosInstance";
+import { useMutation } from "@tanstack/react-query";
+import useLoginStore from "@/store/useLoginStore";
+import { EventSourcePolyfill } from "event-source-polyfill";
 
 interface PreRegisterResponse {
-  merchantId: string; // 서버 응답에서 merchantId의 타입을 확인 후 정의
+  paymentId: string; // 서버 응답에서 paymentId의 타입을 확인 후 정의
 }
 
 export default function ChargePay() {
+  const { token } = useLoginStore();
+
   const [data, setData] = useState<any>({
     storeId: process.env.NEXT_PUBLIC_PORTONE_STORE_ID,
-    paymentId: "",
     orderName: "짐페이 충전",
     totalAmount: 0,
     currency: "KRW",
@@ -21,7 +25,63 @@ export default function ChargePay() {
     customer: {
       fullName: "전민혁",
       phoneNumber: "010-7634-7212",
-      email: "mari394337@gmail.com",
+      email: "cwhite7230@gmail.com",
+    },
+  });
+
+  async function requestPayment(paymentId: string) {
+    if (data) {
+      const response = await PortOne.requestPayment({ ...data, paymentId });
+
+      //백엔드 엔드포인트
+      // const validation = await axiosInstance.post('/api/payments/webhook', {
+      //   txId: response?.txId,
+      //   paymentId: response?.paymentId,
+      // });
+      console.log(response);
+      // console.log(validation);
+    }
+  }
+
+  const { mutate } = useMutation({
+    mutationKey: ["pre-register"],
+    mutationFn: async () => {
+      const response: { paymentId: string } = await axiosInstance.post(
+        "/api/payments/pre-register",
+        {
+          amount: data.totalAmount,
+        },
+      );
+      return response;
+    },
+    onSuccess: (response) => {
+      // const eventSource = new EventSourcePolyfill(
+      //   `http://localhost:3000/backend/api/payments/sse/subscribe/${response.paymentId}`,
+      //   {
+      //     headers: {
+      //       "Content-Type": "text/event-stream",
+      //       "Cache-Control": "no-cache",
+      //       Connection: "keep-alive",
+      //     },
+      //   },
+      // );
+
+      // eventSource.addEventListener("open", (event: any) => {
+      //   console.log(event.data);
+      //   console.log("연결");
+      // });
+
+      // eventSource.addEventListener("Init", (event: any) => {
+      //   console.log(event.data);
+      //   console.log("11");
+      // });
+
+      // eventSource.onerror = () => {
+      //   //에러 발생시 할 동작
+      //   eventSource.close(); //연결 끊기
+      // };
+
+      requestPayment(response.paymentId);
     },
   });
 
@@ -52,72 +112,68 @@ export default function ChargePay() {
       return;
     }
 
-    const response: { merchantId: string } = await axiosInstance.post(
-      "/api/payments/pre-register",
-      {
-        amount: data.totalAmount,
-      }
-    );
+    mutate();
 
-    if (response) {
-      setData({
-        ...data,
-        paymentId: response.merchantId,
-      });
-    }
+    // const response: { paymentId: string } = await axiosInstance.post(
+    //   '/api/payments/pre-register',
+    //   {
+    //     amount: data.totalAmount,
+    //   }
+    // );
 
-    async function requestPayment() {
-      if (data) {
-        const response = await PortOne.requestPayment(data);
+    // if (response) {
+    //   setData({
+    //     ...data,
+    //     paymentId: response.paymentId,
+    //   });
+    // }
 
-        //백엔드 엔드포인트
-        // const validation = await axiosInstance.post('/api/payments/webhook', {
-        //   txId: response?.txId,
-        //   paymentId: response?.paymentId,
-        // });
-        console.log(response);
-        // console.log(validation);
-      }
-    }
+    // if (data.paymentId) {
+    //   if (data.paymentId) {
+    //     const eventSource = new EventSource(
+    //       `https://ac8c-175-195-104-144.ngrok-free.app/api/payments/sse/subscribe/${data.paymentId}`
+    //     );
 
-    //sse구독
-    if (data.paymentId) {
-      const eventSource = new EventSource(
-        `/api/payments/sse/subscribe/${data.paymentId}`
-      );
+    //     eventSource.addEventListener('Transaction Paid', (event) => {
+    //       console.log(event);
+    //     });
+    //     eventSource.addEventListener('Transaction Failed', (event) => {
+    //       console.log(event);
+    //     });
 
-      // eventSource.addEventListener('new_thread', () => {
+    //     eventSource.onerror = () => {
+    //       //에러 발생시 할 동작
+    //       eventSource.close(); //연결 끊기
+    //     };
+    //   }
+    //   requestPayment();
+    // }
+  };
 
-      // });
-
-      eventSource.onerror = () => {
-        //에러 발생시 할 동작
-        eventSource.close(); //연결 끊기
-      };
-
-      requestPayment();
-    }
+  const pay = async () => {
+    const response = await axiosInstance.post("/api/gym-pays");
+    console.log(response);
   };
 
   return (
-    <div className="flex justify-center w-[75%]">
+    <div className="flex w-[75%] justify-center">
       <form
         onSubmit={handleSubmit}
-        className="flex flex-col gap-12 mt-8 p-4 w-[480px] border-2 border-blue-300 rounded-lg"
+        className="mt-8 flex w-[480px] flex-col gap-12 rounded-lg border-2 border-blue-300 p-4"
       >
         <p className="font-bold">Gym Pay 충전하기</p>
         <div className="flex flex-col items-center">
           <input
             type="number"
             placeholder="충전할 금액을 입력해주세요"
-            className="p-2 w-96 border border-gray-300 focus:outline-none"
+            className="w-96 border border-gray-300 p-2 focus:outline-none"
             onChange={handleChangeMoney}
             value={data.totalAmount}
           />
-          <div className="flex justify-between w-[75%] mt-8 mb-8">
+          <div className="mb-8 mt-8 flex w-[75%] justify-between">
             <button
               type="button"
-              className="p-1 bg-blue-300 rounded-lg text-white text-sm font-bold"
+              className="rounded-lg bg-blue-300 p-1 text-sm font-bold text-white"
               onClick={handleButtonClick}
               value={1000}
             >
@@ -125,7 +181,7 @@ export default function ChargePay() {
             </button>
             <button
               type="button"
-              className="p-1 bg-blue-300 rounded-lg text-white text-sm font-bold"
+              className="rounded-lg bg-blue-300 p-1 text-sm font-bold text-white"
               onClick={handleButtonClick}
               value={5000}
             >
@@ -133,7 +189,7 @@ export default function ChargePay() {
             </button>
             <button
               type="button"
-              className="p-1 bg-blue-300 rounded-lg text-white text-sm font-bold"
+              className="rounded-lg bg-blue-300 p-1 text-sm font-bold text-white"
               onClick={handleButtonClick}
               value={10000}
             >
@@ -143,7 +199,7 @@ export default function ChargePay() {
         </div>
         <button
           type="submit"
-          className="p-1 bg-blue-400 rounded-lg text-white text-sm font-bold hover:bg-blue-500 transition-all"
+          className="rounded-lg bg-blue-400 p-1 text-sm font-bold text-white transition-all hover:bg-blue-500"
         >
           충전하기
         </button>

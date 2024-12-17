@@ -1,5 +1,5 @@
-import { create } from 'zustand';
-import { createJSONStorage, persist } from 'zustand/middleware';
+import { create } from "zustand";
+import { createJSONStorage, persist } from "zustand/middleware";
 
 interface LoginState {
   loginState: boolean;
@@ -18,7 +18,7 @@ const useLoginStore = create(
     (set) => {
       return {
         loginState: false,
-        token: '',
+        token: null,
         adminLoginState: false,
         expirationTime: 0,
 
@@ -54,6 +54,7 @@ const useLoginStore = create(
             token: null,
             expirationTime: 0,
           });
+          sessionStorage.removeItem("token");
         },
 
         checkTokenExpiration: () => {
@@ -61,16 +62,16 @@ const useLoginStore = create(
           const currentTime = Date.now();
           if (currentTime > expirationTime) {
             set({ loginState: false, token: null });
-            console.log('토큰이 만료되어 자동 로그아웃되었습니다.');
+            console.log("토큰이 만료되어 자동 로그아웃되었습니다.");
           }
         },
       };
     },
     {
-      name: 'loginStore',
+      name: "loginStore",
       storage: createJSONStorage(() => sessionStorage),
-    }
-  )
+    },
+  ),
 );
 
 export default useLoginStore;

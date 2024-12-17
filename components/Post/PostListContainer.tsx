@@ -7,45 +7,46 @@ import { useEffect, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import axiosInstance from "@/api/axiosInstance";
 import { useRouter, useSearchParams } from "next/navigation";
+import useLoginStore from "@/store/useLoginStore";
 
 interface categoryStateType {
-  postType: "default" | "SELL" | "BUY";
-  postStatus:
+  ["post-type"]: "default" | "SELL" | "BUY";
+  status:
     | "default"
     | "POSTING"
     | "SALE_COMPLETED"
     | "PURCHASE_COMPLETED"
     | "HIDDEN";
-  membershipType:
+  ["membership-type"]:
     | "default"
     | "MEMBERSHIP_ONLY"
     | "MEMBERSHIP_WITH_PT"
     | "PT_ONLY";
-  membershipDuration: "default" | "months_0_3" | "months_3_6" | "months_6_plus";
-  PTCount: "default" | "PT_0_10" | "PT_10_25" | "PT_25_plus";
+  ["month-type"]: "default" | "MONTHS_0_3" | "MONTHS_3_6" | "MONTHS_6_PLUS";
+  ["pt-type"]: "default" | "PT_0_10" | "PT_10_25" | "PT_25_PLUS";
 }
 
 export default function PostListContainer() {
   const searchParams = useSearchParams();
   const router = useRouter();
+  const { token } = useLoginStore();
 
+  const [page, setPage] = useState(0);
   const [filter, setFilter] = useState<categoryStateType>({
-    postType:
-      (searchParams.get("postType") as categoryStateType["postType"]) ||
+    ["post-type"]:
+      (searchParams.get("post-type") as categoryStateType["post-type"]) ||
       "default",
-    postStatus:
-      (searchParams.get("postStatus") as categoryStateType["postStatus"]) ||
+    status:
+      (searchParams.get("status") as categoryStateType["status"]) || "default",
+    ["membership-type"]:
+      (searchParams.get(
+        "membership-type",
+      ) as categoryStateType["membership-type"]) || "default",
+    ["month-type"]:
+      (searchParams.get("month-type") as categoryStateType["month-type"]) ||
       "default",
-    membershipType:
-      (searchParams.get(
-        "membershipType"
-      ) as categoryStateType["membershipType"]) || "default",
-    membershipDuration:
-      (searchParams.get(
-        "membershipDuration"
-      ) as categoryStateType["membershipDuration"]) || "default",
-    PTCount:
-      (searchParams.get("PTCount") as categoryStateType["PTCount"]) ||
+    ["pt-type"]:
+      (searchParams.get("pt-type") as categoryStateType["pt-type"]) ||
       "default",
   });
   const [query, setQuery] = useState("");
@@ -72,18 +73,52 @@ export default function PostListContainer() {
   };
 
   //tanstack-query에서 캐싱해서 처리
-  // useQuery({
-  //   queryKey: ['filterPost', url],
-  //   queryFn: async() => (await axiosInstance.get(`/backend/api/filter?${query}`)).data,
-  //   staleTime: 10000,
-  // })
+  const { data } = useQuery({
+    queryKey: ["filterPost", query, token],
+    queryFn: async () => {
+      const response: any = await axiosInstance.get(
+        `/api/posts/filters?${query}`,
+      );
+      return response.content;
+    },
+    staleTime: 10000,
+    enabled: !!query,
+  });
+
+  const {
+    data: defaultData,
+    error,
+    isPending: defaultDataPending,
+  } = useQuery({
+    queryKey: ["defaultPost", page],
+    queryFn: async () => {
+      const response: any = await axiosInstance.get(
+        `/api/posts/views?page=${page}&size=10`,
+        // "http://localhost:4000/posts",
+      );
+      return response.content;
+    },
+    staleTime: 0,
+    enabled: !query, // query가 없을 때만 실행
+  });
+
+  const handleRadioChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setPage(Number(event.target.value)); // 상태 업데이트
+  };
+
+  if (defaultDataPending) {
+    return <p>로딩중</p>;
+  }
+  if (defaultData) {
+    console.log(defaultData);
+  }
 
   return (
-    <div className="flex flex-col mt-12 w-[70%]">
-      <div className="flex justify-between items-center">
+    <div className="mt-12 flex w-[70%] flex-col">
+      <div className="flex items-center justify-between">
         <p className="mb-12 text-2xl font-bold">양도 회원권</p>
         <Link href={"/community/editpost"}>
-          <button className="btn btn-inf0 bg-blue-300 hover:bg-blue-500 text-white">
+          <button className="btn-inf0 btn bg-blue-500 text-white hover:bg-blue-700">
             글쓰기
           </button>
         </Link>
@@ -91,7 +126,27 @@ export default function PostListContainer() {
       <div className="mb-12">
         <Filter onChangeFilter={handleFilterUrl} filter={filter} />
       </div>
-      <PostList style="w-[100%] flex-wrap justify-center" />
+
+      <PostList
+        data={query !== "" ? data : defaultData}
+        style="w-[100%] flex-wrap justify-center"
+      />
+
+      <div className="mb-12 flex justify-center">
+        <div className="join">
+          {[...Array(5).keys()].map((num) => (
+            <input
+              key={num}
+              className="btn btn-square join-item checked:!border-blue-500 checked:!bg-blue-500"
+              type="radio"
+              name="options"
+              aria-label={`${num + 1}`}
+              value={num}
+              onChange={handleRadioChange}
+            />
+          ))}
+        </div>
+      </div>
     </div>
   );
 }
