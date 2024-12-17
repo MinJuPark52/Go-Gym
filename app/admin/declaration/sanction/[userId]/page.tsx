@@ -1,4 +1,4 @@
-import SanctionUser from '@/components/Admin/SanctionUser';
+import SanctionUser from "@/components/Admin/SanctionUser";
 
 export default function SanctionPage() {
   return (

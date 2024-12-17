@@ -1,4 +1,4 @@
-import ManageUserDetail from '@/components/Admin/ManageUserDetail';
+import ManageUserDetail from "@/components/Admin/ManageUserDetail";
 
 export default function ManageUserDetailPage() {
   return (

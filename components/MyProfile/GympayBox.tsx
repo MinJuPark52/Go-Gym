@@ -3,7 +3,7 @@ import Link from "next/link";
 
 export default function GympayBox() {
   return (
-    <div className="flex flex-col p-4 max-w-[660px] bg-blue-300 text-white rounded-md">
+    <div className="flex max-w-[660px] flex-col rounded-md bg-blue-500 p-4 text-white">
       <div className="flex justify-between">
         <p>Gym Pay</p>
         <p>10,000원</p>

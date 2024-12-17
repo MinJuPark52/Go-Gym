@@ -1,218 +1,177 @@
-import { useState, useEffect } from "react";
-import axios from "axios";
+import { useEffect, useState } from "react";
 import useLoginStore from "@/store/useLoginStore";
+import { EventSourcePolyfill, NativeEventSource } from "event-source-polyfill";
+import axios from "axios";
 
 interface Notification {
   id: number;
   message: string;
-  name: string;
-  data: number;
-  read: boolean;
-  type: "ADD_WISHLIST_MY_POST" | "CHANGE_MEMBER_STATUS";
+  isRead: boolean;
+  type: "POST_ADD_WISH" | "REPORT" | string;
   timestamp: string;
 }
 
 export default function Notice() {
-  const [msg, setMsg] = useState<Notification[]>([]);
-  const [sseUrl, setSseUrl] = useState<string | null>(null);
-  const [isViewingAll, setIsViewingAll] = useState(false);
-  const [dummyReceived, setDummyReceived] = useState(false);
-  const [lastEvent, setLastEvent] = useState(Date.now());
-  const [error, setError] = useState(false);
   const { loginState, token } = useLoginStore();
+  const [error, setError] = useState<string | null>(null);
+  const [notifications, setNotifications] = useState<Notification[]>([]);
+  const [hasNext, setHasNext] = useState(false);
+  const [page, setPage] = useState(0);
+  const [loading, setLoading] = useState(false);
 
-  // 알림 오면 내려주는 데이터 -> 알림창
-  // 알림 실시간 -> 화면에 5초 띄우고 사라지기
-  // 알림 읽음 상태 변경
-  const handleMarkAsRead = async (notificationId: number) => {
-    try {
-      setMsg((prev) =>
-        prev.map((notification) =>
-          notification.id === notificationId
-            ? { ...notification, read: true }
-            : notification
-        )
-      );
-      const response = await axios.put(
-        `/backend/api/notification/${notificationId}/read`,
-        { header: { Authorization: `Bearer ${token}` } }
-      );
-      console.log("알림 읽음 처리", response.data);
-      setMsg((prev: Notification[]) =>
-        prev.filter((notification) => notification.id !== notificationId)
-      );
-    } catch (error) {
-      console.error("Error updating read status:", error);
-    }
-  };
+  const pageSize = 10;
 
-  // 전체 알림 목록 조회 -> 종 아이콘 눌러서 조회 -> 읽지 않은 알림만 저장
-  const handleAllNotifications = async () => {
-    try {
-      const response = await axios.get(
-        "/backend/api/notifications?page={page}&size={size}",
-        { headers: { Authorization: `:{token}` } }
-
-      );
-      const noreadNotifications = response.data.notifications.filter(
-        (notification: Notification) => !notification.read
-      );
-      setMsg(noreadNotifications);
-      setIsViewingAll(true);
-    } catch (error) {
-      console.error("Error fetching all notifications:", error);
-    }
-  };
-
-  // SSE 구독 요청
-  // 구독 요청 일치하는지 확인 if문
-  // 구독이 됐는지 확인하기 어려움 -> 데이터 쏴주기
-  // 더미로 받음. 연결 요청 -> 한번만 console.log
-  // heartbeat -> 30초 이벤트 안오면 다시 재연결, 확인 로직 필요
-  // 알수없는 데이터 -> error
-
-
-  // 구독 시작
-  // 알림 띄우는거 notification
-  // 연결유지되고 있는지 30초 확인 heartbeat (내말 들리니..)
+  // 3. 구독 SSE
   useEffect(() => {
-    let eventSource: EventSource | null = null;
+    if (loginState && token) {
+      const EventSource = EventSourcePolyfill || NativeEventSource;
+      const eventSource = new EventSource(
+        "/backend/api/notifications/subscribe",
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            Connection: "keep-alive",
+            Accept: "text/event-stream",
+          },
+        },
+      );
 
-    const fetchSseUrl = async () => {
+      eventSource.addEventListener("open", () => {
+        console.log("connect");
+      });
+
+      eventSource.addEventListener("message", (event) => {
+        const data = JSON.parse(event.data);
+        if (data.event === "dummy") {
+          console.log("Dummy data:", event.data);
+        } else if (data.event === "notification") {
+          console.log("Notification:", event.data);
+          setNotifications((prevNotifications) => [
+            ...prevNotifications,
+            {
+              id: data.id,
+              message: data.message,
+              isRead: false,
+              type: data.type,
+              timestamp: data.timestamp,
+            },
+          ]);
+        } else if (data.event === "heartbeat") {
+          console.log("Heartbeat:", event.data);
+        }
+      });
+
+      eventSource.onerror = () => {
+        setError("SSE connection error");
+        eventSource.close();
+      };
+
+      return () => {
+        console.log("Closing connection.");
+        eventSource.close();
+      };
+    }
+  }, [loginState, token, error]);
+
+  // 2. 알림 읽음 상태 변경
+  const notificationsRead = async (notificationId: number) => {
+    try {
+      await axios.put(`/api/notifications/${notificationId}/read`);
+      setNotifications((prevNotifications) =>
+        prevNotifications
+          .map((notification) =>
+            notification.id === notificationId
+              ? { ...notification, isRead: true }
+              : notification,
+          )
+          .filter((notification) => notification.id !== notificationId),
+      );
+    } catch (error) {
+      console.log("Error marking notification as read", error);
+    }
+  };
+
+  // 1. 전체 알림 목록 조회
+  useEffect(() => {
+    const fetchNotifications = async () => {
+      setLoading(true);
       try {
         const response = await axios.get(
-          "/backend/api/notification/subscribe",
-          { headers: { Authorization: `:{token}` } }
+          `/backend/api/notifications?page=${page}&size=${pageSize}`,
         );
-        console.log("SSE URL:", response.data.sseUrl);
-        setSseUrl(response.data.sseUrl);
+        console.log("Fetched notifications:", response.data);
+        const { content, hasNext } = response.data;
+
+        const unreadNotifications = content.filter(
+          (notification: Notification) => !notification.isRead,
+        );
+
+        setNotifications((prevNotifications) => [
+          ...prevNotifications,
+          ...unreadNotifications,
+        ]);
+        setHasNext(hasNext);
       } catch (error) {
-        console.error("Failed to fetch SSE URL:", error);
+        console.error("알림을 불러오는 중 오류 발생:", error);
+      } finally {
+        setLoading(false);
       }
     };
 
-    const reconnectSse = () => {
-      if (sseUrl && loginState) {
-        console.log("Reconnecting to SSE...");
-        eventSource = new EventSource(sseUrl);
+    fetchNotifications();
+  }, [page]);
 
-        eventSource.onopen = () => {
-          console.log("SSE connection successfully opened.");
-        };
-
-        eventSource.onmessage = (e) => {
-          try {
-            const data = JSON.parse(e.data);
-            console.log("Received Data:", data);
-
-            const formatTimestamp = new Date(data.timestamp).toLocaleString(
-              "ko-KR",
-              {
-                year: "numeric",
-                month: "2-digit",
-                day: "2-digit",
-                hour: "2-digit",
-                minute: "2-digit",
-              }
-            );
-
-            const formatMessage = `${data.message} <br/> ${formatTimestamp}`;
-
-            if (data.event === "dummy" && !dummyReceived) {
-              setDummyReceived(true);
-              console.log("Dummy data received:", e.data);
-            } else if (data.event === "notification") {
-              setMsg((prev) =>
-                [{ ...data, message: formatMessage }, ...prev].slice(0, 50)
-              );
-              setLastEvent(Date.now());
-              setError(false);
-
-              setTimeout(() => {
-                setMsg((prev) =>
-                  prev.filter((notification) => notification.id !== data.id)
-                );
-              }, 5000);
-            } else if (data.event === "heartbeat") {
-              console.log("Heartbeat received:", e.data);
-            }
-          } catch (error) {
-            console.error("Failed to parse SSE message:", error);
-          }
-        };
-
-        eventSource.onerror = (error) => {
-          console.error("SSE connection error:", error);
-          setError(true);
-          eventSource?.close();
-          console.log("Attempting to reconnect to SSE...");
-          setTimeout(reconnectSse, 5000);
-        };
-      }
-    };
-
-    if (loginState) {
-      fetchSseUrl();
-    } else {
-      setSseUrl(null);
+  const loadMoreNotifications = () => {
+    if (hasNext && !loading) {
+      setPage((prevPage) => prevPage + 1);
     }
-    if (sseUrl && loginState) {
-      reconnectSse();
-    }
-    return () => {
-      eventSource?.close();
-    };
-  }, [sseUrl, loginState, lastEvent, dummyReceived]);
+  };
 
   return (
     <div
-      className="absolute end-0 z-10 w-80 h-72 rounded-md border border-gray-300 bg-white shadow-lg"
+      className="fixed right-[130px] top-[55px] z-10 h-72 w-80 rounded-md border border-gray-300 bg-white shadow-lg"
       role="menu"
     >
-      <div className="p-2 flex justify-between items-center">
+      <div className="flex items-center justify-between p-2">
         <strong className="text-md font-medium uppercase text-gray-700">
           알림📢
         </strong>
-        {!isViewingAll && (
-          <button
-            className="text-sm text-gray-700 mr-1"
-            onClick={handleAllNotifications}
-          >
-            목록
-          </button>
-        )}
       </div>
       <hr />
-      {msg.length === 0 ? (
-        <div className="flex justify-center items-center h-full">
-          <p className="text-sm text-gray-700 mb-10">새로운 알림이 없습니다.</p>
-        </div>
-      ) : (
-        <div className="h-48 overflow-y-auto">
-          {msg.map((notification) => (
-            <a
-              key={notification.id}
-              href="#"
-              onClick={(e) => {
-                e.preventDefault();
-                handleMarkAsRead(notification.id);
-              }}
-              className={`block rounded-lg px-4 py-2 text-sm ${
-                notification.read
-                  ? "text-gray-400"
-                  : "text-gray-700 hover:bg-gray-50 hover:text-gray-700"
-              }`}
-              role="menuitem"
-            >
-              {notification.message}
-            </a>
-          ))}
-        </div>
-      )}
-
-      {error && (
-        <div className="text-red-500 text-sm mt-2 ml-2">
-          서버 연결에 문제가 발생했습니다.
+      <div className="flex h-full items-center justify-center">
+        {notifications.length === 0 && (
+          <p className="mb-10 text-sm text-gray-700">새로운 알림이 없습니다.</p>
+        )}
+      </div>
+      <div className="h-48 overflow-y-auto">
+        {notifications.length > 0
+          ? notifications.map((notification) => (
+              <div
+                key={notification.id}
+                onClick={() => notificationsRead(notification.id)}
+                className={`mb-2 cursor-pointer border p-2 ${
+                  notification.isRead
+                    ? "translate-x-full bg-gray-200 opacity-0"
+                    : "bg-white"
+                }`}
+              >
+                <p>{notification.message}</p>
+                <p className="text-sm text-gray-500">
+                  {notification.timestamp}
+                </p>
+              </div>
+            ))
+          : null}
+      </div>
+      {error && <div className="ml-2 mt-2 text-sm text-red-500">{error}</div>}
+      {hasNext && !loading && (
+        <div className="text-center">
+          <button
+            onClick={loadMoreNotifications}
+            className="text-sm text-blue-500"
+          >
+            더보기
+          </button>
         </div>
       )}
     </div>
