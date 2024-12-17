@@ -51,8 +51,8 @@ export default function Nav() {
 
           <button>
             <FaBell className="h-6 w-10 text-blue-400" onClick={toggleModal} />
+            {modal && <Notice />}
           </button>
-          {modal && <Notice />}
 
           {loginState ? (
             <div className="dropdown dropdown-end">

@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import useLoginStore from "@/store/useLoginStore";
-import { EventSourcePolyfill, NativeEventSource } from "event-source-polyfill";
+import { EventSourcePolyfill } from "event-source-polyfill";
 import axios from "axios";
 
 interface Notification {
@@ -24,9 +24,9 @@ export default function Notice() {
   // 3. 구독 SSE
   useEffect(() => {
     if (loginState && token) {
-      const EventSource = EventSourcePolyfill || NativeEventSource;
+      const EventSource = EventSourcePolyfill;
       const eventSource = new EventSource(
-        "/backend/api/notifications/subscribe",
+        "/backend/api/notification/subscribe",
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -56,8 +56,6 @@ export default function Notice() {
               timestamp: data.timestamp,
             },
           ]);
-        } else if (data.event === "heartbeat") {
-          console.log("Heartbeat:", event.data);
         }
       });
 
@@ -71,7 +69,7 @@ export default function Notice() {
         eventSource.close();
       };
     }
-  }, [loginState, token, error]);
+  }, [loginState, token]);
 
   // 2. 알림 읽음 상태 변경
   const notificationsRead = async (notificationId: number) => {
