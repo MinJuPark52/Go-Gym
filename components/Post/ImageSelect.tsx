@@ -32,6 +32,7 @@ export default function ImageSelect({ name, onChange }: props) {
         htmlFor="file-input"
         className="flex cursor-pointer flex-col items-center justify-center text-gray-600"
       >
+        {name === "imageUrl1" && <div>대표이미지</div>}
         <span className="text-4xl text-green-500">+</span>
         <p className="mt-2 text-sm font-semibold">파일을 올려놓거나</p>
         <p className="mt-2 text-sm font-semibold">아이콘을 클릭하세요</p>

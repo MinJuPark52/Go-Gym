@@ -8,6 +8,8 @@ import { useQuery } from "@tanstack/react-query";
 import axiosInstance from "@/api/axiosInstance";
 import { useRouter, useSearchParams } from "next/navigation";
 import useLoginStore from "@/store/useLoginStore";
+import PostItemSkeleton from "../SkeletonUI/PostItemSkeleton";
+import Pagenation from "../UI/Pagination";
 
 interface categoryStateType {
   ["post-type"]: "default" | "SELL" | "BUY";
@@ -73,7 +75,7 @@ export default function PostListContainer() {
   };
 
   //tanstack-query에서 캐싱해서 처리
-  const { data } = useQuery({
+  const { data, isPending } = useQuery({
     queryKey: ["filterPost", query, token],
     queryFn: async () => {
       const response: any = await axiosInstance.get(
@@ -106,11 +108,21 @@ export default function PostListContainer() {
     setPage(Number(event.target.value)); // 상태 업데이트
   };
 
-  if (defaultDataPending) {
-    return <p>로딩중</p>;
-  }
-  if (defaultData) {
-    console.log(defaultData);
+  let content = (
+    <div className="mb-20 flex min-h-96 w-[100%] gap-4 overflow-x-auto p-12 lg:grid lg:grid-cols-2 lg:justify-items-center 2xl:grid-cols-3">
+      {[...Array(6).keys()].map(() => (
+        <PostItemSkeleton />
+      ))}
+    </div>
+  );
+
+  if (data || defaultData) {
+    content = (
+      <PostList
+        data={query !== "" ? data : defaultData}
+        style="w-[100%] flex-wrap justify-center"
+      />
+    );
   }
 
   return (
@@ -127,26 +139,14 @@ export default function PostListContainer() {
         <Filter onChangeFilter={handleFilterUrl} filter={filter} />
       </div>
 
-      <PostList
-        data={query !== "" ? data : defaultData}
-        style="w-[100%] flex-wrap justify-center"
-      />
+      {content}
 
-      <div className="mb-12 flex justify-center">
-        <div className="join">
-          {[...Array(5).keys()].map((num) => (
-            <input
-              key={num}
-              className="btn btn-square join-item checked:!border-blue-500 checked:!bg-blue-500"
-              type="radio"
-              name="options"
-              aria-label={`${num + 1}`}
-              value={num}
-              onChange={handleRadioChange}
-            />
-          ))}
-        </div>
-      </div>
+      <Pagenation
+        size={5}
+        page={page}
+        onRadioChange={handleRadioChange}
+        totalPage={24}
+      />
     </div>
   );
 }
