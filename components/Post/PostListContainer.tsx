@@ -9,6 +9,7 @@ import axiosInstance from "@/api/axiosInstance";
 import { useRouter, useSearchParams } from "next/navigation";
 import useLoginStore from "@/store/useLoginStore";
 import PostItemSkeleton from "../SkeletonUI/PostItemSkeleton";
+import Pagenation from "../UI/Pagination";
 
 interface categoryStateType {
   ["post-type"]: "default" | "SELL" | "BUY";
@@ -140,21 +141,12 @@ export default function PostListContainer() {
 
       {content}
 
-      <div className="mb-12 flex justify-center">
-        <div className="join">
-          {[...Array(5).keys()].map((num) => (
-            <input
-              key={num}
-              className="btn btn-square join-item checked:!border-blue-500 checked:!bg-blue-500"
-              type="radio"
-              name="options"
-              aria-label={`${num + 1}`}
-              value={num}
-              onChange={handleRadioChange}
-            />
-          ))}
-        </div>
-      </div>
+      <Pagenation
+        size={5}
+        page={page}
+        onRadioChange={handleRadioChange}
+        totalPage={24}
+      />
     </div>
   );
 }
