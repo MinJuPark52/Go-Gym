@@ -44,7 +44,9 @@ export default function Notice() {
 
         eventSource.addEventListener("message", (event) => {
           const data = JSON.parse(event.data);
-          if (data.event === "notification") {
+          if (data.event === "dummy") {
+            console.log("Dummy data:", event.data);
+          } else if (data.event === "notification") {
             setNotifications((prevNotifications) => [
               ...prevNotifications,
               {
