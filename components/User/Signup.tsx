@@ -3,6 +3,9 @@
 import { ChangeEvent, useState } from "react";
 import axios from "axios";
 import { useRouter } from "next/navigation";
+import Image from "next/image";
+import form from "../../public/form.png";
+import { useMutation } from "@tanstack/react-query";
 
 interface Signup {
   email: string;
@@ -169,20 +172,18 @@ export default function SignupPage() {
   };
 
   // 이메일 입력
-  const checkEmail = async (email: string) => {
-    if (!email) {
-      alert("이메일을 입력해주세요.");
-      return;
-    }
+  const checkEmail = useMutation({
+    mutationFn: async (email: string) => {
+      if (!email) {
+        throw new Error("이메일을 입력해주세요.");
+      }
 
-    const emailRegex = /\S+@\S+\.\S+/;
-    if (!emailRegex.test(email)) {
-      alert("이메일 주소에 '@'을 포함해주세요.");
-      return;
-    }
+      const emailRegex = /\S+@\S+\.\S+/;
+      if (!emailRegex.test(email)) {
+        throw new Error("이메일 주소에 '@'을 포함해주세요.");
+      }
 
-    // 이메일 중복확인
-    try {
+      // 이메일 중복확인
       const response = await axios.get<Signup[]>(
         "/backend/api/auth/check-email",
         {
@@ -191,86 +192,95 @@ export default function SignupPage() {
       );
 
       if (response.status === 200) {
-        setIsEmailAvailable(true);
-        alert("이메일 사용 가능합니다.");
+        return true;
       } else {
-        alert("이메일 이미 존재합니다.");
+        throw new Error("이메일 이미 존재합니다.");
       }
-    } catch (error) {
-      console.error("Error checking email availability:", error);
-      alert("서버 오류가 발생했습니다.");
+    },
+    onSuccess: () => {
+      setIsEmailAvailable(true);
+      alert("이메일 사용 가능합니다.");
+    },
+    onError: (error) => {
       setIsEmailAvailable(false);
-    }
-  };
+      alert(error.message);
+    },
+  });
 
   // 닉네임
-  const checkNickname = async (nickname: string) => {
-    if (!nickname) {
-      alert("닉네임을 입력해주세요.");
-      return;
-    }
+  const checkNickname = useMutation<boolean, Error, string>({
+    mutationFn: async (nickname: string) => {
+      if (!nickname) {
+        throw new Error("닉네임을 입력해주세요.");
+      }
 
-    // 닉네임 중복확인
-    try {
+      // 닉네임 중복확인
       const response = await axios.get("/backend/api/auth/check-nickname", {
         params: { nickname },
       });
       if (response.status === 200) {
-        setIsNicknameAvailable(true);
-        alert("닉네임 사용 가능합니다.");
+        return true;
       } else {
-        alert("닉네임 이미 존재합니다.");
+        throw new Error("닉네임 이미 존재합니다.");
       }
-    } catch (error) {
-      console.error("Error checking nickname availability:", error);
-      alert("서버 오류가 발생했습니다.");
+    },
+    onSuccess: () => {
+      setIsNicknameAvailable(true);
+      alert("닉네임 사용 가능합니다.");
+    },
+    onError: (error) => {
       setIsNicknameAvailable(false);
-    }
-  };
+      alert(error.message);
+    },
+  });
 
   // 회원가입
-  const handleSignupSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
+  const handleSignupSubmit = useMutation({
+    mutationFn: async () => {
+      if (!isEmailAvailable || !isNicknameAvailable) {
+        throw new Error("중복확인을 해주세요.");
+      }
 
-    if (!isEmailAvailable || !isNicknameAvailable) {
-      alert("중복확인을 해주세요.");
-      return;
-    }
-
-    if (validateForm()) {
-      setLoading(true);
-      try {
-        const response = await axios.post<Signup[]>(
-          "/backend/api/auth/sign-up",
-          signupFormData,
-        );
-
-        if (response.status === 200) {
-          const emailResponse = await axios.post(
-            "/backend/api/auth/send-verification-email",
-            null,
-            { params: { email: signupFormData.email } },
+      if (validateForm()) {
+        setLoading(true);
+        try {
+          const response = await axios.post<Signup[]>(
+            "/backend/api/auth/sign-up",
+            signupFormData,
           );
 
-          if (emailResponse.status === 200) {
-            alert(
-              "이메일 인증 링크가 전송되었습니다. 이메일을 통해 인증해주세요",
+          if (response.status === 200) {
+            const emailResponse = await axios.post(
+              "/backend/api/auth/send-verification-email",
+              null,
+              { params: { email: signupFormData.email } },
             );
-            router.push("/login");
+
+            if (emailResponse.status === 200) {
+              alert(
+                "이메일 인증 링크가 전송되었습니다. 이메일을 통해 인증해주세요",
+              );
+              router.push("/login");
+            } else {
+              throw new Error("링크 전송 X");
+            }
           } else {
-            throw new Error("링크 전송 X");
+            throw new Error("회원가입 실패");
           }
-        } else {
-          throw new Error("회원가입 실패");
+        } catch (error) {
+          console.error("Error:", error);
+          alert("회원가입에 실패했습니다.");
         }
-      } catch (error) {
-        console.error("오류:", error);
-        alert("회원가입에 실패했습니다.");
-      } finally {
-        setLoading(false);
       }
-    }
-  };
+    },
+    onSuccess: () => {
+      setLoading(false);
+    },
+    onError: (error) => {
+      setLoading(false);
+      console.error("Error:", error);
+    },
+  });
 
   // 관심지역 1
   const handleChangeSubRegionId1 = async (
@@ -335,173 +345,187 @@ export default function SignupPage() {
   };
 
   return (
-    <div className="flex h-[40rem] w-full items-center justify-center border-r-gray-300 bg-gray-50">
-      <form
-        onSubmit={handleSignupSubmit}
-        className="h-full w-full max-w-md space-y-4 bg-white p-8"
-      >
-        <h2 className="text-center text-2xl font-semibold">회원가입</h2>
+    <div className="flex min-h-screen items-center justify-center bg-gray-50">
+      <div className="flex max-w-4xl rounded-l-lg shadow-lg">
+        <Image
+          src={form}
+          alt="Login Image"
+          width={600}
+          height={400}
+          className="h-[35rem] w-[18rem] rounded-l-xl object-cover"
+        />
+      </div>
+      <div className="flex items-center justify-center rounded-r-xl bg-white">
+        <form
+          onSubmit={(e) => {
+            e.preventDefault();
+            handleSignupSubmit.mutate();
+          }}
+          className="h-[35rem] w-[40rem] max-w-md space-y-2 rounded-r-xl border-b-2 border-r-2 border-t-2 border-gray-200 p-8"
+        >
+          <h2 className="text-center text-2xl font-semibold">회원가입</h2>
 
-        {loading && (
-          <div className="absolute inset-0 flex items-center justify-center bg-white bg-opacity-90">
-            <div className="text-3xl text-gray-700">Loading..</div>
-          </div>
-        )}
+          {loading && (
+            <div className="absolute inset-0 flex items-center justify-center bg-white bg-opacity-90">
+              <div className="text-3xl text-gray-700">Loading..</div>
+            </div>
+          )}
 
-        <div>
-          <SignupInput
-            type="text"
-            placeholder="프로필 이미지 URL"
-            value={signupFormData.profileImageUrl}
-            onChange={handleSignupChange("profileImageUrl")}
-            errorMessage={signupErrors.profileImageUrl}
-          />
-        </div>
-
-        <div>
-          <SignupInput
-            type="text"
-            placeholder="이름"
-            value={signupFormData.name}
-            onChange={handleSignupChange("name")}
-            errorMessage={signupErrors.name}
-          />
-        </div>
-
-        <div className="flex items-center space-x-2">
-          <div className="flex-1">
+          <div>
             <SignupInput
               type="text"
-              placeholder="이메일"
-              value={signupFormData.email}
-              onChange={handleSignupChange("email")}
-              errorMessage={signupErrors.email}
+              placeholder="프로필 이미지 URL"
+              value={signupFormData.profileImageUrl}
+              onChange={handleSignupChange("profileImageUrl")}
+              errorMessage={signupErrors.profileImageUrl}
             />
           </div>
-          <button
-            type="button"
-            onClick={() => checkEmail(signupFormData.email)}
-            className="rounded-md bg-blue-500 px-4 py-2 text-white focus:outline-none"
-            disabled={isEmailAvailable}
-          >
-            {isEmailAvailable ? "사용 가능" : "중복확인"}
-          </button>
-        </div>
 
-        <div className="flex items-center space-x-2">
-          <div className="flex-1">
+          <div>
             <SignupInput
               type="text"
-              placeholder="닉네임"
-              value={signupFormData.nickname}
-              onChange={handleSignupChange("nickname")}
-              errorMessage={signupErrors.nickname}
+              placeholder="이름"
+              value={signupFormData.name}
+              onChange={handleSignupChange("name")}
+              errorMessage={signupErrors.name}
             />
           </div>
-          <button
-            type="button"
-            onClick={() => checkNickname(signupFormData.nickname)}
-            className="rounded-md bg-blue-500 px-4 py-2 text-white focus:outline-none"
-            disabled={isNicknameAvailable}
-          >
-            {isNicknameAvailable ? "사용 가능" : "중복확인"}
-          </button>
-        </div>
 
-        <div>
-          <SignupInput
-            type="text"
-            placeholder="핸드폰 번호"
-            value={signupFormData.phone}
-            onChange={handleSignupChange("phone")}
-            errorMessage={signupErrors.phone}
-          />
-        </div>
-
-        <div>
-          <SignupInput
-            type="password"
-            placeholder="비밀번호"
-            value={signupFormData.password}
-            onChange={handleSignupChange("password")}
-            errorMessage={signupErrors.password}
-          />
-        </div>
-
-        <div className="flex space-x-4">
-          <div className="flex-1">
-            <select
-              value={signupFormData.regionId1}
-              onChange={handleChangeRegionId1}
-              className="w-full rounded-md border border-gray-300 p-2"
+          <div className="flex items-center space-x-2">
+            <div className="flex-1">
+              <SignupInput
+                type="text"
+                placeholder="이메일"
+                value={signupFormData.email}
+                onChange={handleSignupChange("email")}
+                errorMessage={signupErrors.email}
+              />
+            </div>
+            <button
+              type="button"
+              onClick={() => checkEmail.mutate(signupFormData.email)}
+              className="rounded-md bg-blue-500 px-4 py-2 text-white focus:outline-none"
+              disabled={isEmailAvailable}
             >
-              {/* 아이디 값을 보냄 */}
-              <option value="">지역 선택1</option>
-              {regions?.map((region) => (
-                <option key={region.id} value={region.name}>
-                  {region.name}
-                </option>
-              ))}
-            </select>
+              {isEmailAvailable ? "사용 가능" : "중복확인"}
+            </button>
           </div>
 
-          <div className="flex-1">
-            <select
-              value={selectSubRegion1.regionId}
-              onChange={handleChangeSubRegionId1}
-              className="w-full rounded-md border border-gray-300 p-2"
+          <div className="flex items-center space-x-2">
+            <div className="flex-1">
+              <SignupInput
+                type="text"
+                placeholder="닉네임"
+                value={signupFormData.nickname}
+                onChange={handleSignupChange("nickname")}
+                errorMessage={signupErrors.nickname}
+              />
+            </div>
+            <button
+              type="button"
+              onClick={() => checkNickname.mutate(signupFormData.nickname)}
+              className="rounded-md bg-blue-500 px-4 py-2 text-white focus:outline-none"
+              disabled={isNicknameAvailable}
             >
-              <option value="">세부 지역 선택1</option>
-              {subRegion1?.map((subRegion) => (
-                <option key={subRegion.name} value={subRegion.id}>
-                  {subRegion.name}
-                </option>
-              ))}
-            </select>
-          </div>
-        </div>
-
-        <div className="flex space-x-4">
-          <div className="flex-1">
-            <select
-              value={signupFormData.regionId2}
-              onChange={handleChangeRegionId2}
-              className="w-full rounded-md border border-gray-300 p-2"
-            >
-              {/* 아이디 값을 보냄 */}
-              <option value="">지역 선택2</option>
-              {regions?.map((region) => (
-                <option key={region.id} value={region.name}>
-                  {region.name}
-                </option>
-              ))}
-            </select>
+              {isNicknameAvailable ? "사용 가능" : "중복확인"}
+            </button>
           </div>
 
-          <div className="flex-1">
-            <select
-              value={selectSubRegion2.regionId}
-              onChange={handleChangeSubRegionId2}
-              className="w-full rounded-md border border-gray-300 p-2"
-            >
-              <option value="">세부 지역 선택2</option>
-              {subRegion2?.map((subRegion) => (
-                <option key={subRegion.name} value={subRegion.id}>
-                  {subRegion.name}
-                </option>
-              ))}
-            </select>
+          <div>
+            <SignupInput
+              type="text"
+              placeholder="핸드폰 번호"
+              value={signupFormData.phone}
+              onChange={handleSignupChange("phone")}
+              errorMessage={signupErrors.phone}
+            />
           </div>
-        </div>
-        <div>
-          <button
-            type="submit"
-            className="mt-3 w-full rounded-md bg-blue-500 py-2 text-white"
-          >
-            회원가입
-          </button>
-        </div>
-      </form>
+
+          <div>
+            <SignupInput
+              type="password"
+              placeholder="비밀번호"
+              value={signupFormData.password}
+              onChange={handleSignupChange("password")}
+              errorMessage={signupErrors.password}
+            />
+          </div>
+
+          <div className="flex space-x-4">
+            <div className="flex-1">
+              <select
+                value={signupFormData.regionId1}
+                onChange={handleChangeRegionId1}
+                className="w-full rounded-md border border-gray-300 p-2"
+              >
+                {/* 아이디 값을 보냄 */}
+                <option value="">지역 선택1</option>
+                {regions?.map((region) => (
+                  <option key={region.id} value={region.name}>
+                    {region.name}
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            <div className="flex-1">
+              <select
+                value={selectSubRegion1.regionId}
+                onChange={handleChangeSubRegionId1}
+                className="w-full rounded-md border border-gray-300 p-2"
+              >
+                <option value="">세부 지역 선택1</option>
+                {subRegion1?.map((subRegion) => (
+                  <option key={subRegion.name} value={subRegion.id}>
+                    {subRegion.name}
+                  </option>
+                ))}
+              </select>
+            </div>
+          </div>
+
+          <div className="flex space-x-4">
+            <div className="flex-1">
+              <select
+                value={signupFormData.regionId2}
+                onChange={handleChangeRegionId2}
+                className="w-full rounded-md border border-gray-300 p-2"
+              >
+                {/* 아이디 값을 보냄 */}
+                <option value="">지역 선택2</option>
+                {regions?.map((region) => (
+                  <option key={region.id} value={region.name}>
+                    {region.name}
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            <div className="flex-1">
+              <select
+                value={selectSubRegion2.regionId}
+                onChange={handleChangeSubRegionId2}
+                className="w-full rounded-md border border-gray-300 p-2"
+              >
+                <option value="">세부 지역 선택2</option>
+                {subRegion2?.map((subRegion) => (
+                  <option key={subRegion.name} value={subRegion.id}>
+                    {subRegion.name}
+                  </option>
+                ))}
+              </select>
+            </div>
+          </div>
+          <div>
+            <button
+              type="submit"
+              className="mt-4 w-full rounded-md bg-blue-500 py-2 text-white"
+            >
+              회원가입
+            </button>
+          </div>
+        </form>
+      </div>
     </div>
   );
 }

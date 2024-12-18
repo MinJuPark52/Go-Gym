@@ -24,6 +24,7 @@ export default function Notice() {
   // 3. 구독 SSE
   useEffect(() => {
     if (loginState && token) {
+<<<<<<< HEAD
       const EventSource = EventSourcePolyfill;
       const eventSource = new EventSource(
         "/backend/api/notification/subscribe",
@@ -58,16 +59,60 @@ export default function Notice() {
           ]);
         }
       });
+=======
+      const EventSource = EventSourcePolyfill || NativeEventSource;
+      const connectToSSE = () => {
+        const eventSource = new EventSource(
+          "/backend/api/notifications/subscribe",
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+              Connection: "keep-alive",
+              Accept: "text/event-stream",
+            },
+          },
+        );
+>>>>>>> a34c0f344acf3265e4551b058493b06a2c896859
 
-      eventSource.onerror = () => {
-        setError("SSE connection error");
-        eventSource.close();
+        eventSource.addEventListener("open", () => {
+          console.log("connect");
+        });
+
+        eventSource.addEventListener("message", (event) => {
+          const data = JSON.parse(event.data);
+          if (data.event === "dummy") {
+            console.log("Dummy data:", event.data);
+          } else if (data.event === "notification") {
+            console.log("Notification:", event.data);
+            setNotifications((prevNotifications) => [
+              ...prevNotifications,
+              {
+                id: data.id,
+                message: data.message,
+                isRead: false,
+                type: data.type,
+                timestamp: data.timestamp,
+              },
+            ]);
+          }
+        });
+
+        eventSource.addEventListener("error", () => {
+          setError("SSE connection error");
+          eventSource.close();
+        });
+
+        setTimeout(() => {
+          eventSource.close();
+          connectToSSE();
+        }, 60000);
+
+        return () => {
+          eventSource.close();
+        };
       };
 
-      return () => {
-        console.log("Closing connection.");
-        eventSource.close();
-      };
+      connectToSSE();
     }
   }, [loginState, token]);
 
@@ -136,31 +181,30 @@ export default function Notice() {
         </strong>
       </div>
       <hr />
-      <div className="flex h-full items-center justify-center">
-        {notifications.length === 0 && (
+      {notifications.length === 0 ? (
+        <div className="flex h-full items-center justify-center">
           <p className="mb-10 text-sm text-gray-700">새로운 알림이 없습니다.</p>
-        )}
-      </div>
-      <div className="h-48 overflow-y-auto">
-        {notifications.length > 0
-          ? notifications.map((notification) => (
-              <div
-                key={notification.id}
-                onClick={() => notificationsRead(notification.id)}
-                className={`mb-2 cursor-pointer border p-2 ${
-                  notification.isRead
-                    ? "translate-x-full bg-gray-200 opacity-0"
-                    : "bg-white"
-                }`}
-              >
-                <p>{notification.message}</p>
-                <p className="text-sm text-gray-500">
-                  {notification.timestamp}
-                </p>
-              </div>
-            ))
-          : null}
-      </div>
+        </div>
+      ) : (
+        <div className="h-48 overflow-y-auto">
+          {notifications.map((notification) => (
+            <div
+              key={notification.id}
+              onClick={() => notificationsRead(notification.id)}
+              className={`mb-2 cursor-pointer border p-2 ${
+                notification.isRead
+                  ? "translate-x-full bg-gray-200 opacity-0"
+                  : "bg-white"
+              }`}
+            >
+              <p>{notification.message}</p>
+              <p className="text-sm text-gray-500">
+                {new Date(notification.timestamp).toLocaleString()}
+              </p>
+            </div>
+          ))}
+        </div>
+      )}
       {error && <div className="ml-2 mt-2 text-sm text-red-500">{error}</div>}
       {hasNext && !loading && (
         <div className="text-center">

@@ -8,6 +8,8 @@ import { useQuery } from "@tanstack/react-query";
 import axiosInstance from "@/api/axiosInstance";
 import { useRouter, useSearchParams } from "next/navigation";
 import useLoginStore from "@/store/useLoginStore";
+import PostItemSkeleton from "../SkeletonUI/PostItemSkeleton";
+import Pagenation from "../UI/Pagination";
 
 interface categoryStateType {
   ["post-type"]: "default" | "SELL" | "BUY";
@@ -31,6 +33,7 @@ export default function PostListContainer() {
   const router = useRouter();
   const { token } = useLoginStore();
 
+  const [page, setPage] = useState(0);
   const [filter, setFilter] = useState<categoryStateType>({
     ["post-type"]:
       (searchParams.get("post-type") as categoryStateType["post-type"]) ||
@@ -72,33 +75,62 @@ export default function PostListContainer() {
   };
 
   //tanstack-query에서 캐싱해서 처리
-  const { data } = useQuery({
+  const { data, isPending } = useQuery({
     queryKey: ["filterPost", query, token],
-    queryFn: async () =>
-      (await axiosInstance.get(`/api/posts/filters?${query}`)).data,
+    queryFn: async () => {
+      const response: any = await axiosInstance.get(
+        `/api/posts/filters?${query}`,
+      );
+      return response.content;
+    },
     staleTime: 10000,
     enabled: !!query,
   });
 
-  const { data: defaultData } = useQuery({
-    queryKey: ["defaultPost"],
-    queryFn: async () =>
-      (await axiosInstance.get("/api/posts/views?page=0&size=10")).data,
-    staleTime: 10000,
+  const {
+    data: defaultData,
+    error,
+    isPending: defaultDataPending,
+  } = useQuery({
+    queryKey: ["defaultPost", page],
+    queryFn: async () => {
+      const response: any = await axiosInstance.get(
+        `/api/posts/views?page=${page}&size=10`,
+        // "http://localhost:4000/posts",
+      );
+      return response.content;
+    },
+    staleTime: 0,
     enabled: !query, // query가 없을 때만 실행
   });
 
-  useEffect(() => {
-    console.log(defaultData);
-    console.log(data);
-  }, [data, defaultData]);
+  const handleRadioChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setPage(Number(event.target.value)); // 상태 업데이트
+  };
+
+  let content = (
+    <div className="mb-20 flex min-h-96 w-[100%] gap-4 overflow-x-auto p-12 lg:grid lg:grid-cols-2 lg:justify-items-center 2xl:grid-cols-3">
+      {[...Array(6).keys()].map(() => (
+        <PostItemSkeleton />
+      ))}
+    </div>
+  );
+
+  if (data || defaultData) {
+    content = (
+      <PostList
+        data={query !== "" ? data : defaultData}
+        style="w-[100%] flex-wrap justify-center"
+      />
+    );
+  }
 
   return (
     <div className="mt-12 flex w-[70%] flex-col">
       <div className="flex items-center justify-between">
         <p className="mb-12 text-2xl font-bold">양도 회원권</p>
         <Link href={"/community/editpost"}>
-          <button className="btn-inf0 btn bg-blue-300 text-white hover:bg-blue-500">
+          <button className="btn-inf0 btn bg-blue-500 text-white hover:bg-blue-700">
             글쓰기
           </button>
         </Link>
@@ -106,12 +138,15 @@ export default function PostListContainer() {
       <div className="mb-12">
         <Filter onChangeFilter={handleFilterUrl} filter={filter} />
       </div>
-      {
-        <PostList
-          data={query ? data : defaultData}
-          style="w-[100%] flex-wrap justify-center"
-        />
-      }
+
+      {content}
+
+      <Pagenation
+        size={5}
+        page={page}
+        onRadioChange={handleRadioChange}
+        totalPage={24}
+      />
     </div>
   );
 }
