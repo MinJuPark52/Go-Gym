@@ -2,6 +2,7 @@ import { create } from "zustand";
 import { createJSONStorage, persist } from "zustand/middleware";
 
 interface UserType {
+  memberId: string;
   name: string;
   email: string;
   nickname: string;
@@ -19,7 +20,7 @@ interface userStore {
   LogoutUser: () => void;
 }
 
-const useLoginStore = create(
+const useUserStore = create(
   persist<userStore>(
     (set) => {
       return {
@@ -39,4 +40,4 @@ const useLoginStore = create(
   ),
 );
 
-export default useLoginStore;
+export default useUserStore;

@@ -14,7 +14,8 @@ interface chatListProps {
   lastMessage: string;
   chatRoomId: string;
   lastMessageAt: string;
-  onClickChatRoom: (chatRoomId: string) => void;
+  onClickChatRoom: (chatRoomId: string, counterpartyNickname: string) => void;
+  onCloseModal: () => void;
 }
 
 export default function ChatList({
@@ -23,6 +24,7 @@ export default function ChatList({
   onClickChatRoom,
   lastMessage,
   lastMessageAt,
+  onCloseModal,
 }: chatListProps) {
   const timeago = useTimeAgo(lastMessageAt);
 
@@ -48,7 +50,12 @@ export default function ChatList({
         className="ml-auto cursor-pointer text-xl text-red-400 transition-all hover:text-3xl"
         onClick={handleDelete}
       />
-      <div onClick={() => onClickChatRoom(chatRoomId)}>
+      <div
+        onClick={() => {
+          onClickChatRoom(chatRoomId, counterpartyNickname);
+          onCloseModal();
+        }}
+      >
         <div className="flex flex-col gap-2">
           <div className="flex justify-between">
             <p className="text-bold text-sm font-bold text-gray-400">
@@ -64,7 +71,10 @@ export default function ChatList({
               priority
             />
 
-            <p className="text-xl">{lastMessage}</p>
+            <p className="text-sm font-bold text-gray-600">
+              {lastMessage.slice(0, 9) +
+                `${lastMessage.length > 9 ? "..." : ""}`}
+            </p>
           </div>
         </div>
         <div className="flex flex-col items-end">

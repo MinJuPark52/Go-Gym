@@ -10,6 +10,7 @@ import {
 
 export default function SearchKakaoMap({
   onClick,
+  onClose,
 }: {
   onClick: (
     latitude: number,
@@ -68,26 +69,33 @@ export default function SearchKakaoMap({
   }
 
   return (
-    <div className="absolute bottom-0 left-0 right-0 top-0 flex flex-col items-center justify-center gap-4 bg-slate-400 bg-opacity-30">
+    <div className="fixed bottom-0 left-0 right-0 top-0 z-50 flex flex-col items-center justify-center gap-4 bg-slate-400 bg-opacity-30">
       {/* 검색 UI */}
-      <form
-        onSubmit={handleSearch}
-        className="mb-4 flex translate-y-[-128px] gap-2"
-      >
+      <form onSubmit={handleSearch} className="mb-4 flex gap-2">
         <input
           type="text"
           value={keyword}
           onChange={(e) => setKeyword(e.target.value)}
           placeholder="검색어를 입력하세요"
-          className="w-72 rounded-lg px-4 py-2 focus:outline-blue-300"
+          className="w-48 rounded-lg px-4 py-2 focus:outline-blue-300 md:w-72"
         />
-        <button className="rounded-lg bg-blue-500 px-4 py-2 text-white hover:bg-blue-600">
+        <button
+          type="submit"
+          className="rounded-lg bg-blue-500 px-4 py-2 text-white hover:bg-blue-600"
+        >
           검색
+        </button>
+        <button
+          type="button"
+          className="rounded-lg bg-blue-500 px-4 py-2 text-white hover:bg-blue-600"
+          onClick={() => onClose()}
+        >
+          닫기
         </button>
       </form>
 
       {/* 지도 */}
-      <div className="flex h-[60%] w-[70%] translate-y-[-128px] justify-center">
+      <div className="flex h-[80%] w-[100%] translate-y-4 justify-center md:w-[80%]">
         <Map
           center={mapCenter}
           style={{ width: "100%", height: "100%" }}
@@ -116,7 +124,7 @@ export default function SearchKakaoMap({
 
         {/* 검색 결과 목록 */}
         {places.length ? (
-          <ul className="h-[100%] w-[30%] max-w-md overflow-y-auto bg-white">
+          <ul className="h-[100%] w-[50%] max-w-md overflow-y-auto bg-white">
             {places.map((place, index) => (
               <li
                 key={index}
@@ -138,7 +146,7 @@ export default function SearchKakaoMap({
                   길찾기
                 </a>
                 <button
-                  className="ml-4 mr-4 rounded-xl bg-blue-300 p-1 pl-2 pr-2 text-sm font-bold text-white transition-all hover:bg-blue-500"
+                  className="ml-2 rounded-xl bg-blue-500 p-1 pl-2 pr-2 text-sm font-bold text-white transition-all hover:bg-blue-600"
                   onClick={() =>
                     onClick(
                       parseFloat(place.y),

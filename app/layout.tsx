@@ -34,7 +34,7 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <body
-        className={`${geistSans.variable} ${geistMono.variable} min-w-[580px] antialiased`}
+        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
         <ClientLayout>
           {modal}

@@ -36,38 +36,11 @@ export default function PostList({
   // if (!data && isPending) {
   //   return <p>데이터 로딩중...</p>;
   // }
-  const {
-    data: defaultData,
-    error,
-    isPending: defaultDataPending,
-  } = useQuery({
-    queryKey: ["defaultPost1"],
-    queryFn: async () => {
-      const response: any = await axios.get("/api/posts/views?page=0&size=5");
-      return response.content;
-    },
-    placeholderData: [],
-    staleTime: 0,
-  });
-
-  if (defaultDataPending) {
-    return [...Array(6).keys()].map(() => <PostItemSkeleton />);
-  }
-  if (error) {
-    return <p>게시글을 불러오는데 문제가 있습니다.</p>;
-  }
-
-  if (defaultData.length === 0) {
-    return <p>작성된 게시글이 없습니다.</p>;
-  }
 
   return (
-    <div className={`mb-12 flex w-full min-w-[750px] gap-8 ${style}`}>
-      {data
-        ? data.map((post: PostType) => <PostItem key={post.postId} {...post} />)
-        : defaultData.map((post: PostType) => (
-            <PostItem key={post.postId} {...post} />
-          ))}
+    <div className="mb-20 flex min-h-96 w-[100%] gap-4 overflow-x-auto p-12 lg:grid lg:grid-cols-2 lg:justify-items-center 2xl:grid-cols-3">
+      {data &&
+        data.map((post: PostType) => <PostItem key={post.postId} {...post} />)}
     </div>
   );
 }

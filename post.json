@@ -1,9 +1,21 @@
 {
+  "user": {
+    "memberId": "1",
+    "name": "전민혁",
+    "email": "mari394337@gmail.com",
+    "nickname": "전빡빡",
+    "phone": "010-7634-7212",
+    "profileImageUrl": null,
+    "interestArea1": "시흥시",
+    "interestArea2": null,
+    "payMoneyId": null,
+    "payMoneyBalance": null
+  },
   "posts": [
     {
       "id": "1",
       "title": "제목입니다~",
-      "postStatus": "POSTING",
+      "postStatus": "PENDING",
       "amount": 10000,
       "content": "내용입니다",
       "gymName": "헬스장1!",
@@ -15,7 +27,7 @@
     {
       "id": "2",
       "title": "제목입니다~",
-      "postStatus": "POSTING",
+      "postStatus": "PENDING",
       "amount": 10000,
       "content": "내용입니다",
       "imageUrl1": "",
@@ -27,7 +39,7 @@
     {
       "id": "3",
       "title": "제목입니다~",
-      "postStatus": "POSTING",
+      "postStatus": "PENDING",
       "amount": 10000,
       "content": "내용입니다",
       "imageUrl1": "",
@@ -39,7 +51,7 @@
     {
       "id": "4",
       "title": "제목입니다~",
-      "postStatus": "POSTING",
+      "postStatus": "PENDING",
       "amount": 10000,
       "content": "내용입니다",
       "imageUrl1": "",
@@ -51,7 +63,7 @@
     {
       "id": "5",
       "title": "제목입니다~",
-      "postStatus": "POSTING",
+      "postStatus": "PENDING",
       "amount": 10000,
       "content": "내용입니다",
       "imageUrl1": "",
@@ -63,7 +75,7 @@
     {
       "id": "6",
       "title": "제목입니다~",
-      "postStatus": "POSTING",
+      "postStatus": "",
       "amount": 10000,
       "content": "내용입니다",
       "imageUrl1": "",
@@ -83,7 +95,7 @@
       "expirationDate": "2025-03-23",
       "remainingSessions": "12",
       "amount": 250000,
-      "postStatus": "POSTING",
+      "postStatus": "PENDING",
       "imageUrl1": "",
       "imageUrl2": "",
       "imageUrl3": "",
@@ -106,7 +118,7 @@
       "expirationDate": "2025-03-23",
       "remainingSessions": "12",
       "amount": 250000,
-      "postStatus": "POSTING",
+      "postStatus": "PENDING",
       "imageUrl1": "",
       "imageUrl2": "",
       "imageUrl3": "",
@@ -129,7 +141,7 @@
       "expirationDate": "2025-03-23",
       "remainingSessions": "12",
       "amount": 250000,
-      "postStatus": "POSTING",
+      "postStatus": "PENDING",
       "imageUrl1": "",
       "imageUrl2": "",
       "imageUrl3": "",
@@ -152,7 +164,7 @@
       "expirationDate": "2025-03-23",
       "remainingSessions": "12",
       "amount": 250000,
-      "postStatus": "POSTING",
+      "postStatus": "PENDING",
       "imageUrl1": "",
       "imageUrl2": "",
       "imageUrl3": "",
@@ -175,7 +187,7 @@
       "expirationDate": "2025-03-23",
       "remainingSessions": "12",
       "amount": 250000,
-      "postStatus": "POSTING",
+      "postStatus": "PENDING",
       "imageUrl1": "",
       "imageUrl2": "",
       "imageUrl3": "",
@@ -198,7 +210,7 @@
       "expirationDate": "2025-03-23",
       "remainingSessions": "12",
       "amount": 250000,
-      "postStatus": "POSTING",
+      "postStatus": "PENDING",
       "imageUrl1": "",
       "imageUrl2": "",
       "imageUrl3": "",
@@ -227,7 +239,7 @@
       "imageUrl2": "",
       "imageUrl3": "",
       "postType": "SELL",
-      "postStatus": "POSTING",
+      "postStatus": "PENDING",
       "membershipType": "MEMBERSHUP_ONLY"
     },
     {
@@ -247,7 +259,7 @@
       "imageUrl2": "",
       "imageUrl3": "",
       "postType": "SELL",
-      "postStatus": "POSTING",
+      "postStatus": "PENDING",
       "membershipType": "MEMBERSHIP_WITH_PT"
     },
     {
@@ -267,7 +279,7 @@
       "imageUrl2": "",
       "imageUrl3": "",
       "postType": "SELL",
-      "postStatus": "POSTING",
+      "postStatus": "PENDING",
       "membershipType": "MEMBERSHIP_WITH_PT"
     }
   ],
@@ -306,7 +318,7 @@
           "postType": "SELL",
           "membershipType": "MEMBERSHIP_WITH_PT",
           "amount": "250000",
-          "postStatus": "POSTING (거래 대기)",
+          "postStatus": "PENDING (거래 대기)",
           "imageUrl1": "~~~~",
           "createdAt": "2024/11/17",
           "updatedAt": "2024/11/22",

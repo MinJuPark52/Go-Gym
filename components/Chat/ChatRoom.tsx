@@ -22,11 +22,13 @@ interface ChatItem {
 }
 
 export default function ChatRoom() {
+  const [modal, setModal] = useState(true);
   const [currentChatRoom, setCurrentChatRoom] = useState("");
+  const [currentChatNickname, setCurrentChatNickname] = useState("");
   const { messages, sendMessage } = useWebSocketStore();
   //채팅방 목록 가져오기
   const { data: chatList, isSuccess: listSuccess } = useQuery<ChatItem[]>({
-    queryKey: ["chatroom"],
+    queryKey: ["chatroom1", messages[messages.length - 1]],
     queryFn: async () => {
       const response: { content: ChatItem[] } = await axiosInstance.get(
         "/api/chatroom?page=0&size=5",
@@ -50,8 +52,9 @@ export default function ChatRoom() {
         })
       : [];
 
-  const handleClickChatRoom = (chatRoomId: string) => {
+  const handleClickChatRoom = (chatRoomId: string, chatNickname: string) => {
     setCurrentChatRoom(chatRoomId);
+    setCurrentChatNickname(chatNickname);
     console.log(currentChatRoom);
   };
 
@@ -73,9 +76,29 @@ export default function ChatRoom() {
     console.log(messages);
   };
 
+  const handleCloseModal = () => {
+    setModal(false);
+  };
+
+  const handleOpenModal = () => {
+    setModal(true);
+  };
+
   return (
-    <div className="flex h-[100%] w-[75%] border-l border-gray-400">
-      <div className="flex h-[100%] w-[30%] flex-col border-r border-gray-400">
+    <div className="border-l-1 relative flex h-[100%] w-[100%] md:w-[75%]">
+      {/* <button onClick={() => axiosInstance.post("/api/chatroom/1")}>
+        채팅방 생성
+      </button> */}
+
+      <div
+        className={`flex h-[100%] w-[100%] ${modal ? "" : "hidden"} flex-col border-2 sm:block sm:w-[50%]`}
+      >
+        <button
+          onClick={handleCloseModal}
+          className={`${modal ? "" : "hidden"} sm:hidden`}
+        >
+          닫기
+        </button>
         {sortedData.map((list) => (
           <ChatList
             key={list.chatRoomId}
@@ -84,10 +107,19 @@ export default function ChatRoom() {
             lastMessage={list.lastMessage}
             lastMessageAt={list.lastMessageAt}
             onClickChatRoom={handleClickChatRoom}
+            onCloseModal={handleCloseModal}
           />
         ))}
       </div>
-      <Chat chatRoomId={currentChatRoom} onSendMessage={handleSendMessage} />
+
+      <div className={`h-full w-[100%] ${!modal ? "" : "hidden"} sm:block`}>
+        <Chat
+          counterpartyNickname={currentChatNickname}
+          chatRoomId={currentChatRoom}
+          onSendMessage={handleSendMessage}
+          onOpenModal={handleOpenModal}
+        />
+      </div>
     </div>
   );
 }

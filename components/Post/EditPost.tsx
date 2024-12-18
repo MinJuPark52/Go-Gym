@@ -14,6 +14,7 @@ import { useMutation } from "@tanstack/react-query";
 import { getAccessToken, getCity } from "@/api/api";
 import axiosInstance from "@/api/axiosInstance";
 import { useRouter } from "next/navigation";
+import useImageUrl from "@/hooks/useImageUrl";
 
 interface categoryStateType {
   postType: "default" | "SELL" | "BUY";
@@ -32,7 +33,7 @@ export default function EditPost() {
     content: "",
     expirationDate: "",
     remainingSessions: 0,
-    amount: 0,
+    amount: "",
     city: "",
     district: "",
     // ptType: 'PT_0_10',
@@ -46,7 +47,7 @@ export default function EditPost() {
     gymName: "",
   });
   //<Record<string, string | File | null>> 백엔드 연동시 타입추가
-  const [images, setImages] = useState<Record<string, string | File | null>>({
+  const [images, setImages] = useState<Record<string, string | null>>({
     imageUrl1: "",
     imageUrl2: "",
     imageUrl3: "",
@@ -132,16 +133,17 @@ export default function EditPost() {
     });
   };
 
-  const handleFileSelect = (key: string, img: File) => {
+  const handleFileSelect = async (key: string, img: File) => {
     // 백엔드 연동시 파일자체 보내기
+    const newImg = await useImageUrl(img.name, img, "posts");
     setImages({
       ...images,
-      [key]: img,
+      [key]: newImg.toString(),
     });
   };
 
   const handleDeleteImage = (el: string) => {
-    setImages({ ...images, [el]: "" });
+    setImages({ ...images, [el]: null });
   };
 
   const handleClickGym = (
@@ -177,7 +179,12 @@ export default function EditPost() {
       return;
     }
 
-    if (values.remainingSessions < 0 || values.amount < 0) {
+    if (Number.isNaN(+values.amount.replace(/,/g, ""))) {
+      alert("숫자만 입력해주세요");
+      return;
+    }
+
+    if (values.remainingSessions < 0 || +values.amount.replace(/,/g, "") < 0) {
       alert("가격과 PT횟수는 0 이상으로 입력해주세요");
       return;
     }
@@ -232,7 +239,13 @@ export default function EditPost() {
     //   data[key] = value as string; // 값이 string 타입으로 추론되도록 처리
     // });
 
-    mutate({ ...values, ...mapValue, ...images, ...categoryValue });
+    mutate({
+      ...values,
+      ...mapValue,
+      ...images,
+      ...categoryValue,
+      amount: +values.amount.replace(/,/g, ""),
+    });
   };
 
   if (isPending) {
@@ -264,7 +277,7 @@ export default function EditPost() {
             </button>
           )}
         </div>
-        <div className="grid max-w-[406px] grid-cols-2 gap-3 md:min-w-[604px] md:max-w-[605px] md:grid-cols-3">
+        <div className="flex flex-wrap gap-3">
           <div className="flex flex-col gap-2">
             <label htmlFor={"expirationDate"} className="text-sm text-gray-500">
               회원권 마감 날짜
@@ -311,7 +324,7 @@ export default function EditPost() {
             />
           </div>
         </div>
-        <div className="mb-4 mt-4 flex gap-4 border-b border-gray-400 pb-8">
+        <div className="mb-4 mt-4 flex flex-wrap gap-4 border-b border-gray-400 pb-8">
           {FIRST_FILTER_CATEGORY.map((category: FILTER_CATEGORY_TYPE) => (
             <FilterCategory
               key={category.label}
@@ -347,7 +360,7 @@ export default function EditPost() {
                   <Image
                     // json서버 사용시까진 blob url
                     // src={images[el] as string}
-                    src={URL.createObjectURL(images[el] as File)}
+                    src={images[el] || ""}
                     alt="헬스장 이미지"
                     className="rounded-lg"
                     fill
