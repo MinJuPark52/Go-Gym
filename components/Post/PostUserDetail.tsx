@@ -54,6 +54,9 @@ export default function PostUserDetail() {
           <p className="text-2xl text-gray-600">
             {data.nickname}님의 다른 게시글
           </p>
+          <button className="btn btn-active bg-red-500 hover:bg-red-700">
+            신고
+          </button>
         </div>
         <div className="m-4 overflow-x-auto">
           <PostList data={post} />

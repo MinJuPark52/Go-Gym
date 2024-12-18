@@ -65,7 +65,7 @@ export default function Filter({
   };
 
   return (
-    <div className="flex min-w-[700px] flex-col gap-4">
+    <div className="flex flex-col gap-4">
       <div className="flex gap-3">
         {FIRST_FILTER_CATEGORY.map((category: FILTER_CATEGORY_TYPE) => (
           <FilterCategory
@@ -77,7 +77,7 @@ export default function Filter({
           />
         ))}
       </div>
-      <div className="flex gap-3">
+      <div className="grid max-w-[406px] grid-cols-2 gap-3 md:min-w-[604px] md:max-w-[605px] md:grid-cols-3">
         {SECOND_FILTER_CATEGORY.map((category: FILTER_CATEGORY_TYPE) => (
           <FilterCategory
             key={category.label}
@@ -88,7 +88,7 @@ export default function Filter({
           />
         ))}
       </div>
-      <div className="mt-8 flex h-16 w-[100%] items-center gap-4 rounded-lg bg-blue-300 pl-4">
+      <div className="mt-8 flex h-16 w-[100%] items-center gap-4 rounded-lg bg-gray-200 pl-4">
         {Object.values(activeFilters).map((value, idx) => (
           <ActiveFilter key={idx} filterValue={value} />
         ))}

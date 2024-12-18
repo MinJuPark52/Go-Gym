@@ -2,7 +2,9 @@
 
 import "react-responsive-carousel/lib/styles/carousel.min.css";
 import { Carousel } from "react-responsive-carousel";
-import workoutImg from "../../public/womanworkingout.jpg";
+import secondImg from "../../public/slider_2.jpg";
+import thirdImg from "../../public/slider_3.jpg";
+import firstImg from "../../public/slider_1.jpg";
 
 import Link from "next/link";
 import Image from "next/image";
@@ -11,21 +13,21 @@ const Slider = () => {
   const items = [
     {
       name: "workout",
-      title: "최고의 헬스장 멤버십 거래",
+      title: "최고의 헬스장 멤버십 중고거래",
       text: "저렴한 가격으로 다양한 헬스장 멤버십을 거래하고, 더 나은 건강을 시작하세요.",
-      img: workoutImg,
-    },
-    {
-      name: "workout",
-      title: "디지털 시대의 스마트한 거래",
-      text: "온라인에서 간편하게 헬스장 회원권을 사고 팔 수 있습니다. 언제 어디서나 쉽고 빠르게!",
-      img: workoutImg,
+      img: firstImg,
     },
     {
       name: "workout",
       title: "다양한 선택지, 나에게 맞는 헬스장",
       text: "여러 헬스장 회원권을 비교하고, 나에게 가장 적합한 헬스장을 찾으세요.",
-      img: workoutImg,
+      img: thirdImg,
+    },
+    {
+      name: "workout",
+      title: "디지털 시대의 스마트한 거래",
+      text: "온라인에서 간편하고 안전하게 거래 할 수 있습니다. 언제 어디서나 쉽고 빠르게!",
+      img: secondImg,
     },
   ];
   interface ISliderItem {
@@ -42,7 +44,7 @@ const Slider = () => {
       onClick={onClickHandler}
       className="absolute left-2 top-1/2 z-10"
     >
-      <kbd className="kbd translate-x-4 border-white bg-transparent text-white">
+      <kbd className="kbd translate-x-4 translate-y-8 border-white bg-transparent text-white md:translate-y-0">
         ◀︎
       </kbd>
     </button>
@@ -54,7 +56,9 @@ const Slider = () => {
       onClick={onClickHandler}
       className="absolute right-8 top-1/2 z-10"
     >
-      <kbd className="kbd border-white bg-transparent text-white">▶︎</kbd>
+      <kbd className="kbd translate-y-8 border-white bg-transparent text-white md:translate-y-0">
+        ▶︎
+      </kbd>
     </button>
   );
 
@@ -69,7 +73,7 @@ const Slider = () => {
       renderArrowNext={(onClickHandler) => CustomNextArrow(onClickHandler)}
       className="carousel-container"
     >
-      {items.map((item: ISliderItem) => {
+      {items.map((item: ISliderItem, idx) => {
         return (
           <div key={item.name} className="carousel-slide h-96">
             <div className="carousel-description absolute bottom-1/3 left-auto right-auto z-50 mb-10 w-full translate-x-8 px-4 text-left lg:container md:px-10">

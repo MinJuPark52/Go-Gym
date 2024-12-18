@@ -7,32 +7,32 @@ import useTimeAgo from "@/hooks/useTimeAgo";
 import DefaultProfile from "../UI/DefaultProfile";
 
 interface PostType {
-  id: string;
-  authorNickName: string;
-  created_at: string;
+  postId: string;
+  authorNickname: string;
+  createdAt: string;
   gymName: string;
   imageUrl1: string;
-  postStatus: string;
+  status: string;
   title: string;
   wishCount: number;
 }
 
 export default function PostItem({
-  id,
-  authorNickName,
-  created_at,
+  postId,
+  authorNickname,
+  createdAt,
   gymName,
   imageUrl1,
-  postStatus,
+  status,
   title,
   wishCount,
 }: PostType) {
-  const postStatusKo = postStatus === "POSTING" && "게시중";
+  const postStatusKo = status === "POSTING" && "게시중";
 
-  const timeago = useTimeAgo(created_at);
+  const timeago = useTimeAgo(createdAt);
 
   return (
-    <Link href={`/community/${id}`}>
+    <Link href={`/community/${postId}`}>
       <div className="h-80 w-80 cursor-pointer rounded-lg border border-[#ccc] shadow">
         <div>
           <div className="m-2 flex justify-between">
@@ -82,7 +82,7 @@ export default function PostItem({
             <div className="avatar">
               <DefaultProfile width="10" />
             </div>
-            {authorNickName}
+            {authorNickname}
           </div>
         </div>
       </div>

@@ -16,6 +16,35 @@ import axiosInstance from "@/api/axiosInstance";
 import { useParams, useRouter } from "next/navigation";
 import axios from "axios";
 
+interface PostType {
+  postId: string;
+  authorNickname: string;
+  authorId: number;
+  amount: string;
+  city: string;
+  district: string;
+  latitude: number;
+  longitude: number;
+  gymKakaoUrl: string;
+  createdAt: string;
+  gymName: string;
+  postType: "default" | "SELL" | "BUY";
+  membershipType:
+    | "default"
+    | "MEMBERSHIP_ONLY"
+    | "MEMBERSHIP_WITH_PT"
+    | "PT_ONLY";
+  expirationDate: string;
+  remainingSessions: number;
+  status: string;
+  title: string;
+  wishCount: number;
+  content: string;
+  imageUrl1: string;
+  imageUrl2: string;
+  imageUrl3: string;
+}
+
 interface categoryStateType {
   postType: "default" | "SELL" | "BUY";
   status:
@@ -32,14 +61,17 @@ interface categoryStateType {
 }
 
 export default function ModifiedPost() {
+  const params = useParams();
+  const router = useRouter();
+
+  //status 추가하기
+
   const [values, setValues] = useState({
     title: "",
     content: "",
     expirationDate: "",
     remainingSessions: 0,
     amount: 0,
-    city: "",
-    district: "",
   });
   const [isMapOpen, setIsMapOpen] = useState(false);
   const [mapValue, setMapValue] = useState({
@@ -61,28 +93,28 @@ export default function ModifiedPost() {
     membershipType: "default",
   });
 
-  const params = useParams();
-  const router = useRouter();
-
   const { data } = useQuery({
     queryKey: ["postDetail", params.postid],
-    queryFn: async () =>
-      (await axios.get(`http://localhost:4000/postDetails/${params.postid}`))
-        .data,
-    staleTime: 10000,
+    queryFn: async () => {
+      const response: PostType = await axiosInstance.get(
+        `/api/posts/details/${params.postid}`,
+      );
+      return response;
+    },
+    staleTime: 1000,
   });
 
   const { mutate, isPending } = useMutation({
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     mutationFn: async (jsonData: Record<string, any>) =>
-      await axiosInstance.put(`/backend/api/posts/${params.postid}`, jsonData),
+      await axiosInstance.put(`/api/posts/${params.postid}`, jsonData),
     onSuccess: (data) => {
-      alert("게시글이 작성되었습니다.");
+      alert("게시글이 수정되었습니다.");
       console.log(data);
       router.push("/community");
     },
     onError: () => {
-      alert("게시글이 작성되지않았습니다.");
+      alert("게시글이 수정되지않았습니다.");
     },
   });
 
@@ -102,31 +134,6 @@ export default function ModifiedPost() {
   }, []);
 
   useEffect(() => {
-    // mapValue.latitude가 0이 아닌 경우에만 getCity 호출
-    const token = sessionStorage.getItem("accessToken");
-
-    if (mapValue.latitude !== 0 && token) {
-      const fetchCityData = async () => {
-        const response = await getCity(
-          mapValue.latitude.toString(),
-          mapValue.longitude.toString(),
-          token,
-        );
-
-        if (response) {
-          setValues({
-            ...values,
-            city: response.sido_nm,
-            district: response.sgg_nm,
-          });
-        }
-      };
-
-      fetchCityData();
-    }
-  }, [mapValue]);
-
-  useEffect(() => {
     if (data) {
       console.log(data);
       setValues({
@@ -134,9 +141,7 @@ export default function ModifiedPost() {
         content: "",
         expirationDate: data.expirationDate,
         remainingSessions: data.remainingSessions,
-        amount: data.amount,
-        city: data.city,
-        district: data.district,
+        amount: +data.amount,
       });
       setMapValue({
         latitude: data.latitude,
@@ -148,6 +153,11 @@ export default function ModifiedPost() {
         imageUrl1: data.imageUrl1 || "",
         imageUrl2: data.imageUrl2 || "",
         imageUrl3: data.imageUrl3 || "",
+      });
+      setCategoryValue({
+        ...categoryValue,
+        postType: data.postType,
+        membershipType: data.membershipType,
       });
     }
   }, [data]);
@@ -174,14 +184,12 @@ export default function ModifiedPost() {
     });
   };
 
-  const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files && e.target.files[0]) {
-      // 백엔드 연동시 파일자체 보내기
-      setImages({
-        ...images,
-        [e.target.name]: URL.createObjectURL(e.target.files[0]),
-      });
-    }
+  const handleFileSelect = (key: string, img: File) => {
+    // 백엔드 연동시 파일자체 보내기
+    setImages({
+      ...images,
+      [key]: img,
+    });
   };
 
   const handleClickGym = (
@@ -230,37 +238,37 @@ export default function ModifiedPost() {
       return;
     }
 
-    const formData = new FormData();
+    // const formData = new FormData();
 
-    // values 추가
-    // number가 있기때문에 toString()을 사용해 타입 고정
-    for (const key in values) {
-      formData.append(key, values[key as keyof typeof values].toString());
-    }
+    // // values 추가
+    // // number가 있기때문에 toString()을 사용해 타입 고정
+    // for (const key in values) {
+    //   formData.append(key, values[key as keyof typeof values].toString());
+    // }
 
-    // mapValue 추가
-    for (const key in mapValue) {
-      formData.append(key, mapValue[key as keyof typeof mapValue].toString());
-    }
+    // // mapValue 추가
+    // for (const key in mapValue) {
+    //   formData.append(key, mapValue[key as keyof typeof mapValue].toString());
+    // }
 
-    // images 추가
-    for (const key in images) {
-      if (images[key]) {
-        formData.append(key, images[key] as File);
-      }
-    }
+    // // images 추가
+    // for (const key in images) {
+    //   if (images[key]) {
+    //     formData.append(key, images[key] as File);
+    //   }
+    // }
 
-    // categoryValue 추가
-    for (const key in categoryValue) {
-      formData.append(key, categoryValue[key as keyof typeof categoryValue]);
-    }
+    // // categoryValue 추가
+    // for (const key in categoryValue) {
+    //   formData.append(key, categoryValue[key as keyof typeof categoryValue]);
+    // }
 
-    const data: Record<string, string> = {};
-    formData.forEach((value, key) => {
-      data[key] = value as string; // 값이 string 타입으로 추론되도록 처리
-    });
+    // const data: Record<string, string> = {};
+    // formData.forEach((value, key) => {
+    //   data[key] = value as string; // 값이 string 타입으로 추론되도록 처리
+    // });
 
-    mutate(data);
+    mutate({ ...values, ...images, ...categoryValue });
   };
 
   if (isPending) {
@@ -353,16 +361,20 @@ export default function ModifiedPost() {
           <div className="flex w-[100%] max-w-[1200px] items-center justify-between">
             {Object.keys(images).map((el) =>
               images[el] ? (
-                <Image
+                <div
                   key={el}
-                  // json서버 사용시까진 blob url  src={URL.createObjectURL(images[el] as File)}
-                  src={URL.createObjectURL(images[el] as File)}
-                  alt="헬스장 이미지"
-                  className="rounded-lg"
-                  width={240}
-                  height={240}
-                  layout="intrinsic"
-                />
+                  className="relative flex h-56 w-60 items-center justify-center"
+                >
+                  <Image
+                    // json서버 사용시까진 blob url
+                    // src={images[el] as string}
+                    src={URL.createObjectURL(images[el] as File)}
+                    alt="헬스장 이미지"
+                    className="rounded-lg"
+                    fill
+                    style={{ objectFit: "cover" }}
+                  />
+                </div>
               ) : (
                 <ImageSelect key={el} name={el} onChange={handleFileSelect} />
               ),
