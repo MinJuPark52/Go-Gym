@@ -68,28 +68,6 @@ export default function ChangeProfile() {
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    const formData = new FormData();
-
-    Object.entries(values).forEach(([key, value]) => {
-      formData.append(key, value as string); // value는 string 타입으로 가정
-    });
-
-    // 파일 추가
-    if (file) {
-      formData.append("profileImageUrl", file); // 파일 추가
-    }
-
-    try {
-      const response = await axiosInstance.put("/api/members/me", formData, {
-        headers: {
-          "Content-Type": "multipart/form-data",
-        },
-      });
-
-      console.log(response);
-    } catch (e) {
-      console.log(e);
-    }
   };
 
   return (

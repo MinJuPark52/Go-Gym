@@ -29,8 +29,8 @@ export default function Nav() {
   }
 
   return (
-    <div className="h-18 flex justify-center border-b border-[#ccc] shadow-md">
-      <div className="flex w-[80%] items-center justify-between">
+    <div className="h-18 relative z-40 flex justify-center border-b border-[#ccc] shadow-md">
+      <div className="flex w-[100%] items-center justify-between pl-2 pr-2 sm:w-[80%]">
         <div className="flex items-center">
           <button className="sm:hidden" onClick={handleToggleMenuModal}>
             <RxHamburgerMenu size={24} />

@@ -26,7 +26,7 @@ const Slider = () => {
     {
       name: "workout",
       title: "디지털 시대의 스마트한 거래",
-      text: "온라인에서 간편하고 안전하게 거래 할 수 있습니다. 언제 어디서나 쉽고 빠르게!",
+      text: "온라인에서 간편하고 안전하게 거래 할 수 있고, 언제 어디서나 쉽고 빠르게!",
       img: secondImg,
     },
   ];
@@ -75,12 +75,16 @@ const Slider = () => {
     >
       {items.map((item: ISliderItem, idx) => {
         return (
-          <div key={item.name} className="carousel-slide h-96">
-            <div className="carousel-description absolute bottom-1/3 left-auto right-auto z-50 mb-10 w-full translate-x-8 px-4 text-left lg:container md:px-10">
-              <h2 className="text-2xl font-bold text-white lg:text-4xl">
+          <div key={item.name} className="carousel-slide h-60 sm:h-96">
+            <div className="carousel-description absolute bottom-1/3 left-auto right-auto z-50 mb-10 w-full translate-x-8 translate-y-6 px-4 text-left lg:container sm:translate-y-0 md:px-10">
+              <h2 className="text-base font-bold text-white sm:text-xl lg:text-4xl">
                 {item.title}
               </h2>
-              <p className="my-2 text-white">{item.text}</p>
+              <div className="my-2 text-sm text-white sm:text-base">
+                {item.text.split(",").map((line, idx) => (
+                  <p key={idx}>{line.trim()}</p>
+                ))}
+              </div>
               <Link
                 href={`/`}
                 className="btn btn-info border-none bg-blue-500 text-white hover:bg-blue-700"

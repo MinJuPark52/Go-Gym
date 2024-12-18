@@ -2,7 +2,11 @@
 
 import { useState } from "react";
 
-export default function ChatPostDetail() {
+export default function ChatPostDetail({
+  onOpenModal,
+}: {
+  onOpenModal: () => void;
+}) {
   const [modal, setModal] = useState(false);
   const [amount, setAmount] = useState("");
 
@@ -31,7 +35,10 @@ export default function ChatPostDetail() {
   };
 
   return (
-    <div className="absolute left-0 right-0 top-0 z-40 flex min-h-32 flex-col gap-2 border-b-2 bg-white p-4 pb-1">
+    <div className="absolute left-0 right-0 top-0 z-30 flex min-h-32 flex-col gap-2 border-b-2 bg-white p-4 pb-1">
+      <button className="btn w-[30%] sm:hidden" onClick={onOpenModal}>
+        채팅방
+      </button>
       <div className="flex gap-4">
         <select className="font-semibold focus:outline-none">
           <option>게시중</option>
@@ -58,12 +65,12 @@ export default function ChatPostDetail() {
             className="mt-8 flex flex-col gap-4 rounded-lg border-2 border-blue-300 p-4"
           >
             <p className="font-bold">거래신청</p>
-            <div className="flex justify-between">
+            <div className="flex flex-col justify-between gap-4 sm:flex-row">
               <div className="flex flex-col items-center">
                 <input
                   type="text"
                   placeholder="거래할 금액을 입력해주세요"
-                  className="flex h-12 min-w-64 rounded-lg border border-gray-300 p-2 focus:outline-none"
+                  className="flex h-12 w-[100%] min-w-64 rounded-lg border border-gray-300 p-2 focus:outline-none"
                   onChange={handleChangeMoney}
                   value={formatNumber(amount)}
                 />

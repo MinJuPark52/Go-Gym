@@ -17,9 +17,16 @@ interface props {
     chatRoomId: string;
     content: string;
   }) => void;
+  counterpartyNickname: string;
+  onOpenModal: () => void;
 }
 
-export default function Chat({ chatRoomId, onSendMessage }: props) {
+export default function Chat({
+  chatRoomId,
+  onSendMessage,
+  counterpartyNickname,
+  onOpenModal,
+}: props) {
   const [text, setText] = useState("");
   const { connect, messages, setAgoMessage, disconnect } = useWebSocketStore();
   const scrollRef = useRef<HTMLDivElement>(null);
@@ -32,7 +39,14 @@ export default function Chat({ chatRoomId, onSendMessage }: props) {
       });
     }
 
+    // const chatLeave = async () => {
+    //   await axiosInstance.post(`/api/chatroom/{chatroom-id}/leave`, {
+    //     lastReadMessageId: messages[messages.length - 1]
+    //   })
+
+    // }
     return () => {
+      // chatLeave();
       disconnect();
     };
   }, [chatRoomId]);
@@ -90,7 +104,7 @@ export default function Chat({ chatRoomId, onSendMessage }: props) {
 
   // scrollTop == 현재위치, 맨밑으로 이동중
   useEffect(() => {
-    if (scrollRef.current) {
+    if (scrollRef.current && scrollRef.current.scrollTop !== 0) {
       scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
     }
   }, [messages]);
@@ -124,11 +138,12 @@ export default function Chat({ chatRoomId, onSendMessage }: props) {
 
   if (isPending) {
     return (
-      <div className="relative flex h-[100%] w-[70%] flex-col border-r-2 bg-blue-200 bg-opacity-40 p-4">
+      <div className="relative flex h-[100%] w-[100%] flex-col border-r-2 bg-blue-200 bg-opacity-40 p-4">
+        <ChatPostDetail onOpenModal={onOpenModal} />
         <div className="flex h-[calc(100%-10rem)] items-center justify-center">
           <span className="loading loading-ring loading-lg"></span>
         </div>
-        <div className="absolute bottom-0 left-0 flex h-40 w-full bg-white p-2">
+        <div className="absolute bottom-0 left-0 flex h-24 w-full bg-white p-2">
           <textarea
             className="flex-[4] focus:outline-none"
             placeholder="메세지를 입력해주세요"
@@ -152,7 +167,7 @@ export default function Chat({ chatRoomId, onSendMessage }: props) {
       onSubmit={handleSubmitMessage}
       className="relative flex h-[100%] w-[70%] flex-col bg-blue-200 bg-opacity-40 p-4"
     >
-      <ChatPostDetail />
+      <ChatPostDetail onOpenModal={onOpenModal} />
       <div
         ref={scrollRef}
         onScroll={handleScroll}
@@ -165,11 +180,16 @@ export default function Chat({ chatRoomId, onSendMessage }: props) {
               <div className="avatar chat-image">
                 <DefaultProfile width="10" />
               </div>
-              <div className="chat-header opacity-50">전민혁</div>
+              <div className="chat-header mb-1 opacity-50">
+                {counterpartyNickname}
+              </div>
               <div className="chat-bubble bg-white text-gray-600">
                 {chat.content}
               </div>
-              <div className="chat-footer opacity-50">Deliverd</div>
+              <div></div>
+              <time className="ml-2 mt-1 text-xs opacity-50">
+                {extractTime(chat.createdAt)}
+              </time>
             </div>
           ) : (
             <div className="chat chat-end" key={chat.createdAt}>
@@ -181,19 +201,19 @@ export default function Chat({ chatRoomId, onSendMessage }: props) {
                   />
                 </div>
               </div>
-              <div className="chat-header">
-                Anakin
-                <time className="text-xs opacity-50">12:46</time>
-              </div>
+              <div className="chat-header mb-1">전민혁</div>
               <div className="chat-bubble bg-blue-500 text-white">
                 {chat.content}
               </div>
-              <div className="chat-footer opacity-50">Seen at 12:46</div>
+
+              <time className="mt-1 text-xs opacity-50">
+                {extractTime(chat.createdAt)}
+              </time>
             </div>
           );
         })}
       </div>
-      <div className="absolute bottom-0 left-0 flex h-40 w-full bg-white p-2">
+      <div className="absolute bottom-0 left-0 flex h-24 w-full bg-white p-2">
         <textarea
           className="flex-[4] focus:outline-none"
           placeholder="메세지를 입력해주세요"
@@ -214,3 +234,9 @@ export default function Chat({ chatRoomId, onSendMessage }: props) {
     </form>
   );
 }
+
+const extractTime = (date: string) => {
+  const timePart = date.split("T")[1]; // "13:31:47.1590463"
+  const [hours, minutes] = timePart.split(":"); // ["13", "31"]
+  return `${hours}:${minutes}`;
+};
