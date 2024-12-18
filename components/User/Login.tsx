@@ -6,6 +6,8 @@ import axios from "axios";
 import { BiSolidMessageRounded } from "react-icons/bi";
 import useLoginStore from "@/store/useLoginStore";
 import { useRouter } from "next/navigation";
+import Image from "next/image";
+import form from "../../public/form.png";
 
 interface User {
   email: string;
@@ -125,60 +127,81 @@ export default function LoginForm() {
   };
 
   return (
-    <form
-      onSubmit={handleLoginSubmit}
-      className="h-[25rem] w-full max-w-md space-y-3 bg-white p-8"
-    >
-      <h2 className="mt-2 text-center text-2xl font-semibold">로그인</h2>
-
-      <LoginInput
-        type="email"
-        placeholder="이메일 : example@gmail.com"
-        value={loginFormData.email}
-        onChange={handleLoginChange("email")}
-        errorMessage={loginErrors.email}
-      />
-      <div>
-        <LoginInput
-          type={showPw ? "text" : "password"}
-          placeholder="비밀번호"
-          value={loginFormData.password}
-          onChange={handleLoginChange("password")}
-          errorMessage={loginErrors.password}
+    <div className="flex items-center justify-center bg-white">
+      <div className="flex h-[30rem] w-[15rem] max-w-4xl shadow-lg">
+        <Image
+          src={form}
+          alt="Login Image"
+          width={600}
+          height={400}
+          className="h-full w-full rounded-l-xl object-cover"
         />
-        <div className="mb-3 flex items-center">
-          <input
-            type="checkbox"
-            id="showPassword"
-            checked={showPw}
-            onChange={() => setShowPw(!showPw)}
-            className="h-4 w-4"
-          />
-          <label htmlFor="showPassword" className="ml-1 text-sm">
-            비밀번호 표시
-          </label>
-        </div>
       </div>
+      <div className="flex items-center justify-center rounded-r-xl border-b-2 border-r-2 border-t-2 border-gray-200">
+        <form
+          onSubmit={handleLoginSubmit}
+          className="h-[30rem] w-[35rem] max-w-md p-8"
+        >
+          <h2 className="mt-4 text-center text-2xl font-semibold">로그인</h2>
+          <div>
+            <label>이메일</label>
+            <LoginInput
+              type="email"
+              placeholder="example@gmail.com"
+              value={loginFormData.email}
+              onChange={handleLoginChange("email")}
+              errorMessage={loginErrors.email}
+            />
+          </div>
 
-      <button
-        type="submit"
-        className="mt-4 w-full rounded-md bg-blue-500 py-2 text-white hover:bg-blue-600 focus:outline-none"
-      >
-        로그인
-      </button>
+          <div>
+            <label>비밀번호</label>
+            <LoginInput
+              type={showPw ? "text" : "password"}
+              placeholder="영문, 숫자, 특수문자 포함"
+              value={loginFormData.password}
+              onChange={handleLoginChange("password")}
+              errorMessage={loginErrors.password}
+            />
+            <div className="mb-2 flex items-center">
+              <input
+                type="checkbox"
+                id="showPassword"
+                checked={showPw}
+                onChange={() => setShowPw(!showPw)}
+                className="h-4 w-4"
+              />
+              <label htmlFor="showPassword" className="ml-1 text-sm">
+                비밀번호 표시
+              </label>
+            </div>
+          </div>
 
-      <div
-        onClick={handleKakaoLogin}
-        className="mt-2 flex cursor-pointer items-center justify-center"
-      >
-        <div className="inline-flex h-[40px] w-[150px] items-center justify-center rounded-md bg-yellow-300 shadow-sm">
-          <BiSolidMessageRounded className="mr-2 h-[20px] w-[20px]" />
-          <span className="text-center text-sm">카카오 로그인</span>
-        </div>
+          <button
+            type="submit"
+            className="mt-6 w-full rounded-md bg-blue-500 py-2 text-white focus:outline-none"
+          >
+            로그인
+          </button>
+
+          <div
+            onClick={handleKakaoLogin}
+            className="mt-2 flex cursor-pointer items-center justify-center"
+          >
+            <div className="inline-flex w-full items-center justify-center rounded-md bg-yellow-300 py-2 shadow-sm">
+              <BiSolidMessageRounded className="mr-2 h-[20px] w-[20px]" />
+              <span className="text-center text-sm">카카오 로그인</span>
+            </div>
+          </div>
+
+          <button
+            type="submit"
+            className="mt-3 w-full rounded-md border border-blue-500 py-1.5"
+          >
+            <Link href="/signup"> 회원가입</Link>
+          </button>
+        </form>
       </div>
-      <div>
-        <Link href="/signup">회원가입</Link>
-      </div>
-    </form>
+    </div>
   );
 }

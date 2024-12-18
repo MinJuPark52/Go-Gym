@@ -3,6 +3,8 @@
 import { ChangeEvent, useState } from "react";
 import axios from "axios";
 import { useRouter } from "next/navigation";
+import Image from "next/image";
+import form from "../../public/form.png";
 
 interface Signup {
   email: string;
@@ -335,173 +337,184 @@ export default function SignupPage() {
   };
 
   return (
-    <div className="flex h-[40rem] w-full items-center justify-center border-r-gray-300 bg-gray-50">
-      <form
-        onSubmit={handleSignupSubmit}
-        className="h-[35rem] w-full max-w-md space-y-3 overflow-y-auto bg-white p-8"
-      >
-        <h2 className="text-center text-2xl font-semibold">회원가입</h2>
+    <div className="flex min-h-screen items-center justify-center bg-gray-50">
+      <div className="flex max-w-4xl rounded-l-lg shadow-lg">
+        <Image
+          src={form}
+          alt="Login Image"
+          width={600}
+          height={400}
+          className="h-[35rem] w-[18rem] rounded-l-xl object-cover"
+        />
+      </div>
+      <div className="flex items-center justify-center rounded-r-xl bg-white">
+        <form
+          onSubmit={handleSignupSubmit}
+          className="h-[35rem] w-[40rem] max-w-md space-y-2 rounded-r-xl border-b-2 border-r-2 border-t-2 border-gray-200 p-8"
+        >
+          <h2 className="text-center text-2xl font-semibold">회원가입</h2>
 
-        {loading && (
-          <div className="absolute inset-0 flex items-center justify-center bg-white bg-opacity-90">
-            <div className="text-3xl text-gray-700">Loading..</div>
-          </div>
-        )}
+          {loading && (
+            <div className="absolute inset-0 flex items-center justify-center bg-white bg-opacity-90">
+              <div className="text-3xl text-gray-700">Loading..</div>
+            </div>
+          )}
 
-        <div>
-          <SignupInput
-            type="text"
-            placeholder="프로필 이미지 URL"
-            value={signupFormData.profileImageUrl}
-            onChange={handleSignupChange("profileImageUrl")}
-            errorMessage={signupErrors.profileImageUrl}
-          />
-        </div>
-
-        <div>
-          <SignupInput
-            type="text"
-            placeholder="이름"
-            value={signupFormData.name}
-            onChange={handleSignupChange("name")}
-            errorMessage={signupErrors.name}
-          />
-        </div>
-
-        <div className="flex items-center space-x-2">
           <div>
             <SignupInput
               type="text"
-              placeholder="이메일"
-              value={signupFormData.email}
-              onChange={handleSignupChange("email")}
-              errorMessage={signupErrors.email}
+              placeholder="프로필 이미지 URL"
+              value={signupFormData.profileImageUrl}
+              onChange={handleSignupChange("profileImageUrl")}
+              errorMessage={signupErrors.profileImageUrl}
             />
           </div>
-          <button
-            type="button"
-            onClick={() => checkEmail(signupFormData.email)}
-            className="rounded-md bg-blue-500 px-4 py-2 text-white focus:outline-none"
-            disabled={isEmailAvailable}
-          >
-            {isEmailAvailable ? "사용 가능" : "중복확인"}
-          </button>
-        </div>
 
-        <div className="flex items-center space-x-2">
           <div>
             <SignupInput
               type="text"
-              placeholder="닉네임"
-              value={signupFormData.nickname}
-              onChange={handleSignupChange("nickname")}
-              errorMessage={signupErrors.nickname}
+              placeholder="이름"
+              value={signupFormData.name}
+              onChange={handleSignupChange("name")}
+              errorMessage={signupErrors.name}
             />
           </div>
-          <button
-            type="button"
-            onClick={() => checkNickname(signupFormData.nickname)}
-            className="rounded-md bg-blue-500 px-4 py-2 text-white focus:outline-none"
-            disabled={isNicknameAvailable}
-          >
-            {isNicknameAvailable ? "사용 가능" : "중복확인"}
-          </button>
-        </div>
 
-        <div>
-          <SignupInput
-            type="text"
-            placeholder="핸드폰 번호"
-            value={signupFormData.phone}
-            onChange={handleSignupChange("phone")}
-            errorMessage={signupErrors.phone}
-          />
-        </div>
-
-        <div>
-          <SignupInput
-            type="password"
-            placeholder="비밀번호"
-            value={signupFormData.password}
-            onChange={handleSignupChange("password")}
-            errorMessage={signupErrors.password}
-          />
-        </div>
-
-        <div className="flex space-x-4">
-          <div className="flex-1">
-            <select
-              value={signupFormData.regionId1}
-              onChange={handleChangeRegionId1}
-              className="w-full rounded-md border border-gray-300 p-2"
+          <div className="flex items-center space-x-2">
+            <div className="flex-1">
+              <SignupInput
+                type="text"
+                placeholder="이메일"
+                value={signupFormData.email}
+                onChange={handleSignupChange("email")}
+                errorMessage={signupErrors.email}
+              />
+            </div>
+            <button
+              type="button"
+              onClick={() => checkEmail(signupFormData.email)}
+              className="rounded-md bg-blue-500 px-4 py-2 text-white focus:outline-none"
+              disabled={isEmailAvailable}
             >
-              {/* 아이디 값을 보냄 */}
-              <option value="">지역 선택1</option>
-              {regions?.map((region) => (
-                <option key={region.id} value={region.name}>
-                  {region.name}
-                </option>
-              ))}
-            </select>
+              {isEmailAvailable ? "사용 가능" : "중복확인"}
+            </button>
           </div>
 
-          <div className="flex-1">
-            <select
-              value={selectSubRegion1.regionId}
-              onChange={handleChangeSubRegionId1}
-              className="w-full rounded-md border border-gray-300 p-2"
+          <div className="flex items-center space-x-2">
+            <div className="flex-1">
+              <SignupInput
+                type="text"
+                placeholder="닉네임"
+                value={signupFormData.nickname}
+                onChange={handleSignupChange("nickname")}
+                errorMessage={signupErrors.nickname}
+              />
+            </div>
+            <button
+              type="button"
+              onClick={() => checkNickname(signupFormData.nickname)}
+              className="rounded-md bg-blue-500 px-4 py-2 text-white focus:outline-none"
+              disabled={isNicknameAvailable}
             >
-              <option value="">세부 지역 선택1</option>
-              {subRegion1?.map((subRegion) => (
-                <option key={subRegion.name} value={subRegion.id}>
-                  {subRegion.name}
-                </option>
-              ))}
-            </select>
-          </div>
-        </div>
-
-        <div className="flex space-x-4">
-          <div className="flex-1">
-            <select
-              value={signupFormData.regionId2}
-              onChange={handleChangeRegionId2}
-              className="w-full rounded-md border border-gray-300 p-2"
-            >
-              {/* 아이디 값을 보냄 */}
-              <option value="">지역 선택2</option>
-              {regions?.map((region) => (
-                <option key={region.id} value={region.name}>
-                  {region.name}
-                </option>
-              ))}
-            </select>
+              {isNicknameAvailable ? "사용 가능" : "중복확인"}
+            </button>
           </div>
 
-          <div className="flex-1">
-            <select
-              value={selectSubRegion2.regionId}
-              onChange={handleChangeSubRegionId2}
-              className="w-full rounded-md border border-gray-300 p-2"
-            >
-              <option value="">세부 지역 선택2</option>
-              {subRegion2?.map((subRegion) => (
-                <option key={subRegion.name} value={subRegion.id}>
-                  {subRegion.name}
-                </option>
-              ))}
-            </select>
+          <div>
+            <SignupInput
+              type="text"
+              placeholder="핸드폰 번호"
+              value={signupFormData.phone}
+              onChange={handleSignupChange("phone")}
+              errorMessage={signupErrors.phone}
+            />
           </div>
-        </div>
-        <div>
-          <button
-            type="submit"
-            className="w-full rounded-md bg-blue-500 py-2 text-white"
-          >
-            회원가입
-          </button>
-        </div>
-      </form>
+
+          <div>
+            <SignupInput
+              type="password"
+              placeholder="비밀번호"
+              value={signupFormData.password}
+              onChange={handleSignupChange("password")}
+              errorMessage={signupErrors.password}
+            />
+          </div>
+
+          <div className="flex space-x-4">
+            <div className="flex-1">
+              <select
+                value={signupFormData.regionId1}
+                onChange={handleChangeRegionId1}
+                className="w-full rounded-md border border-gray-300 p-2"
+              >
+                {/* 아이디 값을 보냄 */}
+                <option value="">지역 선택1</option>
+                {regions?.map((region) => (
+                  <option key={region.id} value={region.name}>
+                    {region.name}
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            <div className="flex-1">
+              <select
+                value={selectSubRegion1.regionId}
+                onChange={handleChangeSubRegionId1}
+                className="w-full rounded-md border border-gray-300 p-2"
+              >
+                <option value="">세부 지역 선택1</option>
+                {subRegion1?.map((subRegion) => (
+                  <option key={subRegion.name} value={subRegion.id}>
+                    {subRegion.name}
+                  </option>
+                ))}
+              </select>
+            </div>
+          </div>
+
+          <div className="flex space-x-4">
+            <div className="flex-1">
+              <select
+                value={signupFormData.regionId2}
+                onChange={handleChangeRegionId2}
+                className="w-full rounded-md border border-gray-300 p-2"
+              >
+                {/* 아이디 값을 보냄 */}
+                <option value="">지역 선택2</option>
+                {regions?.map((region) => (
+                  <option key={region.id} value={region.name}>
+                    {region.name}
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            <div className="flex-1">
+              <select
+                value={selectSubRegion2.regionId}
+                onChange={handleChangeSubRegionId2}
+                className="w-full rounded-md border border-gray-300 p-2"
+              >
+                <option value="">세부 지역 선택2</option>
+                {subRegion2?.map((subRegion) => (
+                  <option key={subRegion.name} value={subRegion.id}>
+                    {subRegion.name}
+                  </option>
+                ))}
+              </select>
+            </div>
+          </div>
+          <div>
+            <button
+              type="submit"
+              className="mt-4 w-full rounded-md bg-blue-500 py-2 text-white"
+            >
+              회원가입
+            </button>
+          </div>
+        </form>
+      </div>
     </div>
   );
 }
