@@ -2,8 +2,8 @@
 
 import "react-responsive-carousel/lib/styles/carousel.min.css";
 import { Carousel } from "react-responsive-carousel";
-import secondImg from "../../public/slider_2.jpg";
-import thirdImg from "../../public/slider_3.jpg";
+import thirdImg from "../../public/slider_5.jpg";
+import secondImg from "../../public/slider_3.jpg";
 import firstImg from "../../public/slider_1.jpg";
 
 import Link from "next/link";
@@ -21,13 +21,13 @@ const Slider = () => {
       name: "workout",
       title: "다양한 선택지, 나에게 맞는 헬스장",
       text: "여러 헬스장 회원권을 비교하고, 나에게 가장 적합한 헬스장을 찾으세요.",
-      img: thirdImg,
+      img: secondImg,
     },
     {
       name: "workout",
       title: "디지털 시대의 스마트한 거래",
       text: "온라인에서 간편하고 안전하게 거래 할 수 있고, 언제 어디서나 쉽고 빠르게!",
-      img: secondImg,
+      img: thirdImg,
     },
   ];
   interface ISliderItem {

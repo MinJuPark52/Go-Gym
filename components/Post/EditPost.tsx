@@ -48,9 +48,9 @@ export default function EditPost() {
   });
   //<Record<string, string | File | null>> 백엔드 연동시 타입추가
   const [images, setImages] = useState<Record<string, string | null>>({
-    imageUrl1: null,
-    imageUrl2: null,
-    imageUrl3: null,
+    imageUrl1: "",
+    imageUrl2: "",
+    imageUrl3: "",
   });
 
   const [categoryValue, setCategoryValue] = useState<categoryStateType>({
@@ -244,7 +244,7 @@ export default function EditPost() {
       ...mapValue,
       ...images,
       ...categoryValue,
-      [values.amount]: +values.amount.replace(/,/g, ""),
+      amount: +values.amount.replace(/,/g, ""),
     });
   };
 
@@ -277,7 +277,7 @@ export default function EditPost() {
             </button>
           )}
         </div>
-        <div className="grid max-w-[406px] grid-cols-2 gap-3 md:min-w-[604px] md:max-w-[605px] md:grid-cols-3">
+        <div className="flex flex-wrap gap-3">
           <div className="flex flex-col gap-2">
             <label htmlFor={"expirationDate"} className="text-sm text-gray-500">
               회원권 마감 날짜
@@ -324,7 +324,7 @@ export default function EditPost() {
             />
           </div>
         </div>
-        <div className="mb-4 mt-4 flex gap-4 border-b border-gray-400 pb-8">
+        <div className="mb-4 mt-4 flex flex-wrap gap-4 border-b border-gray-400 pb-8">
           {FIRST_FILTER_CATEGORY.map((category: FILTER_CATEGORY_TYPE) => (
             <FilterCategory
               key={category.label}

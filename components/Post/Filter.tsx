@@ -11,12 +11,7 @@ import ActiveFilter from "./ActiveFilter";
 
 interface categoryStateType {
   ["post-type"]: "default" | "SELL" | "BUY";
-  status:
-    | "default"
-    | "POSTING"
-    | "SALE_COMPLETED"
-    | "PURCHASE_COMPLETED"
-    | "HIDDEN";
+  status: "default" | "PENDING" | "IN_PROGRESS" | "COMPLETED" | "HIDDEN";
   ["membership-type"]:
     | "default"
     | "MEMBERSHIP_ONLY"
@@ -66,7 +61,7 @@ export default function Filter({
 
   return (
     <div className="flex flex-col gap-4">
-      <div className="flex gap-3">
+      <div className="flex flex-wrap gap-3">
         {FIRST_FILTER_CATEGORY.map((category: FILTER_CATEGORY_TYPE) => (
           <FilterCategory
             key={category.label}
@@ -77,7 +72,7 @@ export default function Filter({
           />
         ))}
       </div>
-      <div className="grid max-w-[406px] grid-cols-2 gap-3 md:min-w-[604px] md:max-w-[605px] md:grid-cols-3">
+      <div className="flex flex-wrap gap-3">
         {SECOND_FILTER_CATEGORY.map((category: FILTER_CATEGORY_TYPE) => (
           <FilterCategory
             key={category.label}

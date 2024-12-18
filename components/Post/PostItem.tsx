@@ -27,7 +27,7 @@ export default function PostItem({
   title,
   wishCount,
 }: PostType) {
-  const postStatusKo = status === "POSTING" && "게시중";
+  const postStatusKo = status === "PENDING" && "게시중";
 
   const timeago = useTimeAgo(createdAt);
 
@@ -68,12 +68,6 @@ export default function PostItem({
               <FaHeart color="#DC7D7D" />{" "}
               <span className="ml-1 text-sm font-normal text-gray-500">
                 {wishCount}
-              </span>
-            </div>
-            <div className="flex items-center">
-              <IoChatbubblesOutline size={24} />{" "}
-              <span className="ml-1 text-sm font-normal text-gray-500">
-                100
               </span>
             </div>
           </div>

@@ -95,7 +95,7 @@ export default function ChatRoom() {
       >
         <button
           onClick={handleCloseModal}
-          className={`${modal ? "" : "hidden"}`}
+          className={`${modal ? "" : "hidden"} sm:hidden`}
         >
           닫기
         </button>

@@ -48,12 +48,7 @@ interface PostType {
 
 interface categoryStateType {
   postType: "default" | "SELL" | "BUY";
-  status:
-    | "default"
-    | "POSTING"
-    | "SALE_COMPLETED"
-    | "PURCHASE_COMPLETED"
-    | "HIDDEN";
+  status: "default" | "PENDING" | "IN_PROGRESS" | "COMPLETED" | "HIDDEN";
   membershipType:
     | "default"
     | "MEMBERSHIP_ONLY"
@@ -90,7 +85,7 @@ export default function ModifiedPost() {
 
   const [categoryValue, setCategoryValue] = useState<categoryStateType>({
     postType: "default",
-    status: "POSTING",
+    status: "PENDING",
     membershipType: "default",
   });
 
