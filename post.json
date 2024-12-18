@@ -1,4 +1,16 @@
 {
+  "user": {
+    "memberId": "1",
+    "name": "전민혁",
+    "email": "mari394337@gmail.com",
+    "nickname": "전빡빡",
+    "phone": "010-7634-7212",
+    "profileImageUrl": null,
+    "interestArea1": "시흥시",
+    "interestArea2": null,
+    "payMoneyId": null,
+    "payMoneyBalance": null
+  },
   "posts": [
     {
       "id": "1",

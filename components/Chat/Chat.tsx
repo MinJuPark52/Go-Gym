@@ -1,11 +1,12 @@
 "use client";
 import Image from "next/image";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import profile from "@/public/default_profile.png";
 import useWebSocketStore from "@/store/useSocketStore";
 import DefaultProfile from "../UI/DefaultProfile";
 import axiosInstance from "@/api/axiosInstance";
-import { useQuery } from "@tanstack/react-query";
+import { useInfiniteQuery, useQuery } from "@tanstack/react-query";
+import ChatPostDetail from "./ChatPostDetail";
 
 interface props {
   chatRoomId: string;
@@ -21,6 +22,7 @@ interface props {
 export default function Chat({ chatRoomId, onSendMessage }: props) {
   const [text, setText] = useState("");
   const { connect, messages, setAgoMessage, disconnect } = useWebSocketStore();
+  const scrollRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     // 숫자 부분만 chatroomid적어주면 됨
@@ -35,17 +37,65 @@ export default function Chat({ chatRoomId, onSendMessage }: props) {
     };
   }, [chatRoomId]);
 
-  // const { data: agoMessage } = useQuery({
+  // const { data: agoMessage, isPending } = useQuery({
   //   queryKey: ["agoMessage", chatRoomId],
-  //   queryFn: async () => await axiosInstance.get(`/api/chatroom/${chatRoomId}`),
+  //   queryFn: async () =>
+  //     await axiosInstance.get(
+  //       `/api/chatroom/${chatRoomId}/messages?page=0&size=20`,
+  //     ),
   //   staleTime: 10000,
+  //   enabled: chatRoomId !== "",
   // });
-
   // useEffect(() => {
-  //   if (agoMessage) {
-  //     setAgoMessage(agoMessage.data);
-  //   }
+  //   console.log(agoMessage);
   // }, [agoMessage]);
+
+  //무한스크롤 구현
+
+  const { data, fetchNextPage, hasNextPage, isFetchingNextPage, isPending } =
+    useInfiniteQuery({
+      queryKey: ["agomessages"],
+      queryFn: async ({ pageParam = 0 }) => {
+        const res: { messages: any } = await axiosInstance.get(
+          `/api/chatroom/${chatRoomId}/messages`,
+          {
+            params: { page: pageParam, size: 6 },
+          },
+        );
+        return res.messages;
+      },
+      getNextPageParam: (lastPage, pages) => {
+        return lastPage.last ? undefined : pages.length;
+      },
+      initialPageParam: 0,
+      enabled: !!chatRoomId,
+    });
+
+  useEffect(() => {
+    if (data) {
+      const allMessages = data.pages.flatMap((page) => page.content);
+      setAgoMessage(allMessages.reverse()); // Zustand 상태 업데이트
+      console.log(data);
+    }
+  }, [data, setAgoMessage]);
+
+  const handleScroll = () => {
+    if (scrollRef.current) {
+      const { scrollTop } = scrollRef.current;
+      if (scrollTop === 0 && hasNextPage && !isFetchingNextPage) {
+        fetchNextPage(); // 위로 스크롤 시 다음 페이지 데이터 불러오기
+      }
+    }
+  };
+
+  // scrollTop == 현재위치, 맨밑으로 이동중
+  useEffect(() => {
+    if (scrollRef.current) {
+      scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
+    }
+  }, [messages]);
+
+  //무한 스크롤 함수 끝
 
   const handleText = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     setText(e.target.value);
@@ -72,14 +122,42 @@ export default function Chat({ chatRoomId, onSendMessage }: props) {
     handleSendMessage();
   };
 
-  const buttonStyle = text.trim().length ? "bg-blue-300" : "bg-gray-300";
+  if (isPending) {
+    return (
+      <div className="relative flex h-[100%] w-[70%] flex-col border-r-2 bg-blue-200 bg-opacity-40 p-4">
+        <div className="flex h-[calc(100%-10rem)] items-center justify-center">
+          <span className="loading loading-ring loading-lg"></span>
+        </div>
+        <div className="absolute bottom-0 left-0 flex h-40 w-full bg-white p-2">
+          <textarea
+            className="flex-[4] focus:outline-none"
+            placeholder="메세지를 입력해주세요"
+          />
+          <div className="flex flex-[1] items-center justify-center">
+            <button
+              type="submit"
+              className="btn btn-info border-blue-500 bg-blue-500 text-white"
+              disabled={text.trim().length === 0}
+            >
+              전송
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <form
       onSubmit={handleSubmitMessage}
       className="relative flex h-[100%] w-[70%] flex-col bg-blue-200 bg-opacity-40 p-4"
     >
-      <div className="flex h-[calc(100%-10rem)] flex-col overflow-y-auto p-2 scrollbar-hide">
+      <ChatPostDetail />
+      <div
+        ref={scrollRef}
+        onScroll={handleScroll}
+        className="flex h-[calc(100%-10rem)] flex-col overflow-y-auto p-2 pt-32 scrollbar-hide"
+      >
         {/* 채팅 데이터 받아오면 위에 코드로 교체 예정 */}
         {messages.map((chat) => {
           return chat.senderId === 1 ? (

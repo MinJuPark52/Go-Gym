@@ -26,7 +26,7 @@ export default function ChatRoom() {
   const { messages, sendMessage } = useWebSocketStore();
   //채팅방 목록 가져오기
   const { data: chatList, isSuccess: listSuccess } = useQuery<ChatItem[]>({
-    queryKey: ["chatroom"],
+    queryKey: ["chatroom1"],
     queryFn: async () => {
       const response: { content: ChatItem[] } = await axiosInstance.get(
         "/api/chatroom?page=0&size=5",
@@ -75,6 +75,9 @@ export default function ChatRoom() {
 
   return (
     <div className="flex h-[100%] w-[75%] border-l border-gray-400">
+      <button onClick={() => axiosInstance.post("/api/chatroom/1")}>
+        채팅방 생성
+      </button>
       <div className="flex h-[100%] w-[30%] flex-col border-r border-gray-400">
         {sortedData.map((list) => (
           <ChatList
