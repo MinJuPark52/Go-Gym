@@ -14,11 +14,11 @@ export default function GympayBox() {
   });
   return (
     <>
-      {user?.payMoneyId ? (
+      {user?.gymPayBalance ? (
         <div className="flex min-h-24 max-w-[660px] flex-col rounded-md bg-blue-500 p-4 text-white">
           <div className="flex justify-between">
             <p>Gym Pay</p>
-            <p>{user.payMoneyBalance}</p>
+            <p>{user.gymPayBalance}</p>
           </div>
           <Link href={"/mypage/addGymPay"} className="ml-auto">
             <button>충전</button>

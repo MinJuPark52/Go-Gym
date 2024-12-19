@@ -41,11 +41,11 @@ export default function ChangeProfile() {
         </p>
         <p className="text-sm font-bold text-gray-600">이메일: {user?.email}</p>
         <div className="flex items-center gap-4">
-          <div className="flex w-fit rounded-lg bg-[#5AC800] bg-opacity-60 pb-1 pl-2 pr-2 pt-1">
+          {/* <div className="flex w-fit rounded-lg bg-[#5AC800] bg-opacity-60 pb-1 pl-2 pr-2 pt-1">
             <p className="text-[11px] font-bold text-[#377008]">
               {user?.interestArea1}
             </p>
-          </div>
+          </div> */}
         </div>
       </div>
       <Link href={"/mypage/changeProfile"} className="ml-auto">
