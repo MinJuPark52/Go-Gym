@@ -42,8 +42,11 @@ export default function Notice() {
           setError(null);
         });
 
+        // addEventListener('dummy', (event) => {
+        // 이벤트의 종류가 더미로 지정
         eventSource.addEventListener("message", (event) => {
           const data = JSON.parse(event.data);
+          // 더미 안에 데이터값이 더미인지 확인
           if (data.event === "dummy") {
             console.log("Dummy data:", event.data);
           } else if (data.event === "notification") {
