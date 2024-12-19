@@ -6,7 +6,7 @@ import { useRouter } from "next/navigation";
 import Image from "next/image";
 import form from "../../public/form.png";
 import { useMutation } from "@tanstack/react-query";
-import UseImageUrl from "@/hooks/useImageUrl";
+import S3ImageUrl from "@/hooks/S3ImageUrl";
 
 interface Signup {
   email: string;
@@ -122,6 +122,9 @@ export default function SignupPage() {
     profileImageUrl: "",
   });
 
+  const [file, setFile] = useState<string>("");
+  const fileInputRef = useRef<HTMLInputElement | null>(null);
+
   const handleSignupChange =
     (field: keyof typeof signupFormData) =>
     (e: ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
@@ -236,13 +239,9 @@ export default function SignupPage() {
   });
 
   // 프로필 이미지
-  // const uploadImage = useImageUrl(profileImageUrl);
-  const [file, setFile] = useState<string>("");
-  const fileInputRef = useRef<HTMLInputElement | null>(null);
-
   const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
-      const newImg = await UseImageUrl(
+      const newImg = await S3ImageUrl(
         e.target.files[0].name,
         e.target.files[0],
         "members",
@@ -389,7 +388,7 @@ export default function SignupPage() {
             </div>
           )}
 
-          <div className="flex flex-col space-y-2 text-gray-500">
+          <div className="flex flex-col space-y-2 text-gray-400">
             <label htmlFor="file-upload" className="rounded-md border p-2">
               {file || "프로필을 선택해주세요"}
             </label>
@@ -473,7 +472,7 @@ export default function SignupPage() {
             />
           </div>
 
-          <div className="flex space-x-4 text-gray-500">
+          <div className="flex space-x-4 text-gray-400">
             <div className="flex-1">
               <select
                 value={signupFormData.regionId1}
@@ -506,7 +505,7 @@ export default function SignupPage() {
             </div>
           </div>
 
-          <div className="flex space-x-4 text-gray-500">
+          <div className="flex space-x-4 text-gray-400">
             <div className="flex-1">
               <select
                 value={signupFormData.regionId2}
