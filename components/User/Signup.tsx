@@ -1,11 +1,12 @@
 "use client";
 
-import { ChangeEvent, useState } from "react";
+import { ChangeEvent, useState, useRef } from "react";
 import axios from "axios";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 import form from "../../public/form.png";
 import { useMutation } from "@tanstack/react-query";
+import UseImageUrl from "@/hooks/useImageUrl";
 
 interface Signup {
   email: string;
@@ -234,6 +235,22 @@ export default function SignupPage() {
     },
   });
 
+  // 프로필 이미지
+  // const uploadImage = useImageUrl(profileImageUrl);
+  const [file, setFile] = useState<string>("");
+  const fileInputRef = useRef<HTMLInputElement | null>(null);
+
+  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files && e.target.files[0]) {
+      const newImg = await UseImageUrl(
+        e.target.files[0].name,
+        e.target.files[0],
+        "members",
+      );
+      setFile(newImg.toString());
+    }
+  };
+
   // 회원가입
   const handleSignupSubmit = useMutation({
     mutationFn: async () => {
@@ -243,6 +260,7 @@ export default function SignupPage() {
 
       if (validateForm()) {
         setLoading(true);
+
         try {
           const response = await axios.post<Signup[]>(
             "/backend/api/auth/sign-up",
@@ -371,13 +389,17 @@ export default function SignupPage() {
             </div>
           )}
 
-          <div>
-            <SignupInput
-              type="text"
-              placeholder="프로필 이미지 URL"
-              value={signupFormData.profileImageUrl}
-              onChange={handleSignupChange("profileImageUrl")}
-              errorMessage={signupErrors.profileImageUrl}
+          <div className="flex flex-col space-y-2 text-gray-500">
+            <label htmlFor="file-upload" className="rounded-md border p-2">
+              {file || "프로필을 선택해주세요"}
+            </label>
+            <input
+              type="file"
+              id="file-upload"
+              accept="image/*"
+              ref={fileInputRef}
+              onChange={handleImageUpload}
+              className="hidden"
             />
           </div>
 
@@ -451,7 +473,7 @@ export default function SignupPage() {
             />
           </div>
 
-          <div className="flex space-x-4">
+          <div className="flex space-x-4 text-gray-500">
             <div className="flex-1">
               <select
                 value={signupFormData.regionId1}
@@ -484,7 +506,7 @@ export default function SignupPage() {
             </div>
           </div>
 
-          <div className="flex space-x-4">
+          <div className="flex space-x-4 text-gray-500">
             <div className="flex-1">
               <select
                 value={signupFormData.regionId2}
