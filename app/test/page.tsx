@@ -80,7 +80,7 @@ export default function TestPage() {
             console.log("eventData" + event.data);
           });
           setClick1(false);
-          if (!click) {
+          if (!click1) {
             eventSource.close();
             setClick1(true);
           }
