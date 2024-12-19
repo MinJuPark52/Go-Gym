@@ -8,10 +8,7 @@ interface UserType {
   nickname: string;
   phone: string;
   profileImageUrl: string | null;
-  interestArea1: string | null;
-  interestArea2: string | null;
-  payMoneyId: string | null;
-  payMoneyBalance: string | null;
+  gymPayBalance: string | null;
 }
 
 interface userStore {

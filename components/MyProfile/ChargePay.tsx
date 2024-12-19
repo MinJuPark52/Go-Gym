@@ -1,19 +1,12 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import PortOne from "@portone/browser-sdk/v2";
 import axiosInstance from "@/api/axiosInstance";
 import { useMutation } from "@tanstack/react-query";
-import useLoginStore from "@/store/useLoginStore";
-import { EventSourcePolyfill } from "event-source-polyfill";
-
-interface PreRegisterResponse {
-  paymentId: string; // 서버 응답에서 paymentId의 타입을 확인 후 정의
-}
 
 export default function ChargePay() {
-  const { token } = useLoginStore();
-
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const [data, setData] = useState<any>({
     storeId: process.env.NEXT_PUBLIC_PORTONE_STORE_ID,
     orderName: "짐페이 충전",
@@ -55,32 +48,6 @@ export default function ChargePay() {
       return response;
     },
     onSuccess: (response) => {
-      // const eventSource = new EventSourcePolyfill(
-      //   `http://localhost:3000/backend/api/payments/sse/subscribe/${response.paymentId}`,
-      //   {
-      //     headers: {
-      //       "Content-Type": "text/event-stream",
-      //       "Cache-Control": "no-cache",
-      //       Connection: "keep-alive",
-      //     },
-      //   },
-      // );
-
-      // eventSource.addEventListener("open", (event: any) => {
-      //   console.log(event.data);
-      //   console.log("연결");
-      // });
-
-      // eventSource.addEventListener("Init", (event: any) => {
-      //   console.log(event.data);
-      //   console.log("11");
-      // });
-
-      // eventSource.onerror = () => {
-      //   //에러 발생시 할 동작
-      //   eventSource.close(); //연결 끊기
-      // };
-
       requestPayment(response.paymentId);
     },
   });
@@ -113,47 +80,12 @@ export default function ChargePay() {
     }
 
     mutate();
-
-    // const response: { paymentId: string } = await axiosInstance.post(
-    //   '/api/payments/pre-register',
-    //   {
-    //     amount: data.totalAmount,
-    //   }
-    // );
-
-    // if (response) {
-    //   setData({
-    //     ...data,
-    //     paymentId: response.paymentId,
-    //   });
-    // }
-
-    // if (data.paymentId) {
-    //   if (data.paymentId) {
-    //     const eventSource = new EventSource(
-    //       `https://ac8c-175-195-104-144.ngrok-free.app/api/payments/sse/subscribe/${data.paymentId}`
-    //     );
-
-    //     eventSource.addEventListener('Transaction Paid', (event) => {
-    //       console.log(event);
-    //     });
-    //     eventSource.addEventListener('Transaction Failed', (event) => {
-    //       console.log(event);
-    //     });
-
-    //     eventSource.onerror = () => {
-    //       //에러 발생시 할 동작
-    //       eventSource.close(); //연결 끊기
-    //     };
-    //   }
-    //   requestPayment();
-    // }
   };
 
-  const pay = async () => {
-    const response = await axiosInstance.post("/api/gym-pays");
-    console.log(response);
-  };
+  // const pay = async () => {
+  //   const response = await axiosInstance.post("/api/gym-pays");
+  //   console.log(response);
+  // };
 
   return (
     <div className="flex w-[75%] justify-center">

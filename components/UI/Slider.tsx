@@ -73,7 +73,7 @@ const Slider = () => {
       renderArrowNext={(onClickHandler) => CustomNextArrow(onClickHandler)}
       className="carousel-container"
     >
-      {items.map((item: ISliderItem, idx) => {
+      {items.map((item: ISliderItem) => {
         return (
           <div key={item.name} className="carousel-slide h-60 sm:h-96">
             <div className="carousel-description absolute bottom-1/3 left-auto right-auto z-50 mb-10 w-full translate-x-8 translate-y-6 px-4 text-left lg:container sm:translate-y-0 md:px-10">

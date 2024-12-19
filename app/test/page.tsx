@@ -1,51 +1,93 @@
 "use client";
-
-import axios from "axios";
 import { EventSourcePolyfill } from "event-source-polyfill";
+import { useState } from "react";
 
-export default function Test() {
-  const handlerClick = () => {
-    const eventSource = new EventSourcePolyfill(
-      `http://localhost:3000/backend/api/notifications/subscribe`,
-      {
-        headers: {
-          "Content-Type": "text/event-stream",
-          "Cache-Control": "no-cache",
-          Connection: "keep-alive",
-          Authorization:
-            "Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJwb3N0QHRlc3QuY29tIiwiaWQiOjEsInJvbGVzIjpbIlVTRVIiXSwiaWF0IjoxNzM0MjYyMzcwLCJleHAiOjE3MzQyNjU5NzB9.rc1BhNb0HYJN6-Zf0UqRxsRscP2VpGyExJ5C96jmLlE",
-        },
-      },
-    );
-
-    eventSource.onmessage = (event) => {
-      console.log("Default message event:", event.data);
-    };
-
-    eventSource.addEventListener("open", (event: any) => {
-      console.log(event.data);
-      console.log("연결");
-    });
-
-    eventSource.addEventListener("dummy", (event: any) => {
-      console.log(event.data);
-      console.log("11");
-    });
-
-    eventSource.addEventListener("notification", (event: any) => {
-      console.log(event.data);
-      console.log("11");
-    });
-
-    eventSource.onerror = () => {
-      //에러 발생시 할 동작
-      eventSource.close(); //연결 끊기
-    };
-  };
+export default function TestPage() {
+  const [click, setClick] = useState(true);
+  const [click1, setClick1] = useState(true);
 
   return (
-    <button onClick={handlerClick} className="btn btn-active">
-      구독
-    </button>
+    <>
+      <button
+        onClick={() => {
+          const eventSource = new EventSourcePolyfill(
+            "https://36d6-211-202-41-148.ngrok-free.app/api/notifications/subscribe?id=1",
+            {
+              headers: {
+                Connection: "keep-alive",
+                Accept: "text/event-stream",
+              },
+            },
+          );
+          eventSource.addEventListener("open", () => {
+            console.log("connect");
+          });
+
+          eventSource.onmessage = (event) => {
+            console.log("Default message event received");
+            console.log("Event:", event);
+            console.log("Event Data:", event.data);
+          };
+
+          eventSource.addEventListener("message", (event: any) => {
+            console.log("1");
+            console.log("event" + event);
+            console.log("eventData" + event.data);
+          });
+          eventSource.addEventListener("dummy", (event: any) => {
+            console.log("1");
+            console.log("event" + event);
+            console.log("eventData" + event.data);
+          });
+          setClick(false);
+          if (!click) {
+            eventSource.close();
+            setClick(true);
+          }
+        }}
+      >
+        구독
+      </button>
+      <button
+        onClick={() => {
+          const eventSource = new EventSourcePolyfill(
+            "https://go-gym.site/api/notifications/subscribe?id=1",
+            {
+              headers: {
+                Connection: "keep-alive",
+                Accept: "text/event-stream",
+              },
+            },
+          );
+          eventSource.addEventListener("open", () => {
+            console.log("connect");
+          });
+
+          eventSource.onmessage = (event) => {
+            console.log("Default message event received");
+            console.log("Event:", event);
+            console.log("Event Data:", event.data);
+          };
+
+          eventSource.addEventListener("message", (event: any) => {
+            console.log("1");
+            console.log("event" + event);
+            console.log("eventData" + event.data);
+          });
+          eventSource.addEventListener("dummy", (event: any) => {
+            console.log("1");
+            console.log("event" + event);
+            console.log("eventData" + event.data);
+          });
+          setClick1(false);
+          if (!click1) {
+            eventSource.close();
+            setClick1(true);
+          }
+        }}
+      >
+        구독2
+      </button>
+    </>
   );
 }

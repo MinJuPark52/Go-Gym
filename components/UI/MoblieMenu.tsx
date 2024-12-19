@@ -1,5 +1,4 @@
 import Link from "next/link";
-import DefaultProfile from "./DefaultProfile";
 
 export default function MobileMenu({
   onToggleMenuModal,

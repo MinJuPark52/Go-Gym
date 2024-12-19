@@ -1,7 +1,7 @@
 import axiosInstance from "@/api/axiosInstance";
 import axios from "axios";
 
-export default async function useImageUrl(
+export default async function S3ImageUrl(
   fileName: string,
   file: File,
   type: string,
@@ -16,11 +16,12 @@ export default async function useImageUrl(
     });
 
     const imageUrl = new URL(url);
-    console.log(`${imageUrl.origin}${imageUrl.pathname}`);
-    return { url, imageUrl };
+    const realImg = `${imageUrl.origin}${imageUrl.pathname}`;
+    console.log(realImg);
+    return { url, realImg };
   };
 
-  const { url, imageUrl } = await presignedUrl();
+  const { url, realImg } = await presignedUrl();
   // //반복문으로 돌리기
   // // await uploadImageToS3('', file[0]);
 
@@ -30,7 +31,7 @@ export default async function useImageUrl(
   };
 
   upload();
-  return imageUrl;
+  return realImg;
 }
 
 const uploadImageToS3 = async (presignedUrl: string, file: File) => {

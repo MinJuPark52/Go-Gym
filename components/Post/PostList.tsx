@@ -1,10 +1,6 @@
 "use client";
 
-import { useQuery } from "@tanstack/react-query";
 import PostItem from "./PostItem";
-import axiosInstance from "@/api/axiosInstance";
-import axios from "axios";
-import PostItemSkeleton from "../SkeletonUI/PostItemSkeleton";
 
 interface PostType {
   amount: number;
@@ -18,13 +14,7 @@ interface PostType {
   wishCount: number;
 }
 
-export default function PostList({
-  data,
-  style,
-}: {
-  data?: PostType[];
-  style?: string;
-}) {
+export default function PostList({ data }: { data?: PostType[] }) {
   // const { data: defaultData, isPending } = useQuery({
   //   queryKey: ["default"],
   //   queryFn: async () => (await axios.get("http://localhost:4000/posts")).data,

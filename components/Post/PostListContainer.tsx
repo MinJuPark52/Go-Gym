@@ -10,7 +10,6 @@ import { useRouter, useSearchParams } from "next/navigation";
 import useLoginStore from "@/store/useLoginStore";
 import PostItemSkeleton from "../SkeletonUI/PostItemSkeleton";
 import Pagenation from "../UI/Pagination";
-import axios from "axios";
 
 interface categoryStateType {
   ["post-type"]: "default" | "SELL" | "BUY";
@@ -71,9 +70,10 @@ export default function PostListContainer() {
   };
 
   //tanstack-query에서 캐싱해서 처리
-  const { data, isPending } = useQuery({
+  const { data } = useQuery({
     queryKey: ["filterPost", query, token],
     queryFn: async () => {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const response: any = await axiosInstance.get(
         `/api/posts/filters?${query}`,
       );
@@ -90,6 +90,7 @@ export default function PostListContainer() {
   } = useQuery({
     queryKey: ["defaultPost", page, loginState],
     queryFn: async () => {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const response: any = await axiosInstance.get(
         `api/posts/views?page=${page}&size=10`,
         // "http://localhost:4000/posts",
@@ -117,12 +118,7 @@ export default function PostListContainer() {
   }
 
   if (data || defaultData) {
-    content = (
-      <PostList
-        data={query !== "" ? data : defaultData}
-        style="w-[100%] flex-wrap justify-center"
-      />
-    );
+    content = <PostList data={query !== "" ? data : defaultData} />;
   }
 
   if (error) {

@@ -1,6 +1,5 @@
 "use client";
-import axiosInstance from "@/api/axiosInstance";
-import useImageUrl from "@/hooks/useImageUrl";
+import S3ImageUrl from "@/hooks/S3ImageUrl";
 import useUserStore from "@/store/useUserStore";
 import Image from "next/image";
 import { useRef, useState } from "react";
@@ -53,7 +52,7 @@ export default function ChangeProfile() {
   const handleFileSelect = async (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
       // 백엔드 연동시 파일자체 보내기
-      const newImg = await useImageUrl(
+      const newImg = await S3ImageUrl(
         e.target.files[0].name,
         e.target.files[0],
         "members",
@@ -132,8 +131,8 @@ export default function ChangeProfile() {
       <div>
         <SignupInput
           type="text"
-          placeholder={user!.name}
-          value={user!.name}
+          placeholder={user ? user.name : ""}
+          value={user ? user.name : ""}
           disabled={true}
         />
       </div>
@@ -142,8 +141,8 @@ export default function ChangeProfile() {
         <div>
           <SignupInput
             type="text"
-            placeholder={user!.email}
-            value={user!.email}
+            placeholder={user ? user.email : ""}
+            value={user ? user.email : ""}
             disabled={true}
           />
         </div>
@@ -155,7 +154,7 @@ export default function ChangeProfile() {
             type="text"
             placeholder="닉네임"
             disabled={false}
-            value={user!.nickname}
+            value={user ? user.nickname : ""}
             name="nickname"
             onChange={handleChangeValue}
           />
@@ -167,7 +166,7 @@ export default function ChangeProfile() {
           type="text"
           placeholder="핸드폰 번호 ex)010-0000-0000"
           disabled={false}
-          value={user!.phone}
+          value={user ? user.phone : ""}
           name="phone"
           onChange={handleChangeValue}
         />
