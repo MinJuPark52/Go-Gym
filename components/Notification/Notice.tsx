@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import useLoginStore from "@/store/useLoginStore";
-import { EventSourcePolyfill, NativeEventSource } from "event-source-polyfill";
+import { EventSourcePolyfill } from "event-source-polyfill";
 import axios from "axios";
 
 interface Notification {
@@ -24,7 +24,7 @@ export default function Notice() {
   // 3. 구독 SSE
   useEffect(() => {
     if (loginState && token) {
-      const EventSource = EventSourcePolyfill || NativeEventSource;
+      const EventSource = EventSourcePolyfill;
       const connectToSSE = () => {
         const eventSource = new EventSource(
           "/backend/api/notifications/subscribe",
@@ -38,15 +38,18 @@ export default function Notice() {
         );
 
         eventSource.addEventListener("open", () => {
-          console.log("connect");
+          console.log("SSE connected");
+          setError(null);
         });
 
+        // addEventListener('dummy', (event) => {
+        // 이벤트의 종류가 더미로 지정
         eventSource.addEventListener("message", (event) => {
           const data = JSON.parse(event.data);
+          // 더미 안에 데이터값이 더미인지 확인
           if (data.event === "dummy") {
             console.log("Dummy data:", event.data);
           } else if (data.event === "notification") {
-            console.log("Notification:", event.data);
             setNotifications((prevNotifications) => [
               ...prevNotifications,
               {
@@ -64,18 +67,23 @@ export default function Notice() {
           setError("SSE connection error");
           eventSource.close();
         });
-
-        setTimeout(() => {
-          eventSource.close();
-          connectToSSE();
-        }, 60000);
-
-        return () => {
-          eventSource.close();
-        };
+        return eventSource;
       };
 
-      connectToSSE();
+      let eventSource = connectToSSE();
+
+      const reconnectInterval = setInterval(() => {
+        if (eventSource.readyState === EventSource.CLOSED) {
+          console.log("Reconnecting SSE...");
+          eventSource.close();
+          eventSource = connectToSSE();
+        }
+      }, 60000);
+
+      return () => {
+        clearInterval(reconnectInterval);
+        eventSource.close();
+      };
     }
   }, [loginState, token]);
 
