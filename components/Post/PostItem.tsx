@@ -9,7 +9,7 @@ import DefaultProfile from "../UI/DefaultProfile";
 interface PostType {
   postId: string;
   authorNickname: string;
-  createdAt: string;
+  // createdAt: string;
   gymName: string;
   imageUrl1: string;
   status: string;
@@ -20,7 +20,7 @@ interface PostType {
 export default function PostItem({
   postId,
   authorNickname,
-  createdAt,
+  // createdAt,
   gymName,
   imageUrl1,
   status,
@@ -29,27 +29,23 @@ export default function PostItem({
 }: PostType) {
   const postStatusKo = status === "PENDING" && "게시중";
 
-  const timeago = useTimeAgo(createdAt);
+  // const timeago = useTimeAgo(createdAt);
 
   return (
     <Link href={`/community/${postId}`}>
       <div className="h-80 w-80 cursor-pointer rounded-lg border border-[#ccc] shadow">
         <div>
           <div className="m-2 flex justify-between">
-            <div className="badge border-none bg-blue-300 pb-3 pt-3 text-sm font-bold text-white">
+            <div className="badge border-none bg-blue-500 pb-3 pt-3 text-sm font-bold text-white">
               {postStatusKo}
             </div>
-            <p className="text-xs text-gray-500">{timeago}</p>
+            {/* <p className="text-xs text-gray-500">{timeago}</p> */}
           </div>
           <div className="flex h-56 flex-col justify-between border-b border-[#ccc] pb-1">
             {imageUrl1 ? (
-              <Image
-                src={imageUrl1}
-                alt="헬스장 사진"
-                width={200}
-                height={140}
-                priority
-              />
+              <div className="relative flex h-[140px] items-center justify-center bg-gray-400 bg-opacity-50">
+                <Image src={imageUrl1} alt="헬스장 사진" fill priority />
+              </div>
             ) : (
               <div className="flex h-[140px] items-center justify-center bg-gray-400 bg-opacity-50">
                 기본 이미지

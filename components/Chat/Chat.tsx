@@ -5,7 +5,7 @@ import profile from "@/public/default_profile.png";
 import useWebSocketStore from "@/store/useSocketStore";
 import DefaultProfile from "../UI/DefaultProfile";
 import axiosInstance from "@/api/axiosInstance";
-import { useInfiniteQuery, useQuery } from "@tanstack/react-query";
+import { useInfiniteQuery, useMutation, useQuery } from "@tanstack/react-query";
 import ChatPostDetail from "./ChatPostDetail";
 
 interface props {
@@ -28,8 +28,43 @@ export default function Chat({
   onOpenModal,
 }: props) {
   const [text, setText] = useState("");
-  const { connect, messages, setAgoMessage, disconnect } = useWebSocketStore();
+  const { connect, messages, setAgoMessage, disconnect, initMessages } =
+    useWebSocketStore();
   const scrollRef = useRef<HTMLDivElement>(null);
+
+  const {
+    data,
+    fetchNextPage,
+    hasNextPage,
+    hasPreviousPage,
+    isFetchingNextPage,
+    isPending,
+  } = useInfiniteQuery({
+    queryKey: ["agomessages"],
+    queryFn: async ({ pageParam = 0 }) => {
+      const res: { messages: any } = await axiosInstance.get(
+        `/api/chatroom/${chatRoomId}/messages`,
+        {
+          params: { page: pageParam, size: 6 },
+        },
+      );
+      return res.messages;
+    },
+    getNextPageParam: (lastPage, pages) => {
+      return lastPage.last ? undefined : pages.length;
+    },
+    getPreviousPageParam: (_, pages) => {
+      return pages.length === 1 ? undefined : pages.length - 2;
+    },
+    initialPageParam: 0,
+    enabled: !!chatRoomId,
+  });
+
+  const chatLeave = async (createdAt: string) => {
+    await axiosInstance.post(`/api/chatroom/${chatRoomId}/leave`, {
+      leaveAt: createdAt,
+    });
+  };
 
   useEffect(() => {
     // 숫자 부분만 chatroomid적어주면 됨
@@ -39,57 +74,33 @@ export default function Chat({
       });
     }
 
-    // const chatLeave = async () => {
-    //   await axiosInstance.post(`/api/chatroom/{chatroom-id}/leave`, {
-    //     lastReadMessageId: messages[messages.length - 1]
-    //   })
-
-    // }
     return () => {
-      // chatLeave();
-      disconnect();
+      if (chatRoomId && messages) {
+        (async () => {
+          const latestCreatedAt = messages[messages.length - 1].createdAt.slice(
+            0,
+            19,
+          );
+          await chatLeave(latestCreatedAt);
+          disconnect();
+        })();
+      } else {
+        disconnect();
+      }
     };
   }, [chatRoomId]);
 
-  // const { data: agoMessage, isPending } = useQuery({
-  //   queryKey: ["agoMessage", chatRoomId],
-  //   queryFn: async () =>
-  //     await axiosInstance.get(
-  //       `/api/chatroom/${chatRoomId}/messages?page=0&size=20`,
-  //     ),
-  //   staleTime: 10000,
-  //   enabled: chatRoomId !== "",
-  // });
-  // useEffect(() => {
-  //   console.log(agoMessage);
-  // }, [agoMessage]);
-
   //무한스크롤 구현
 
-  const { data, fetchNextPage, hasNextPage, isFetchingNextPage, isPending } =
-    useInfiniteQuery({
-      queryKey: ["agomessages"],
-      queryFn: async ({ pageParam = 0 }) => {
-        const res: { messages: any } = await axiosInstance.get(
-          `/api/chatroom/${chatRoomId}/messages`,
-          {
-            params: { page: pageParam, size: 6 },
-          },
-        );
-        return res.messages;
-      },
-      getNextPageParam: (lastPage, pages) => {
-        return lastPage.last ? undefined : pages.length;
-      },
-      initialPageParam: 0,
-      enabled: !!chatRoomId,
-    });
-
   useEffect(() => {
-    if (data) {
+    if (data && hasPreviousPage) {
       const allMessages = data.pages.flatMap((page) => page.content);
       setAgoMessage(allMessages.reverse()); // Zustand 상태 업데이트
       console.log(data);
+    } else if (data && !hasPreviousPage) {
+      initMessages();
+      const allMessages = data.pages.flatMap((page) => page.content);
+      setAgoMessage(allMessages.reverse());
     }
   }, [data, setAgoMessage]);
 
@@ -165,13 +176,13 @@ export default function Chat({
   return (
     <form
       onSubmit={handleSubmitMessage}
-      className="relative flex h-[100%] w-[70%] flex-col bg-blue-200 bg-opacity-40 p-4"
+      className="relative flex h-[100%] w-[100%] flex-col bg-blue-200 bg-opacity-40 p-4"
     >
       <ChatPostDetail onOpenModal={onOpenModal} />
       <div
         ref={scrollRef}
         onScroll={handleScroll}
-        className="flex h-[calc(100%-10rem)] flex-col overflow-y-auto p-2 pt-32 scrollbar-hide"
+        className="flex h-[calc(100%-6rem)] flex-col overflow-y-auto p-2 pt-36 scrollbar-hide sm:pt-32"
       >
         {/* 채팅 데이터 받아오면 위에 코드로 교체 예정 */}
         {messages.map((chat) => {

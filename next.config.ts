@@ -9,7 +9,7 @@ const nextConfig: NextConfig = {
       },
       {
         source: "/backend/:path*", // Local API
-        destination: "https://283a-175-195-104-144.ngrok-free.app/:path*",
+        destination: "https://4ea0-1-240-3-56.ngrok-free.app/:path*",
         // destination: "https://go-gym.site:path*",
       },
       {
@@ -19,6 +19,7 @@ const nextConfig: NextConfig = {
     ];
   },
   images: {
+    domains: ["example-s3-bucket.amazonaws.com"],
     remotePatterns: [
       {
         protocol: "https",
