@@ -6,8 +6,6 @@ import useTimeAgo from "@/hooks/useTimeAgo";
 import { IoTrashBinOutline } from "react-icons/io5";
 import { useMutation } from "@tanstack/react-query";
 import axiosInstance from "@/api/axiosInstance";
-import { useEffect } from "react";
-import useWebSocketStore from "@/store/useSocketStore";
 
 interface chatListProps {
   counterpartyNickname: string;
@@ -71,10 +69,12 @@ export default function ChatList({
               priority
             />
 
-            <p className="text-sm font-bold text-gray-600">
-              {lastMessage.slice(0, 9) +
-                `${lastMessage.length > 9 ? "..." : ""}`}
-            </p>
+            {lastMessage && (
+              <p className="text-sm font-bold text-gray-600">
+                {lastMessage.slice(0, 9) +
+                  `${lastMessage.length > 9 ? "..." : ""}`}
+              </p>
+            )}
           </div>
         </div>
         <div className="flex flex-col items-end">

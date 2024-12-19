@@ -1,10 +1,9 @@
 "use client";
 
 import { useQuery } from "@tanstack/react-query";
-import axios from "axios";
 import ChatList from "./ChatList";
 import Chat from "./Chat";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import useWebSocketStore from "@/store/useSocketStore";
 import axiosInstance from "@/api/axiosInstance";
 
@@ -38,10 +37,6 @@ export default function ChatRoom() {
     staleTime: 0,
     placeholderData: [],
   });
-
-  useEffect(() => {
-    console.log(chatList);
-  }, [chatList]);
 
   const sortedData =
     listSuccess && chatList?.length
@@ -99,17 +94,18 @@ export default function ChatRoom() {
         >
           닫기
         </button>
-        {sortedData.map((list) => (
-          <ChatList
-            key={list.chatRoomId}
-            chatRoomId={list.chatRoomId}
-            counterpartyNickname={list.counterpartyNickname}
-            lastMessage={list.lastMessage}
-            lastMessageAt={list.lastMessageAt}
-            onClickChatRoom={handleClickChatRoom}
-            onCloseModal={handleCloseModal}
-          />
-        ))}
+        {sortedData &&
+          sortedData.map((list) => (
+            <ChatList
+              key={list.chatRoomId}
+              chatRoomId={list.chatRoomId}
+              counterpartyNickname={list.counterpartyNickname}
+              lastMessage={list.lastMessage}
+              lastMessageAt={list.lastMessageAt}
+              onClickChatRoom={handleClickChatRoom}
+              onCloseModal={handleCloseModal}
+            />
+          ))}
       </div>
 
       <div className={`h-full w-[100%] ${!modal ? "" : "hidden"} sm:block`}>

@@ -10,7 +10,7 @@ interface WebSocketState {
     content: string;
     createdAt: string;
   }[];
-
+  initMessages: () => void;
   setAgoMessage: (
     agoMessage: {
       chatRoomId: string;
@@ -31,7 +31,11 @@ interface WebSocketState {
 const useWebSocketStore = create<WebSocketState>((set) => ({
   stompClient: null,
   messages: [],
-
+  initMessages: () =>
+    set(() => {
+      console.log("Messages 초기화됨");
+      return { messages: [] };
+    }),
   setAgoMessage: (agoMessage) =>
     set((state) => {
       const combinedMessages = [...agoMessage, ...state.messages];
@@ -39,10 +43,7 @@ const useWebSocketStore = create<WebSocketState>((set) => ({
       // 중복 제거: chatRoomId와 createdAt을 기준으로 필터링
       const uniqueMessages = Array.from(
         new Map(
-          combinedMessages.map((msg) => [
-            `${msg.chatRoomId} ${msg.createdAt}`,
-            msg,
-          ]),
+          combinedMessages.map((msg) => [`${msg.createdAt}`, msg]),
         ).values(),
       );
 
@@ -69,10 +70,7 @@ const useWebSocketStore = create<WebSocketState>((set) => ({
               // 중복 제거
               const uniqueMessages = Array.from(
                 new Map(
-                  combinedMessages.map((msg) => [
-                    `${msg.chatRoomId}-${msg.createdAt}`,
-                    msg,
-                  ]),
+                  combinedMessages.map((msg) => [`${msg.createdAt}`, msg]),
                 ).values(),
               );
 

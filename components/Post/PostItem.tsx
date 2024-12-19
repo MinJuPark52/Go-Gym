@@ -1,7 +1,6 @@
 import Image from "next/image";
 import { FaHeart } from "react-icons/fa";
-import { IoChatbubblesOutline } from "react-icons/io5";
-import profile from "../../public/default_profile.png";
+
 import Link from "next/link";
 import useTimeAgo from "@/hooks/useTimeAgo";
 import DefaultProfile from "../UI/DefaultProfile";
@@ -36,20 +35,16 @@ export default function PostItem({
       <div className="h-80 w-80 cursor-pointer rounded-lg border border-[#ccc] shadow">
         <div>
           <div className="m-2 flex justify-between">
-            <div className="badge border-none bg-blue-300 pb-3 pt-3 text-sm font-bold text-white">
+            <div className="badge border-none bg-blue-500 pb-3 pt-3 text-sm font-bold text-white">
               {postStatusKo}
             </div>
             <p className="text-xs text-gray-500">{timeago}</p>
           </div>
           <div className="flex h-56 flex-col justify-between border-b border-[#ccc] pb-1">
             {imageUrl1 ? (
-              <Image
-                src={imageUrl1}
-                alt="헬스장 사진"
-                width={200}
-                height={140}
-                priority
-              />
+              <div className="relative flex h-[140px] items-center justify-center bg-gray-400 bg-opacity-50">
+                <Image src={imageUrl1} alt="헬스장 사진" fill priority />
+              </div>
             ) : (
               <div className="flex h-[140px] items-center justify-center bg-gray-400 bg-opacity-50">
                 기본 이미지

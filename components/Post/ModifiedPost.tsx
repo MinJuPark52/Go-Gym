@@ -11,11 +11,10 @@ import ImageSelect from "./ImageSelect";
 import Image from "next/image";
 import SearchKakaoMap from "./SearchKaKaoMap";
 import { useMutation, useQuery } from "@tanstack/react-query";
-import { getAccessToken, getCity } from "@/api/api";
+import { getAccessToken } from "@/api/api";
 import axiosInstance from "@/api/axiosInstance";
 import { useParams, useRouter } from "next/navigation";
-import axios from "axios";
-import useImageUrl from "@/hooks/useImageUrl";
+import S3ImageUrl from "@/hooks/S3ImageUrl";
 
 interface PostType {
   postId: string;
@@ -182,7 +181,7 @@ export default function ModifiedPost() {
 
   const handleFileSelect = async (key: string, img: File) => {
     // 백엔드 연동시 파일자체 보내기
-    const newImg = await useImageUrl(img.name, img, "posts");
+    const newImg = await S3ImageUrl(img.name, img, "posts");
     setImages({
       ...images,
       [key]: newImg.toString(),
