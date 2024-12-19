@@ -72,16 +72,16 @@ export const SECOND_FILTER_CATEGORY: FILTER_CATEGORY_TYPE[] = [
     categoryName: "게시글 상태",
     options: [
       {
-        value: "POSTING",
+        value: "PENDING",
         optionName: "게시중",
       },
       {
-        value: "SALE_COMPLETED",
-        optionName: "판매완료",
+        value: "IN_PROGRESS",
+        optionName: "거래중",
       },
       {
-        value: "PURCHASE_COMPLETED",
-        optionName: "구매 완료",
+        value: "COMPLETED",
+        optionName: "거래완료",
       },
     ],
   },

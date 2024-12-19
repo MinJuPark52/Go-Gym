@@ -15,6 +15,7 @@ import { getAccessToken, getCity } from "@/api/api";
 import axiosInstance from "@/api/axiosInstance";
 import { useParams, useRouter } from "next/navigation";
 import axios from "axios";
+import useImageUrl from "@/hooks/useImageUrl";
 
 interface PostType {
   postId: string;
@@ -47,12 +48,7 @@ interface PostType {
 
 interface categoryStateType {
   postType: "default" | "SELL" | "BUY";
-  status:
-    | "default"
-    | "POSTING"
-    | "SALE_COMPLETED"
-    | "PURCHASE_COMPLETED"
-    | "HIDDEN";
+  status: "default" | "PENDING" | "IN_PROGRESS" | "COMPLETED" | "HIDDEN";
   membershipType:
     | "default"
     | "MEMBERSHIP_ONLY"
@@ -71,7 +67,7 @@ export default function ModifiedPost() {
     content: "",
     expirationDate: "",
     remainingSessions: 0,
-    amount: 0,
+    amount: "",
   });
   const [isMapOpen, setIsMapOpen] = useState(false);
   const [mapValue, setMapValue] = useState({
@@ -81,7 +77,7 @@ export default function ModifiedPost() {
     gymName: "",
   });
   //<Record<string, string | File | null>> 백엔드 연동시 타입추가
-  const [images, setImages] = useState<Record<string, string | File | null>>({
+  const [images, setImages] = useState<Record<string, string | null>>({
     imageUrl1: "",
     imageUrl2: "",
     imageUrl3: "",
@@ -89,7 +85,7 @@ export default function ModifiedPost() {
 
   const [categoryValue, setCategoryValue] = useState<categoryStateType>({
     postType: "default",
-    status: "POSTING",
+    status: "PENDING",
     membershipType: "default",
   });
 
@@ -141,7 +137,7 @@ export default function ModifiedPost() {
         content: "",
         expirationDate: data.expirationDate,
         remainingSessions: data.remainingSessions,
-        amount: +data.amount,
+        amount: data.amount,
       });
       setMapValue({
         latitude: data.latitude,
@@ -184,12 +180,17 @@ export default function ModifiedPost() {
     });
   };
 
-  const handleFileSelect = (key: string, img: File) => {
+  const handleFileSelect = async (key: string, img: File) => {
     // 백엔드 연동시 파일자체 보내기
+    const newImg = await useImageUrl(img.name, img, "posts");
     setImages({
       ...images,
-      [key]: img,
+      [key]: newImg.toString(),
     });
+  };
+
+  const handleDeleteImage = (el: string) => {
+    setImages({ ...images, [el]: "" });
   };
 
   const handleClickGym = (
@@ -225,7 +226,12 @@ export default function ModifiedPost() {
       return;
     }
 
-    if (values.remainingSessions < 0 || values.amount < 0) {
+    if (Number.isNaN(+values.amount.replace(/,/g, ""))) {
+      alert("숫자만 입력해주세요");
+      return;
+    }
+
+    if (values.remainingSessions < 0 || +values.amount.replace(/,/g, "") < 0) {
       alert("가격과 PT횟수는 0 이상으로 입력해주세요");
       return;
     }
@@ -268,7 +274,12 @@ export default function ModifiedPost() {
     //   data[key] = value as string; // 값이 string 타입으로 추론되도록 처리
     // });
 
-    mutate({ ...values, ...images, ...categoryValue });
+    mutate({
+      ...values,
+      ...images,
+      ...categoryValue,
+      [values.amount]: +values.amount.replace(/,/g, ""),
+    });
   };
 
   if (isPending) {
@@ -328,11 +339,11 @@ export default function ModifiedPost() {
               가격
             </label>
             <input
-              type="number"
+              type="text"
               className="h-12 w-48 cursor-pointer rounded-md border border-gray-400 pl-2 text-gray-600 focus:outline-blue-400"
               name={"amount"}
               id={"amount"}
-              value={values.amount}
+              value={formatNumber(values.amount.toString())}
               onChange={handleValues}
               placeholder="ex) 250000"
             />
@@ -363,12 +374,18 @@ export default function ModifiedPost() {
               images[el] ? (
                 <div
                   key={el}
-                  className="relative flex h-56 w-60 items-center justify-center"
+                  className="relative flex h-56 min-w-60 items-center justify-center"
                 >
+                  <button
+                    className="absolute right-0 top-[-30px]"
+                    onClick={() => handleDeleteImage(el)}
+                  >
+                    ❌
+                  </button>
                   <Image
                     // json서버 사용시까진 blob url
                     // src={images[el] as string}
-                    src={URL.createObjectURL(images[el] as File)}
+                    src={images[el] || ""}
                     alt="헬스장 이미지"
                     className="rounded-lg"
                     fill
@@ -399,3 +416,8 @@ export default function ModifiedPost() {
     </>
   );
 }
+
+const formatNumber = (input: string) => {
+  const numericValue = input.replace(/,/g, "");
+  return numericValue.replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+};

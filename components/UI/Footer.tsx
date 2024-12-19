@@ -44,6 +44,7 @@ export default function Footer() {
 
         {/* 하단 영역 */}
         <div className="mt-8 border-t border-gray-700 pt-4 text-center text-sm">
+          <p>Slider Image Attribution: www.freepik.com </p>
           <p>Designed and built by GO GYM</p>
           <p className="mt-2 text-sm">© 2024 zerobase.</p>
         </div>

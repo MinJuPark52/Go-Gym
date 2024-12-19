@@ -33,9 +33,21 @@ const useWebSocketStore = create<WebSocketState>((set) => ({
   messages: [],
 
   setAgoMessage: (agoMessage) =>
-    set(() => ({
-      messages: [...agoMessage],
-    })),
+    set((state) => {
+      const combinedMessages = [...agoMessage, ...state.messages];
+
+      // 중복 제거: chatRoomId와 createdAt을 기준으로 필터링
+      const uniqueMessages = Array.from(
+        new Map(
+          combinedMessages.map((msg) => [
+            `${msg.chatRoomId} ${msg.createdAt}`,
+            msg,
+          ]),
+        ).values(),
+      );
+
+      return { messages: uniqueMessages };
+    }),
 
   connect: (url, chatroomId, onMessage) => {
     const client = new Client({
@@ -49,9 +61,23 @@ const useWebSocketStore = create<WebSocketState>((set) => ({
         if (onMessage) {
           client.subscribe(`/topic/chatroom/${chatroomId}`, (message) => {
             const receivedMessage = JSON.parse(message.body);
-            set((state) => ({
-              messages: [...state.messages, receivedMessage],
-            }));
+            //실시간 상태 구독후 messages의 업데이트 Map객체 사용해서 중복제거
+            set((state) => {
+              // messages: [...state.messages, receivedMessage],
+              const combinedMessages = [...state.messages, receivedMessage];
+
+              // 중복 제거
+              const uniqueMessages = Array.from(
+                new Map(
+                  combinedMessages.map((msg) => [
+                    `${msg.chatRoomId}-${msg.createdAt}`,
+                    msg,
+                  ]),
+                ).values(),
+              );
+
+              return { messages: uniqueMessages };
+            });
             onMessage(message);
           });
         }

@@ -1,5 +1,7 @@
 "use client";
 import axiosInstance from "@/api/axiosInstance";
+import useImageUrl from "@/hooks/useImageUrl";
+import useUserStore from "@/store/useUserStore";
 import Image from "next/image";
 import { useRef, useState } from "react";
 
@@ -8,6 +10,7 @@ const SignupInput: React.FC<InputProps> = ({
   name,
   placeholder,
   disabled,
+  value,
   onChange,
 }) => (
   <div>
@@ -17,6 +20,7 @@ const SignupInput: React.FC<InputProps> = ({
       placeholder={placeholder}
       className="w-full rounded-md border border-gray-300 p-2"
       onChange={onChange}
+      value={value}
       disabled={disabled}
     />
   </div>
@@ -27,11 +31,14 @@ interface InputProps {
   name?: string;
   placeholder: string;
   disabled: boolean;
+  value?: string;
   onChange?: (e: React.ChangeEvent<HTMLInputElement>) => void;
 }
 
 export default function ChangeProfile() {
-  const [file, setFile] = useState<File>();
+  const { user } = useUserStore();
+
+  const [file, setFile] = useState<string>("");
   const [values, setValues] = useState({
     nickname: "",
     phone: "",
@@ -43,10 +50,15 @@ export default function ChangeProfile() {
     fileInputRef.current?.click(); // useRef를 사용하여 파일 입력 요소 클릭
   };
 
-  const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFileSelect = async (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
       // 백엔드 연동시 파일자체 보내기
-      setFile(e.target.files[0]);
+      const newImg = await useImageUrl(
+        e.target.files[0].name,
+        e.target.files[0],
+        "members",
+      );
+      setFile(newImg.toString());
     }
   };
 
@@ -56,28 +68,6 @@ export default function ChangeProfile() {
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    const formData = new FormData();
-
-    Object.entries(values).forEach(([key, value]) => {
-      formData.append(key, value as string); // value는 string 타입으로 가정
-    });
-
-    // 파일 추가
-    if (file) {
-      formData.append("profileImageUrl", file); // 파일 추가
-    }
-
-    try {
-      const response = await axiosInstance.put("/api/members/me", formData, {
-        headers: {
-          "Content-Type": "multipart/form-data",
-        },
-      });
-
-      console.log(response);
-    } catch (e) {
-      console.log(e);
-    }
   };
 
   return (
@@ -90,7 +80,7 @@ export default function ChangeProfile() {
         <>
           <div className="relative ml-auto mr-auto flex h-[240px] w-[240px] justify-center overflow-hidden rounded-[100%] border border-gray-300">
             <Image
-              src={URL.createObjectURL(file as File)}
+              src={file}
               alt="헬스장 이미지"
               className="rounded-lg"
               layout="fill"
@@ -140,12 +130,22 @@ export default function ChangeProfile() {
       )}
 
       <div>
-        <SignupInput type="text" placeholder="이름 고정" disabled={true} />
+        <SignupInput
+          type="text"
+          placeholder={user!.name}
+          value={user!.name}
+          disabled={true}
+        />
       </div>
 
       <div className="flex items-center space-x-2">
         <div>
-          <SignupInput type="text" placeholder="이메일 고정" disabled={true} />
+          <SignupInput
+            type="text"
+            placeholder={user!.email}
+            value={user!.email}
+            disabled={true}
+          />
         </div>
       </div>
 
@@ -155,6 +155,7 @@ export default function ChangeProfile() {
             type="text"
             placeholder="닉네임"
             disabled={false}
+            value={user!.nickname}
             name="nickname"
             onChange={handleChangeValue}
           />
@@ -166,6 +167,7 @@ export default function ChangeProfile() {
           type="text"
           placeholder="핸드폰 번호 ex)010-0000-0000"
           disabled={false}
+          value={user!.phone}
           name="phone"
           onChange={handleChangeValue}
         />
