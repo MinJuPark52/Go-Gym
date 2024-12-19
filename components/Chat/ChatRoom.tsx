@@ -1,85 +1,121 @@
-'use client';
+"use client";
 
-import { useQuery } from '@tanstack/react-query';
-import axios from 'axios';
-import ChatList from './ChatList';
-import Chat from './Chat';
-import { useEffect } from 'react';
-import useWebSocketStore from '@/store/useSocketStore';
+import { useQuery } from "@tanstack/react-query";
+import ChatList from "./ChatList";
+import Chat from "./Chat";
+import { useState } from "react";
+import useWebSocketStore from "@/store/useSocketStore";
+import axiosInstance from "@/api/axiosInstance";
 
 interface ChatItem {
-  chatRoomId: number;
+  chatRoomId: string;
   createdAt: string;
-  postId: number;
-  counterpartyId: number;
+  postId: string;
+  counterpartyId: string;
   counterpartyNickname: string;
-  unreadMessageCount: number;
+  unreadMessageCount: string;
   lastMessage: string;
   lastMessageAt: string;
+  postAuthorActive: boolean;
+  requestorActive: boolean;
 }
 
 export default function ChatRoom() {
-  const { connect, sendMessage, disconnect } = useWebSocketStore();
+  const [modal, setModal] = useState(true);
+  const [currentChatRoom, setCurrentChatRoom] = useState("");
+  const [currentChatNickname, setCurrentChatNickname] = useState("");
+  const { messages, sendMessage } = useWebSocketStore();
   //채팅방 목록 가져오기
-  const { data, isSuccess } = useQuery<ChatItem[]>({
-    queryKey: ['chatList'],
-    queryFn: async () =>
-      (await axios.get('http://localhost:4000/chatList')).data,
-    staleTime: 100000,
+  const { data: chatList, isSuccess: listSuccess } = useQuery<ChatItem[]>({
+    queryKey: ["chatroom1", messages[messages.length - 1]],
+    queryFn: async () => {
+      const response: { content: ChatItem[] } = await axiosInstance.get(
+        "/api/chatroom?page=0&size=5",
+      );
+      return response.content;
+    },
+    staleTime: 0,
+    placeholderData: [],
   });
 
-  useEffect(() => {
-    connect(process.env.NEXT_PUBLIC_BACKEND_URL + '/ws', '2', (message) => {
-      console.log('New message:', message.body);
-    });
-
-    return () => {
-      disconnect();
-    };
-  }, [connect, disconnect]);
-
   const sortedData =
-    isSuccess && data?.length
-      ? [...data].sort((a, b) => {
+    listSuccess && chatList?.length
+      ? [...chatList].sort((a, b) => {
           const dateA = new Date(a.lastMessageAt).getTime();
           const dateB = new Date(b.lastMessageAt).getTime();
           return dateB - dateA;
         })
       : [];
 
+  const handleClickChatRoom = (chatRoomId: string, chatNickname: string) => {
+    setCurrentChatRoom(chatRoomId);
+    setCurrentChatNickname(chatNickname);
+    console.log(currentChatRoom);
+  };
+
   const handleSendMessage = ({
     chatRoomId,
-    senderId,
     content,
   }: {
     chatRoomId: string;
-    senderId: string;
     content: string;
   }) => {
+    //송신 경로 등록
     sendMessage(
-      '/app/chatroom/message',
+      "/app/chatroom/message",
       JSON.stringify({
         chatRoomId,
-        senderId,
         content,
-      })
+      }),
     );
+    console.log(messages);
+  };
+
+  const handleCloseModal = () => {
+    setModal(false);
+  };
+
+  const handleOpenModal = () => {
+    setModal(true);
   };
 
   return (
-    <div className=" flex w-[75%] h-[100%] border-l border-gray-400">
-      <div className=" flex flex-col w-[30%] h-[100%] border-r border-gray-400">
-        {sortedData.map((list) => (
-          <ChatList
-            key={list.chatRoomId}
-            counterpartyNickname={list.counterpartyNickname}
-            lastMessage={list.lastMessage}
-            lastMessageAt={list.lastMessageAt}
-          />
-        ))}
-        <div></div>
+    <div className="border-l-1 relative flex h-[100%] w-[100%] md:w-[75%]">
+      {/* <button onClick={() => axiosInstance.post("/api/chatroom/1")}>
+        채팅방 생성
+      </button> */}
+
+      <div
+        className={`flex h-[100%] w-[100%] ${modal ? "" : "hidden"} flex-col border-2 sm:block sm:w-[50%]`}
+      >
+        <button
+          onClick={handleCloseModal}
+          className={`${modal ? "" : "hidden"} sm:hidden`}
+        >
+          닫기
+        </button>
+        {sortedData &&
+          sortedData.map((list) => (
+            <ChatList
+              key={list.chatRoomId}
+              chatRoomId={list.chatRoomId}
+              counterpartyNickname={list.counterpartyNickname}
+              lastMessage={list.lastMessage}
+              lastMessageAt={list.lastMessageAt}
+              onClickChatRoom={handleClickChatRoom}
+              onCloseModal={handleCloseModal}
+            />
+          ))}
       </div>
-      <Chat onSendMessage={handleSendMessage} />
+
+      <div className={`h-full w-[100%] ${!modal ? "" : "hidden"} sm:block`}>
+        <Chat
+          counterpartyNickname={currentChatNickname}
+          chatRoomId={currentChatRoom}
+          onSendMessage={handleSendMessage}
+          onOpenModal={handleOpenModal}
+        />
+      </div>
     </div>
   );
 }

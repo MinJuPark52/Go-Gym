@@ -1,7 +1,7 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
-@import url('https://unpkg.com/react-quill@1.3.3/dist/quill.snow.css');
+@import url("https://unpkg.com/react-quill@1.3.3/dist/quill.snow.css");
 
 :root {
   --background: #ffffff;
@@ -15,16 +15,23 @@
   }
 }
 
+@font-face {
+  font-family: "MyFont";
+  src: url("./fonts/NotoSansKR-VariableFont_wght.ttf") format("truetype");
+  font-weight: normal;
+  font-style: normal;
+}
+
 body {
   color: var(--foreground);
   background: var(--background);
   min-height: 100vh;
-  width: 100vw;
 }
 
 * {
   scroll-behavior: smooth;
   box-sizing: border-box;
+  font-family: "MyFont", sans-serif;
   padding: 0;
   margin: 0;
 }

@@ -1,10 +1,10 @@
-import ChangeProfile from '@/components/MyProfile/ChangeProfile';
-import GympayBox from '@/components/MyProfile/GympayBox';
+import ChangeProfile from "@/components/MyProfile/Profile";
+import GympayBox from "@/components/MyProfile/GympayBox";
 
 export default function MyPage() {
   return (
-    <div className=" flex justify-center">
-      <div className=" flex flex-col w-[75%] gap-12">
+    <div className="flex min-w-[700px] justify-center">
+      <div className="flex flex-col gap-12">
         <ChangeProfile />
         <GympayBox />
       </div>

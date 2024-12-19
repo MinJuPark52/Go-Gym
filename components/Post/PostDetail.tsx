@@ -1,124 +1,201 @@
-'use client';
-import { FaHeart } from 'react-icons/fa';
-import { CgCloseO } from 'react-icons/cg';
-import DOMpurify from 'dompurify';
+"use client";
+import { FaHeart } from "react-icons/fa";
+import { FaRegHeart } from "react-icons/fa";
+import DOMpurify from "dompurify";
 
-import { useQuery } from '@tanstack/react-query';
-import axios from 'axios';
-import { useParams } from 'next/navigation';
-import PostDetailImage from './PostDetailImage';
-import { useState } from 'react';
-import Image from 'next/image';
+import { useMutation, useQuery } from "@tanstack/react-query";
+import { useParams, useRouter } from "next/navigation";
+import PostDetailImage from "./PostDetailImage";
+import { useEffect, useState } from "react";
+import Link from "next/link";
+import axiosInstance from "@/api/axiosInstance";
+import useLoginStore from "@/store/useLoginStore";
+
+interface PostType {
+  postId: string;
+  authorNickname: string;
+  authorId: number;
+  amount: string;
+  createdAt: string;
+  gymName: string;
+  imageUrl1: string;
+  postType: string;
+  expirationDate: string;
+  status: string;
+  title: string;
+  wishCount: number;
+  isWished: boolean;
+  content: string;
+  imageUrl: string;
+}
 
 export default function PostDetail() {
-  const [visibleModal, setVisibleModal] = useState(false);
   const { id } = useParams();
-  const { data } = useQuery({
-    queryKey: ['postDetail'],
-    queryFn: async () =>
-      (await axios.get(`http://localhost:4000/postDetails/${id}`)).data,
+  const router = useRouter();
+  const { loginState } = useLoginStore();
+
+  //queryKey 상태 관리
+  const [queryKeySuffix, setQueryKeySuffix] = useState(0);
+
+  const { data: detail } = useQuery({
+    queryKey: ["postDetail", id, queryKeySuffix],
+    queryFn: async () => {
+      const response: PostType = await axiosInstance.get(
+        `/api/posts/details/${id}`,
+      );
+      return response;
+    },
     staleTime: 1000,
   });
 
-  const handleImageClick = () => {
-    setVisibleModal(!visibleModal);
+  useEffect(() => {
+    console.log(detail);
+  }, [detail]);
+
+  const { mutate } = useMutation({
+    mutationKey: ["AddChatRoom"],
+    mutationFn: async () => await axiosInstance.post(`/api/chatroom/${id}`),
+    onSuccess: () => router.push("/chat"),
+    onError: () => alert("채팅방 생성이 실패했습니다."),
+  });
+
+  const { mutate: wish } = useMutation({
+    mutationKey: ["wish"],
+    mutationFn: async () => await axiosInstance.post(`/api/posts/${id}/wishes`),
+    onSuccess: () => setQueryKeySuffix((prev) => prev + 1),
+    onError: () => alert("찜 실패."),
+  });
+
+  const handleWishClick = () => {
+    if (loginState) {
+      try {
+        wish();
+        if (detail?.isWished) {
+          alert("찜 취소");
+        } else {
+          alert("찜 성공");
+        }
+      } catch (e) {
+        console.log(e);
+      }
+    } else {
+      const wishConfirm = confirm(
+        "로그인을 해야합니다. 로그인 페이지로 이동하시겠습니까?",
+      );
+      if (wishConfirm) {
+        router.push("/login");
+      }
+    }
   };
 
-  let statusBox = '게시중';
-
-  if (data && data.postStatus === 'PENDING') {
-    statusBox = '게시중';
-  } else if (data && data.postStatus === 'IN_PROGRESS') {
-    statusBox = '거래 중';
-  } else if (data && data.postStatus === 'COMPLETED') {
-    statusBox = '거래 완료';
+  let statusBox = "게시중";
+  if (detail && detail.status === "PENDING") {
+    statusBox = "게시중";
+  } else if (detail && detail.status === "IN_PROGRESS") {
+    statusBox = "거래중";
+  } else if (detail && detail.status === "COMPLETED") {
+    statusBox = "거래완료";
   }
 
   return (
     <>
-      {data && (
-        <div className=" flex flex-col w-[70%]">
-          <div className=" mb-6 border-b border-gray-400">
-            <div className=" mt-12 ml-2 mr-2 mb-2">
-              <p className=" text-2xl font-bold">{data.title}</p>
-              <div className=" flex w-fit mt-4 pl-2 pr-2 pt-1 pb-1 rounded-lg bg-[#5AC800] bg-opacity-60 ">
-                <p className=" text-[11px] text-[#377008] font-bold">
-                  {statusBox}
-                </p>
+      {detail && (
+        <div className="flex w-[70%] flex-col">
+          <div className="mb-6 border-b border-gray-400">
+            <div className="mb-2 ml-2 mr-2 mt-12">
+              <div className="flex justify-between">
+                <p className="text-2xl font-bold">{detail.title}</p>
+                <Link href={`/community/modifiedpost/${id}`}>
+                  <button className="btn bg-blue-500 text-white hover:bg-blue-600">
+                    수정하기
+                  </button>
+                </Link>
               </div>
-              <p className=" text-right text-sm text-gray-500 font-bold">
-                작성일 : {data.createdAt}
+              <div className="badge border-none bg-blue-500 pb-3 pt-3 text-sm font-bold text-white">
+                {statusBox}
+              </div>
+              <p className="text-right text-sm font-bold text-gray-500">
+                작성일 : {detail.createdAt.slice(0, 16).replace("T", " ")}
               </p>
             </div>
           </div>
-          <div className=" flex flex-col gap-4 p-4 pt-0 mb-4 border-b border-gray-400">
-            <div className=" flex justify-between">
-              <p className=" font-bold">
-                <span className=" text-gray-500 ">게시글 종류 : </span>
-                {data.postType === 'SELL' ? '팝니다' : '삽니다'}
+          <div className="mb-4 flex flex-col gap-4 border-b border-gray-400 p-4 pt-0">
+            <div className="flex items-center justify-between">
+              <p className="text-xs font-bold sm:text-base">
+                <span className="text-gray-500">게시글 종류 : </span>
+                {detail.postType === "SELL" ? "팝니다" : "삽니다"}
               </p>
-              <p className=" font-bold">
-                <span className=" text-gray-500">작성자 : </span>
-                <span className=" cursor-pointer hover:underline underline-offset-4">
-                  {data.authorNickname}
-                </span>
+              <p className="text-xs font-bold sm:text-base">
+                <span className="text-gray-500">작성자 : </span>
+
+                <Link href={`/community/${id}/userdetail`}>
+                  <button className="btn btn-active h-2 p-2 text-xs sm:text-base">
+                    {detail.authorNickname}
+                  </button>
+                </Link>
               </p>
             </div>
-            <p className=" font-bold">
-              <span className=" text-gray-500 ">헬스장 : </span>
-              {data.gymName}
+            <p className="text-xs font-bold sm:text-base">
+              <span className="text-gray-500">헬스장 : </span>
+              {detail.gymName}
             </p>
-            <div className=" flex justify-between">
-              <p className=" font-bold">
-                <span className=" text-gray-500 ">회원권 마감일 : </span>
-                {data.expirationDate}
+            <div className="flex justify-between">
+              <p className="text-xs font-bold sm:text-base">
+                <span className="text-gray-500">회원권 마감일 : </span>
+                {detail.expirationDate}
               </p>
-              <p className=" font-bold">
-                <span className=" text-gray-500">가격 : </span>
-                {data.amount} {'원'}
+              <p className="text-xs font-bold sm:text-base">
+                <span className="text-gray-500">가격 : </span>
+                {formatNumber(detail.amount.toString())} {"원"}
               </p>
             </div>
           </div>
-          <div className=" relative min-h-[360px] p-4 border-b border-gray-400">
+          <div className="relative min-h-[360px] border-b border-gray-400 p-4">
             <div
-              className=" overflow-hidden whitespace-pre-wrap"
+              className="overflow-hidden whitespace-pre-wrap"
               dangerouslySetInnerHTML={{
-                __html: DOMpurify.sanitize(data.content),
+                __html: DOMpurify.sanitize(detail.content),
               }}
             />
-            <div className=" flex items-center gap-1 absolute bottom-2 right-2 cursor-pointer">
-              <span className=" text-gray-400 text-sm font-bold ">찜</span>
-              <FaHeart color="#DC7D7D" size={24} />
+            <div className="absolute bottom-2 right-2 flex cursor-pointer items-center gap-1">
+              <button onClick={handleWishClick}>
+                {detail.isWished ? (
+                  <FaHeart color="#DC7D7D" size={24} />
+                ) : (
+                  <FaRegHeart color="#DC7D7D" size={24} />
+                )}
+              </button>
+              <span className="text-sm font-bold text-gray-400">
+                {detail.wishCount}
+              </span>
             </div>
           </div>
 
-          <div className=" relative flex p-4 min-h-20">
-            <PostDetailImage
-              imageUrl={data.imageUrl1}
-              onClick={handleImageClick}
-            />
-            <button className=" absolute bottom-4 right-4 p-1 pl-2 pr-2 rounded-lg bg-blue-300 text-2xl text-white hover:bg-blue-500 transition-all">
-              채팅하기
-            </button>
-          </div>
-        </div>
-      )}
-      {data && visibleModal && (
-        <div className=" flex flex-col justify-center items-center absolute top-0 bottom-0 left-0 right-0 bg-gray-600 bg-opacity-30">
-          <div className=" flex justify-between items-center max-w-[1100px] w-[70%] animate-slide-down">
-            <p className=" text-white text-xl font-bold">사진 크게보기</p>
-            <CgCloseO
-              size={48}
-              color="#545454"
-              className=" translate-x-12 cursor-pointer"
-              onClick={handleImageClick}
-            />
-          </div>
-          <div className=" relative bg-white max-w-[1100px] w-[70%] h-[60%] rounded-lg overflow-hidden animate-slide-down">
-            <Image src={data.imageUrl1} alt="이미지" layout="fill" />
+          <div className="relative flex min-h-40 p-4">
+            <Link
+              href={{
+                pathname: `/community/${id}/imagedetail`,
+                query: { imageUrl: detail.imageUrl },
+              }}
+            >
+              <PostDetailImage imageUrl={detail.imageUrl1} />
+            </Link>
+            {loginState && (
+              <button
+                onClick={() => mutate()}
+                className="btn absolute bottom-4 right-4 bg-blue-500 p-1 pl-2 pr-2 text-white transition-all hover:bg-blue-600"
+              >
+                채팅하기
+              </button>
+            )}
           </div>
         </div>
       )}
     </>
   );
 }
+
+const formatNumber = (input: string) => {
+  const numericValue = input.replace(/,/g, "");
+  return numericValue.replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+};
