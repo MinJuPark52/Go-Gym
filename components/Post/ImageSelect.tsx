@@ -1,6 +1,5 @@
 "use client";
 
-import { useState } from "react";
 import { useDropzone } from "react-dropzone";
 
 interface props {

@@ -1,7 +1,7 @@
 import axiosInstance from "@/api/axiosInstance";
 import axios from "axios";
 
-export default async function useImageUrl(
+export default async function S3ImageUrl(
   fileName: string,
   file: File,
   type: string,

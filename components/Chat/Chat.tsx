@@ -1,11 +1,9 @@
 "use client";
-import Image from "next/image";
 import { useEffect, useRef, useState } from "react";
-import profile from "@/public/default_profile.png";
 import useWebSocketStore from "@/store/useSocketStore";
 import DefaultProfile from "../UI/DefaultProfile";
 import axiosInstance from "@/api/axiosInstance";
-import { useInfiniteQuery, useMutation, useQuery } from "@tanstack/react-query";
+import { useInfiniteQuery } from "@tanstack/react-query";
 import ChatPostDetail from "./ChatPostDetail";
 
 interface props {
@@ -42,6 +40,7 @@ export default function Chat({
   } = useInfiniteQuery({
     queryKey: ["agomessages"],
     queryFn: async ({ pageParam = 0 }) => {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const res: { messages: any } = await axiosInstance.get(
         `/api/chatroom/${chatRoomId}/messages`,
         {
@@ -76,11 +75,11 @@ export default function Chat({
 
     return () => {
       if (chatRoomId && messages) {
+        console.log(messages);
         (async () => {
-          const latestCreatedAt = messages[messages.length - 1].createdAt.slice(
-            0,
-            19,
-          );
+          const latestCreatedAt = messages[messages.length - 1].createdAt
+            .slice(0, 19)
+            .replace("T", " ");
           await chatLeave(latestCreatedAt);
           disconnect();
         })();
@@ -184,7 +183,6 @@ export default function Chat({
         onScroll={handleScroll}
         className="flex h-[calc(100%-6rem)] flex-col overflow-y-auto p-2 pt-36 scrollbar-hide sm:pt-32"
       >
-        {/* 채팅 데이터 받아오면 위에 코드로 교체 예정 */}
         {messages.map((chat) => {
           return chat.senderId === 1 ? (
             <div className="chat chat-start" key={chat.createdAt}>

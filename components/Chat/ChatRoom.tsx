@@ -1,10 +1,9 @@
 "use client";
 
 import { useQuery } from "@tanstack/react-query";
-import axios from "axios";
 import ChatList from "./ChatList";
 import Chat from "./Chat";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import useWebSocketStore from "@/store/useSocketStore";
 import axiosInstance from "@/api/axiosInstance";
 

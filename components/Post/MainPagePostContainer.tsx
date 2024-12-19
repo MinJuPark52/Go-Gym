@@ -12,6 +12,7 @@ export default function MainPagePostContainer() {
   const { data, error, isPending } = useQuery({
     queryKey: ["defaultPost", loginState],
     queryFn: async () => {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const response: any = await axiosInstance.get(
         `api/posts/views?page=0&size=10`,
         // "http://localhost:4000/posts",
@@ -22,7 +23,13 @@ export default function MainPagePostContainer() {
   });
 
   if (isPending) {
-    return [...Array(6).keys()].map((idx) => <PostItemSkeleton key={idx} />);
+    return (
+      <div className="mb-20 mt-8 flex min-h-96 w-[100%] gap-4 overflow-x-auto p-12 lg:grid lg:grid-cols-2 lg:justify-items-center 2xl:grid-cols-3">
+        {[...Array(6).keys()].map((idx) => (
+          <PostItemSkeleton key={idx} />
+        ))}
+      </div>
+    );
   }
 
   // postId,
@@ -36,17 +43,20 @@ export default function MainPagePostContainer() {
 
   if (error) {
     return (
-      <PostItem
-        postId="1"
-        authorNickname="전빡빡"
-        gymName="바디트랜스"
-        imageUrl1="https://go-gym-bucket.s3.ap-northeast-2.amazonaws.com/posts/2024/12/18/4893bf95-c33d-47f6-ad0e-308bb3dfd61f-slider_두번째.jpg"
-        status="PENDING"
-        title="제목"
-        wishCount={12}
-      />
+      <div className="mb-20 mt-8 flex min-h-96 w-[100%] gap-4 overflow-x-auto p-12 lg:grid lg:grid-cols-2 lg:justify-items-center 2xl:grid-cols-3">
+        <PostItem
+          postId="1"
+          authorNickname="전빡빡"
+          createdAt=""
+          gymName="바디트랜스"
+          imageUrl1="https://go-gym-bucket.s3.ap-northeast-2.amazonaws.com/posts/2024/12/18/4893bf95-c33d-47f6-ad0e-308bb3dfd61f-slider_두번째.jpg"
+          status="PENDING"
+          title="제목"
+          wishCount={2}
+        />
+      </div>
     );
   }
 
-  return <PostList />;
+  return <PostList data={data} />;
 }

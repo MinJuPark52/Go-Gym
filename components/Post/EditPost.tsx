@@ -14,7 +14,7 @@ import { useMutation } from "@tanstack/react-query";
 import { getAccessToken, getCity } from "@/api/api";
 import axiosInstance from "@/api/axiosInstance";
 import { useRouter } from "next/navigation";
-import useImageUrl from "@/hooks/useImageUrl";
+import S3ImageUrl from "@/hooks/S3ImageUrl";
 
 interface categoryStateType {
   postType: "default" | "SELL" | "BUY";
@@ -144,7 +144,7 @@ export default function EditPost() {
       ...preview,
       [key]: img,
     });
-    const newImg = await useImageUrl(img.name, img, "posts");
+    const newImg = await S3ImageUrl(img.name, img, "posts");
     if (newImg) {
       setImages((prevImages) => ({
         ...prevImages,
@@ -370,7 +370,7 @@ export default function EditPost() {
                   >
                     ❌
                   </button>
-                  <img
+                  <Image
                     // json서버 사용시까진 blob url
                     // src={images[el] as string}
                     src={URL.createObjectURL(preview[el]!)}

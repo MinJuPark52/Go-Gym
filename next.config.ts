@@ -9,8 +9,8 @@ const nextConfig: NextConfig = {
       },
       {
         source: "/backend/:path*", // Local API
-        destination: "https://4ea0-1-240-3-56.ngrok-free.app/:path*",
-        // destination: "https://go-gym.site:path*",
+        destination: "https://de60-175-194-46-244.ngrok-free.app/:path*",
+        // destination: "https://go-gym.site/:path*",
       },
       {
         source: "/chat/:path*", // Local API
@@ -18,6 +18,7 @@ const nextConfig: NextConfig = {
       },
     ];
   },
+
   images: {
     domains: ["example-s3-bucket.amazonaws.com"],
     remotePatterns: [

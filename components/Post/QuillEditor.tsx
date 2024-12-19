@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useState, useMemo } from "react";
+import React, { useMemo } from "react";
 import dynamic from "next/dynamic";
 
 // ReactQuill을 동적으로 클라이언트에서만 로드되도록 설정

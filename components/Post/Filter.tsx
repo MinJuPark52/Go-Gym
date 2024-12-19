@@ -28,6 +28,7 @@ export default function Filter({
   onChangeFilter: (obj: categoryStateType) => void;
   filter: categoryStateType;
 }) {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const obj: any = {};
 
   const [activeFilters, setActiveFilters] = useState({

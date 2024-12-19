@@ -6,8 +6,7 @@ import { useQuery } from "@tanstack/react-query";
 import axios from "axios";
 import profile from "../../public/default_profile.png";
 import Image from "next/image";
-import { useParams, useRouter } from "next/navigation";
-import { useEffect } from "react";
+import { useRouter } from "next/navigation";
 
 export default function PostUserDetail() {
   const router = useRouter();

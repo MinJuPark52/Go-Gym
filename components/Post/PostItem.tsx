@@ -1,7 +1,6 @@
 import Image from "next/image";
 import { FaHeart } from "react-icons/fa";
-import { IoChatbubblesOutline } from "react-icons/io5";
-import profile from "../../public/default_profile.png";
+
 import Link from "next/link";
 import useTimeAgo from "@/hooks/useTimeAgo";
 import DefaultProfile from "../UI/DefaultProfile";
@@ -9,7 +8,7 @@ import DefaultProfile from "../UI/DefaultProfile";
 interface PostType {
   postId: string;
   authorNickname: string;
-  // createdAt: string;
+  createdAt: string;
   gymName: string;
   imageUrl1: string;
   status: string;
@@ -20,7 +19,7 @@ interface PostType {
 export default function PostItem({
   postId,
   authorNickname,
-  // createdAt,
+  createdAt,
   gymName,
   imageUrl1,
   status,
@@ -29,7 +28,7 @@ export default function PostItem({
 }: PostType) {
   const postStatusKo = status === "PENDING" && "게시중";
 
-  // const timeago = useTimeAgo(createdAt);
+  const timeago = useTimeAgo(createdAt);
 
   return (
     <Link href={`/community/${postId}`}>
@@ -39,7 +38,7 @@ export default function PostItem({
             <div className="badge border-none bg-blue-500 pb-3 pt-3 text-sm font-bold text-white">
               {postStatusKo}
             </div>
-            {/* <p className="text-xs text-gray-500">{timeago}</p> */}
+            <p className="text-xs text-gray-500">{timeago}</p>
           </div>
           <div className="flex h-56 flex-col justify-between border-b border-[#ccc] pb-1">
             {imageUrl1 ? (

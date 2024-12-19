@@ -3,7 +3,7 @@
 import Image from "next/image";
 import profile from "../../public/default_profile.png";
 import { useQuery } from "@tanstack/react-query";
-import axiosInstance from "@/api/axiosInstance";
+// import axiosInstance from "@/api/axiosInstance";
 import Link from "next/link";
 import axios from "axios";
 import { useEffect } from "react";
