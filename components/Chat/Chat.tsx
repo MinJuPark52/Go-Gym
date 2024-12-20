@@ -5,6 +5,8 @@ import DefaultProfile from "../UI/DefaultProfile";
 import axiosInstance from "@/api/axiosInstance";
 import { useInfiniteQuery, useMutation } from "@tanstack/react-query";
 import ChatPostDetail from "./ChatPostDetail";
+import useUserStore from "@/store/useUserStore";
+import ProfileImage from "../UI/ProfileImage";
 
 interface props {
   chatRoomId: string;
@@ -28,6 +30,7 @@ export default function Chat({
   const [text, setText] = useState("");
   const { connect, messages, setAgoMessage, disconnect, initMessages } =
     useWebSocketStore();
+  const { user } = useUserStore();
   const scrollRef = useRef<HTMLDivElement>(null);
 
   const {
@@ -138,6 +141,9 @@ export default function Chat({
     }
     //senderId랑 chatRoomId 1번 고정
     onSendMessage({ chatRoomId, content: text });
+    if (scrollRef.current) {
+      scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
+    }
     setText("");
   };
 
@@ -173,7 +179,6 @@ export default function Chat({
   if (isPending) {
     return (
       <div className="relative flex h-[100%] w-[100%] flex-col border-r-2 bg-blue-200 bg-opacity-40 p-4">
-        <ChatPostDetail onOpenModal={onOpenModal} chatRoomId={chatRoomId} />
         <div className="flex h-[calc(100%-10rem)] items-center justify-center">
           <span className="loading loading-ring loading-lg"></span>
           <div className="flex h-48 w-48 flex-wrap items-center justify-center gap-4 rounded-lg bg-white">
@@ -222,42 +227,50 @@ export default function Chat({
         className="flex h-[calc(100%-6rem)] flex-col overflow-y-auto p-2 pt-36 scrollbar-hide sm:pt-32"
       >
         {messages.map((chat) => {
-          return chat.senderId === 1 ? (
-            <div className="chat chat-start" key={chat.createdAt}>
-              <div className="avatar chat-image">
-                <DefaultProfile width="10" />
-              </div>
-              <div className="chat-header mb-1 opacity-50">
-                {counterpartyNickname}
-              </div>
-              <div className="chat-bubble bg-white text-gray-600">
-                {chat.content}
-              </div>
-              <div></div>
-              <time className="ml-2 mt-1 text-xs opacity-50">
-                {extractTime(chat.createdAt)}
-              </time>
-            </div>
-          ) : (
-            <div className="chat chat-end" key={chat.createdAt}>
-              <div className="avatar chat-image">
-                <div className="w-10 rounded-full">
-                  <img
-                    alt="Tailwind CSS chat bubble component"
-                    src="https://img.daisyui.com/images/stock/photo-1534528741775-53994a69daeb.webp"
-                  />
+          if (chat.senderId.toString() === user?.memberId) {
+            return (
+              <div className="chat chat-end" key={chat.createdAt}>
+                <div className="avatar chat-image">
+                  <div className="w-10 rounded-full">
+                    <img
+                      alt="Tailwind CSS chat bubble component"
+                      src="https://img.daisyui.com/images/stock/photo-1534528741775-53994a69daeb.webp"
+                    />
+                  </div>
                 </div>
-              </div>
-              <div className="chat-header mb-1">전민혁</div>
-              <div className="chat-bubble bg-blue-500 text-white">
-                {chat.content}
-              </div>
+                <div className="chat-header mb-1">{user.nickname}</div>
+                <div className="chat-bubble bg-blue-500 text-white">
+                  {chat.content}
+                </div>
 
-              <time className="mt-1 text-xs opacity-50">
-                {extractTime(chat.createdAt)}
-              </time>
-            </div>
-          );
+                <time className="mt-1 text-xs opacity-50">
+                  {extractTime(chat.createdAt)}
+                </time>
+              </div>
+            );
+          } else if (chat.senderId.toString() !== user?.memberId) {
+            return (
+              <div className="chat chat-start" key={chat.createdAt}>
+                <div className="avatar chat-image overflow-hidden rounded-full">
+                  {user?.profileImageUrl ? (
+                    <ProfileImage src={user?.profileImageUrl} />
+                  ) : (
+                    <DefaultProfile width="10" />
+                  )}
+                </div>
+                <div className="chat-header mb-1 opacity-50">
+                  {counterpartyNickname}
+                </div>
+                <div className="chat-bubble bg-white text-gray-600">
+                  {chat.content}
+                </div>
+                <div></div>
+                <time className="ml-2 mt-1 text-xs opacity-50">
+                  {extractTime(chat.createdAt)}
+                </time>
+              </div>
+            );
+          }
         })}
       </div>
       <div className="absolute bottom-0 left-0 flex h-24 w-full bg-white p-2">

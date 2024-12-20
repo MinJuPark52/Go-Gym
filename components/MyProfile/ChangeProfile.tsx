@@ -3,7 +3,6 @@ import axiosInstance from "@/api/axiosInstance";
 import S3ImageUrl from "@/hooks/S3ImageUrl";
 import useUserStore from "@/store/useUserStore";
 import { useMutation } from "@tanstack/react-query";
-import axios from "axios";
 import Image from "next/image";
 import { useRef, useState } from "react";
 
@@ -61,7 +60,7 @@ export default function ChangeProfile() {
       }
 
       // 닉네임 중복확인
-      const response = await axios.get("/backend/api/auth/check-nickname", {
+      const response = await axiosInstance.get("/api/auth/check-nickname", {
         params: { nickname },
       });
       if (response.status === 200) {

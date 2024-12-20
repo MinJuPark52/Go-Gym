@@ -12,10 +12,11 @@ import { RxHamburgerMenu } from "react-icons/rx";
 import { useState } from "react";
 import MobileMenu from "./MoblieMenu";
 import useUserStore from "@/store/useUserStore";
+import ProfileImage from "./ProfileImage";
 
 export default function Nav() {
   const { loginState, adminLoginState, logout } = useLoginStore();
-  const { LogoutUser } = useUserStore();
+  const { LogoutUser, user } = useUserStore();
   const [modal, setModal] = useState(false);
   const [menuModal, setMenuModal] = useState(false);
 
@@ -74,9 +75,13 @@ export default function Nav() {
               <div
                 tabIndex={0}
                 role="button"
-                className="avatar btn btn-circle btn-ghost"
+                className="avatar btn btn-circle btn-ghost overflow-hidden"
               >
-                <DefaultProfile width="10" />
+                {user?.profileImageUrl ? (
+                  <ProfileImage src={user.profileImageUrl} />
+                ) : (
+                  <DefaultProfile width="10" />
+                )}
               </div>
               <ul
                 tabIndex={0}

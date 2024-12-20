@@ -34,7 +34,7 @@ export default function ChatPostDetail({
     mutationKey: ["tdStart"],
     mutationFn: async () =>
       await axiosInstance.put(`/api/safe-payments/${chatRoomId}`, {
-        dateTIme: `${transactionDate.date} ${transactionDate.time}`,
+        dateTIme: `${transactionDate.date} ${transactionDate.time}:00`,
       }),
     onSuccess: () => console.log("거래 일정을 잡았습니다."),
   });
@@ -84,7 +84,7 @@ export default function ChatPostDetail({
     // const realAmount = +amount.replace(/,/g, "");
 
     tdStart();
-    console.log(transactionDate);
+    console.log(`${transactionDate.date} ${transactionDate.time}:00`);
     setModal(false);
   };
 

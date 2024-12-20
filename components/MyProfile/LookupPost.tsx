@@ -19,24 +19,19 @@ export default function LookupPost() {
   useEffect(() => {
     if (category === "my-posts") {
       setTitle("내가 작성한 게시글");
-      // setUrl(`/api/members/me/posts`);
-      setUrl("http://localhost:4000/posts");
+      setUrl(`/api/members/me/posts`);
     } else if (category === "wishlist") {
       setTitle("내가 찜한 게시글");
-      setUrl("http://localhost:4000/posts");
-      // setUrl(`/api/members/me/wishlist`);
+      setUrl(`/api/members/me/wishlist`);
     } else if (category === "recent-view") {
       setTitle("최근 본 게시글");
-      setUrl("http://localhost:4000/posts");
-      // setUrl(
-      //   `/api/members/me/recent-views`,
-      // );
+      setUrl(`/api/members/me/recent-views`);
     } else if (category === "purchaselist") {
       setTitle("구매 목록");
-      setUrl("http://localhost:4000/posts");
+      setUrl(`/api/members/transactions/buy`);
     } else if (category === "salelist") {
       setTitle("판매 목록");
-      setUrl("http://localhost:4000/posts");
+      setUrl(`/api/members/transactions/sell`);
     }
   }, [category]);
 
@@ -80,7 +75,7 @@ export default function LookupPost() {
         <PostList data={data} />
       </div>
       <Pagenation
-        size={5}
+        size={3}
         page={currentPage}
         onRadioChange={handleRadioChange}
         totalPage={24}
