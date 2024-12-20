@@ -5,7 +5,6 @@ import profile from "../../public/default_profile.png";
 import { useMutation, useQuery } from "@tanstack/react-query";
 // import axiosInstance from "@/api/axiosInstance";
 import Link from "next/link";
-import axios from "axios";
 import { useEffect } from "react";
 import useUserStore from "@/store/useUserStore";
 import axiosInstance from "@/api/axiosInstance";
@@ -17,6 +16,7 @@ export default function Profile() {
   const { data: userData, isSuccess } = useQuery({
     queryKey: ["user"],
     queryFn: async () => {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const response: any = await axiosInstance.get("/api/members/me/profile");
       return response;
     },

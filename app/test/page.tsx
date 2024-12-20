@@ -11,7 +11,7 @@ export default function TestPage() {
       <button
         onClick={() => {
           const eventSource = new EventSourcePolyfill(
-            "https://36d6-211-202-41-148.ngrok-free.app/api/notifications/subscribe?id=1",
+            `https://36d6-211-202-41-148.ngrok-free.app/api/notifications/subscribe?member=${localStorage.getItem("memberId")}`,
             {
               headers: {
                 Connection: "keep-alive",
@@ -28,12 +28,13 @@ export default function TestPage() {
             console.log("Event:", event);
             console.log("Event Data:", event.data);
           };
-
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
           eventSource.addEventListener("message", (event: any) => {
             console.log("1");
             console.log("event" + event);
             console.log("eventData" + event.data);
           });
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
           eventSource.addEventListener("dummy", (event: any) => {
             console.log("1");
             console.log("event" + event);
@@ -51,7 +52,7 @@ export default function TestPage() {
       <button
         onClick={() => {
           const eventSource = new EventSourcePolyfill(
-            "https://go-gym.site/api/notifications/subscribe?id=1",
+            `https://go-gym.site/api/notifications/subscribe?member=${localStorage.getItem("memberId")}`,
             {
               headers: {
                 Connection: "keep-alive",
@@ -68,12 +69,13 @@ export default function TestPage() {
             console.log("Event:", event);
             console.log("Event Data:", event.data);
           };
-
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
           eventSource.addEventListener("message", (event: any) => {
             console.log("1");
             console.log("event" + event);
             console.log("eventData" + event.data);
           });
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
           eventSource.addEventListener("dummy", (event: any) => {
             console.log("1");
             console.log("event" + event);

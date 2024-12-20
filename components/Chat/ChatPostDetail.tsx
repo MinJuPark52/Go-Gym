@@ -12,7 +12,6 @@ export default function ChatPostDetail({
 }) {
   const [modal, setModal] = useState(false);
   const [modal1, setModal1] = useState(false);
-  const [amount, setAmount] = useState("");
 
   const { mutate: paystart } = useMutation({
     mutationKey: ["start"],
@@ -32,16 +31,11 @@ export default function ChatPostDetail({
     setModal(false);
   };
 
-  const handleChangeMoney = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setAmount(e.target.value);
-  };
-
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    const realAmount = +amount.replace(/,/g, "");
+    // const realAmount = +amount.replace(/,/g, "");
 
     paystart();
-    console.log(realAmount);
     setModal(false);
   };
 
@@ -59,7 +53,7 @@ export default function ChatPostDetail({
         <p className="text-sm font-bold text-gray-500">제목이요</p>
       </div>
       <div className="flex items-center justify-between">
-        <p className="font-semibold">10,000원</p>
+        <p className="font-semibold">{formatNumber("10000")}원</p>
         <div className="flex items-center gap-2">
           <AiOutlineExclamationCircle
             size={18}

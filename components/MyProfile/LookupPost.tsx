@@ -16,9 +16,6 @@ export default function LookupPost() {
   const [currentPage, setCurrentPage] = useState(0);
   const { user } = useUserStore();
 
-  // const url = `/api/members/${category}`;
-  let content = "안녕";
-
   useEffect(() => {
     if (category === "my-posts") {
       setTitle("내가 작성한 게시글");
@@ -50,6 +47,7 @@ export default function LookupPost() {
   const { data, isPending } = useQuery({
     queryKey: ["post", user, url],
     queryFn: async () => {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const response: any = await axiosInstance.get(
         `${url}?page=${currentPage}&size=5`,
       );
@@ -60,7 +58,7 @@ export default function LookupPost() {
 
   if (isPending) {
     <div className="mt-8 flex flex-col gap-16">
-      <h1 className="text-3xl">{content}</h1>
+      <h1 className="text-3xl">{title}</h1>
       <div className="mb-20 mt-8 flex min-h-96 w-[100%] gap-4 overflow-x-auto p-12 lg:grid lg:grid-cols-2 lg:justify-items-center 2xl:grid-cols-3">
         {[...Array(6).keys()].map((idx) => (
           <PostItemSkeleton key={idx} />
