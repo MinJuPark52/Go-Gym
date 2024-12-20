@@ -1,7 +1,7 @@
 "use client";
 
 import { ChangeEvent, useState, useRef } from "react";
-import axios from "axios";
+import axiosInstance from "@/api/axiosInstance";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 import form from "../../public/form.png";
@@ -188,9 +188,12 @@ export default function SignupPage() {
       }
 
       // 이메일 중복확인
-      const response = await axios.get<Signup[]>("/api/auth/check-email", {
-        params: { email },
-      });
+      const response = await axiosInstance.get<Signup[]>(
+        "/api/auth/check-email",
+        {
+          params: { email },
+        },
+      );
 
       if (response.status === 200) {
         return true;
@@ -216,7 +219,7 @@ export default function SignupPage() {
       }
 
       // 닉네임 중복확인
-      const response = await axios.get("/api/auth/check-nickname", {
+      const response = await axiosInstance.get("/api/auth/check-nickname", {
         params: { nickname },
       });
       if (response.status === 200) {
@@ -258,13 +261,13 @@ export default function SignupPage() {
         setLoading(true);
 
         try {
-          const response = await axios.post<Signup[]>(
+          const response = await axiosInstance.post<Signup[]>(
             "/api/auth/sign-up",
             signupFormData,
           );
 
           if (response.status === 200) {
-            const emailResponse = await axios.post(
+            const emailResponse = await axiosInstance.post(
               "/api/auth/send-verification-email",
               null,
               { params: { email: signupFormData.email } },
@@ -311,9 +314,9 @@ export default function SignupPage() {
 
     if (selectedRegionId1) {
       try {
-        const response = await axios.get<{ regionId: string; name: string }[]>(
-          `backend/api/regions?name=${selectedRegionId1}`,
-        );
+        const response = await axiosInstance.get<
+          { regionId: string; name: string }[]
+        >(`backend/api/regions?name=${selectedRegionId1}`);
         if (response) {
           const regionsData = response.data.map((data) => ({
             id: data.regionId,
@@ -342,9 +345,9 @@ export default function SignupPage() {
 
     if (selectedRegionId2) {
       try {
-        const response = await axios.get<{ regionId: string; name: string }[]>(
-          `backend/api/regions?name=${selectedRegionId2}`,
-        );
+        const response = await axiosInstance.get<
+          { regionId: string; name: string }[]
+        >(`backend/api/regions?name=${selectedRegionId2}`);
         if (response) {
           const regionsData = response.data.map((data) => ({
             id: data.regionId,

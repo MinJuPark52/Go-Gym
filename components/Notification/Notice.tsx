@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import useLoginStore from "@/store/useLoginStore";
 import { EventSourcePolyfill } from "event-source-polyfill";
-import axios from "axios";
+import axiosInstance from "@/api/axiosInstance";
 
 interface Notification {
   id: number;
@@ -90,7 +90,7 @@ export default function Notice() {
   // 2. 알림 읽음 상태 변경
   const notificationsRead = async (notificationId: number) => {
     try {
-      await axios.put(`/api/notifications/${notificationId}/read`);
+      await axiosInstance.put(`/api/notifications/${notificationId}/read`);
       setNotifications((prevNotifications) =>
         prevNotifications
           .map((notification) =>
@@ -110,7 +110,7 @@ export default function Notice() {
     const fetchNotifications = async () => {
       setLoading(true);
       try {
-        const response = await axios.get(
+        const response = await axiosInstance.get(
           `/backend/api/notifications?page=${page}&size=${pageSize}`,
         );
         console.log("Fetched notifications:", response.data);

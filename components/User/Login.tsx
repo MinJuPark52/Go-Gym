@@ -2,7 +2,7 @@
 
 import { ChangeEvent, useState } from "react";
 import Link from "next/link";
-import axios from "axios";
+import axiosInstance from "@/api/axiosInstance";
 import { BiSolidMessageRounded } from "react-icons/bi";
 import useLoginStore from "@/store/useLoginStore";
 import { useRouter } from "next/navigation";
@@ -98,7 +98,7 @@ export default function LoginForm() {
 
     if (validateForm()) {
       try {
-        const response = await axios.post<User[]>("/api/auth/sign-in", {
+        const response = await axiosInstance.post<User[]>("/api/auth/sign-in", {
           email: loginFormData.email,
           password: loginFormData.password,
         });
@@ -117,11 +117,7 @@ export default function LoginForm() {
           }
         }
       } catch (error) {
-        if (axios.isAxiosError(error)) {
-          console.error("Axios error:", error.response || error.message);
-        } else {
-          console.error("Unknown error:", error);
-        }
+        console.error("unknown error:", error);
         alert("로그인 중 오류가 발생했습니다. 다시 시도해주세요.");
       }
     }
