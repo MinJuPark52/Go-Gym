@@ -234,6 +234,23 @@ export default function SignupPage() {
     },
   });
 
+
+  // 프로필 이미지
+  const handleButtonClick = () => {
+    fileInputRef.current?.click(); // useRef를 사용하여 파일 입력 요소 클릭
+  };
+  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files && e.target.files[0]) {
+      const newImg = await S3ImageUrl(
+        e.target.files[0].name,
+        e.target.files[0],
+        "members",
+      );
+      setFile(newImg.toString());
+    }
+  };
+
+
   // 회원가입
   const handleSignupSubmit = useMutation({
     mutationFn: async () => {
@@ -371,15 +388,53 @@ export default function SignupPage() {
             </div>
           )}
 
-          <div>
-            <SignupInput
-              type="text"
-              placeholder="프로필 이미지 URL"
-              value={signupFormData.profileImageUrl}
-              onChange={handleSignupChange("profileImageUrl")}
-              errorMessage={signupErrors.profileImageUrl}
-            />
-          </div>
+          {file ? (
+            <>
+              <div className="relative ml-auto mr-auto flex h-[80px] w-[80px] justify-center overflow-hidden rounded-[100%] border border-gray-300">
+                <div className="flex justify-center">
+                  <button
+                    type="button"
+                    onClick={handleButtonClick}
+                    className="rounded bg-blue-500 px-4 py-2 text-white hover:bg-blue-600"
+                  >
+                    다시 선택
+                  </button>
+
+                  <input
+                    type="file"
+                    accept="image/*"
+                    id="file-input"
+                    name="file-input"
+                    onChange={handleImageUpload}
+                    ref={fileInputRef}
+                    style={{ display: "none" }}
+                  />
+                </div>
+              </div>
+            </>
+          ) : (
+            <div className="relative ml-auto mr-auto flex h-[120px] w-[120px] justify-center overflow-hidden rounded-[100%] border border-gray-300">
+              <div className="flex h-20 w-60 items-center justify-center">
+                <input
+                  type="file"
+                  accept="image/*"
+                  id="file-input"
+                  className="absolute inset-0 h-full w-full cursor-pointer opacity-0"
+                  onChange={handleImageUpload}
+                />
+                <label
+                  htmlFor="file-input"
+                  className="flex cursor-pointer flex-col items-center justify-center text-gray-600"
+                >
+                  <span className="text-4xl text-green-500">+</span>
+                  <span className="mt-2 text-sm font-semibold">
+                    {"프로필 사진"}
+                  </span>
+                </label>
+              </div>
+            </div>
+          )}
+
 
           <div>
             <SignupInput
