@@ -76,13 +76,9 @@ export default function Chat({
   useEffect(() => {
     // 숫자 부분만 chatroomid적어주면 됨
     if (chatRoomId) {
-      connect(
-        process.env.NEXT_PUBLIC_BACKEND_URL + "/ws",
-        chatRoomId,
-        (message) => {
-          console.log("New message:", message.body);
-        },
-      );
+      connect(process.env.BACKEND_URL + "/ws", chatRoomId, (message) => {
+        console.log("New message:", message.body);
+      });
     }
 
     return () => {
