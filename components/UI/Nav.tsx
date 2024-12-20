@@ -114,9 +114,7 @@ export default function Nav() {
                   </Link>
                 </li>
                 <li>
-
                   <p onClick={handleLogout}>로그아웃</p>
-
                 </li>
               </ul>
             </div>
