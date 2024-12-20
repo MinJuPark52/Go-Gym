@@ -12,7 +12,7 @@ interface UserType {
 }
 
 interface userStore {
-  user: UserType | null;
+  user: UserType;
   InitUser: (data: UserType) => void;
   LogoutUser: () => void;
 }

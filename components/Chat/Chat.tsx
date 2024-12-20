@@ -7,6 +7,7 @@ import { useInfiniteQuery, useMutation } from "@tanstack/react-query";
 import ChatPostDetail from "./ChatPostDetail";
 import useUserStore from "@/store/useUserStore";
 import ProfileImage from "../UI/ProfileImage";
+import axios from "axios";
 
 interface props {
   chatRoomId: string;
@@ -71,9 +72,13 @@ export default function Chat({
   useEffect(() => {
     // 숫자 부분만 chatroomid적어주면 됨
     if (chatRoomId) {
-      connect("/backend" + "/ws", chatRoomId, (message) => {
-        console.log("New message:", message.body);
-      });
+      connect(
+        process.env.NEXT_PUBLIC_BACKEND_URL + "/ws",
+        chatRoomId,
+        (message) => {
+          console.log("New message:", message.body);
+        },
+      );
     }
 
     return () => {
@@ -155,46 +160,40 @@ export default function Chat({
   const { mutate: approve } = useMutation({
     mutationKey: ["approve"],
     mutationFn: async () =>
-      await axiosInstance.put(`/api/safe-payments/5/approve`),
+      await axiosInstance.put(
+        `/api/safe-payments/${localStorage.getItem("safePaymentId")}/approve`,
+      ),
     onSuccess: () => alert("승인"),
   });
   const { mutate: reject } = useMutation({
     mutationKey: ["reject"],
     mutationFn: async () =>
-      await axiosInstance.put(`/api/safe-payments/5/reject`),
+      await axiosInstance.put(
+        `/api/safe-payments/${localStorage.getItem("safePaymentId")}/reject`,
+      ),
     onSuccess: () => alert("거절"),
   });
   const { mutate: cancel } = useMutation({
     mutationKey: ["cancel"],
     mutationFn: async () =>
-      await axiosInstance.put(`/api/safe-payments/5/cancel`),
+      await axiosInstance.put(
+        `/api/safe-payments/${localStorage.getItem("safePaymentId")}/cancel`,
+      ),
     onSuccess: () => alert("취소"),
   });
   const { mutate: complete } = useMutation({
     mutationKey: ["complete"],
     mutationFn: async () =>
-      await axiosInstance.put(`/api/safe-payments/5/complete`),
+      await axiosInstance.put(
+        `/api/safe-payments/${localStorage.getItem("safePaymentId")}/complete`,
+      ),
     onSuccess: () => alert("완료"),
   });
   if (isPending) {
     return (
       <div className="relative flex h-[100%] w-[100%] flex-col border-r-2 bg-blue-200 bg-opacity-40 p-4">
         <div className="flex h-[calc(100%-10rem)] items-center justify-center">
-          <span className="loading loading-ring loading-lg"></span>
-          <div className="flex h-48 w-48 flex-wrap items-center justify-center gap-4 rounded-lg bg-white">
-            <button className="btn" onClick={() => approve()}>
-              승인
-            </button>
-            <button className="btn" onClick={() => reject()}>
-              거절
-            </button>
-            <button className="btn" onClick={() => cancel()}>
-              취소
-            </button>
-            <button className="btn" onClick={() => complete()}>
-              완료
-            </button>
-          </div>
+          {/* <span className="loading loading-ring loading-lg"></span> */}
         </div>
         <div className="absolute bottom-0 left-0 flex h-24 w-full bg-white p-2">
           <textarea
@@ -227,7 +226,10 @@ export default function Chat({
         className="flex h-[calc(100%-6rem)] flex-col overflow-y-auto p-2 pt-36 scrollbar-hide sm:pt-32"
       >
         {messages.map((chat) => {
-          if (chat.senderId.toString() === user?.memberId) {
+          if (
+            chat.MessageType === "USER_SEND" &&
+            chat.senderId.toString() === user?.memberId
+          ) {
             return (
               <div className="chat chat-end" key={chat.createdAt}>
                 <div className="avatar chat-image">
@@ -241,6 +243,270 @@ export default function Chat({
                 <div className="chat-header mb-1">{user.nickname}</div>
                 <div className="chat-bubble bg-blue-500 text-white">
                   {chat.content}
+                </div>
+
+                <time className="mt-1 text-xs opacity-50">
+                  {extractTime(chat.createdAt)}
+                </time>
+              </div>
+            );
+          } else if (
+            chat.MessageType === "USER_SEND" &&
+            chat.senderId.toString() !== user?.memberId
+          ) {
+            return (
+              <div className="chat chat-start" key={chat.createdAt}>
+                <div className="avatar chat-image overflow-hidden rounded-full">
+                  {user?.profileImageUrl ? (
+                    <ProfileImage src={user?.profileImageUrl} />
+                  ) : (
+                    <DefaultProfile width="10" />
+                  )}
+                </div>
+                <div className="chat-header mb-1 opacity-50">
+                  {counterpartyNickname}
+                </div>
+                <div className="chat-bubble bg-white text-gray-600">
+                  {chat.content}
+                </div>
+                <div></div>
+                <time className="ml-2 mt-1 text-xs opacity-50">
+                  {extractTime(chat.createdAt)}
+                </time>
+              </div>
+            );
+          } else if (
+            chat.MessageType === "SYSTEM_SAFE_PAYMENT_REQUEST" &&
+            chat.senderId.toString() === user?.memberId
+          ) {
+            return (
+              <div className="chat chat-end" key={chat.createdAt}>
+                <div className="avatar chat-image">
+                  <div className="w-10 rounded-full">
+                    <img
+                      alt="Tailwind CSS chat bubble component"
+                      src="https://img.daisyui.com/images/stock/photo-1534528741775-53994a69daeb.webp"
+                    />
+                  </div>
+                </div>
+                <div className="chat-header mb-1">{user?.nickname}</div>
+                <div className="chat-bubble bg-blue-500 text-white">
+                  <div className="flex flex-col items-center justify-center gap-4 rounded-lg bg-white">
+                    <div>
+                      <p>
+                        <span className="text-2xl">알림📢 </span>
+                        {counterpartyNickname} !
+                      </p>
+                      <p>{user.nickname} 님이 안전결제를 신청했습니다.</p>
+                    </div>
+                    <div className="flex gap-8">
+                      <button className="btn bg-blue-500 text-white">
+                        승인
+                      </button>
+                      <button className="btn bg-blue-500 text-white">
+                        거절
+                      </button>
+                    </div>
+                  </div>
+                </div>
+
+                <time className="mt-1 text-xs opacity-50">
+                  {extractTime(chat.createdAt)}
+                </time>
+              </div>
+            );
+          } else if (
+            chat.MessageType === "SYSTEM_SAFE_PAYMENT_REQUEST" &&
+            chat.senderId.toString() !== user?.memberId
+          ) {
+            return (
+              <div className="chat chat-end" key={chat.createdAt}>
+                <div className="avatar chat-image">
+                  <div className="w-10 rounded-full">
+                    <img
+                      alt="Tailwind CSS chat bubble component"
+                      src="https://img.daisyui.com/images/stock/photo-1534528741775-53994a69daeb.webp"
+                    />
+                  </div>
+                </div>
+                <div className="chat-header mb-1">{user?.nickname}</div>
+                <div className="chat-bubble bg-blue-500 text-white"></div>
+                <div className="chat chat-start" key={chat.createdAt}>
+                  <div className="avatar chat-image overflow-hidden rounded-full">
+                    {user?.profileImageUrl ? (
+                      <ProfileImage src={user?.profileImageUrl} />
+                    ) : (
+                      <DefaultProfile width="10" />
+                    )}
+                  </div>
+                  <div className="chat-header mb-1 opacity-50">
+                    {counterpartyNickname}
+                  </div>
+                  <div className="chat-bubble bg-white text-gray-600">
+                    <div className="flex flex-col items-center justify-center gap-4 rounded-lg bg-white">
+                      <div>
+                        <p>
+                          <span className="text-2xl">알림📢 </span>
+                          {user.nickname} !
+                        </p>
+                        <p>
+                          {counterpartyNickname}님이 안전결제를 신청했습니다.
+                        </p>
+                      </div>
+                      <div className="flex gap-8">
+                        <button
+                          className="btn bg-blue-500 text-white"
+                          onClick={() => approve()}
+                        >
+                          승인
+                        </button>
+                        <button
+                          className="btn bg-blue-500 text-white"
+                          onClick={() => reject()}
+                        >
+                          거절
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                  <div></div>
+                  <time className="ml-2 mt-1 text-xs opacity-50">
+                    {extractTime(chat.createdAt)}
+                  </time>
+                </div>
+                <time className="mt-1 text-xs opacity-50">
+                  {extractTime(chat.createdAt)}
+                </time>
+              </div>
+            );
+          } else if (
+            chat.MessageType === "SYSTEM_SAFE_PAYMENT_APPROVE" &&
+            chat.senderId.toString() === user?.memberId
+          ) {
+            return (
+              <div className="chat chat-end" key={chat.createdAt}>
+                <div className="avatar chat-image">
+                  <div className="w-10 rounded-full">
+                    <img
+                      alt="Tailwind CSS chat bubble component"
+                      src="https://img.daisyui.com/images/stock/photo-1534528741775-53994a69daeb.webp"
+                    />
+                  </div>
+                </div>
+                <div className="chat-header mb-1">{user?.nickname}</div>
+                <div className="chat-bubble bg-blue-500 text-white">
+                  <div className="flex flex-col items-center justify-center gap-4 rounded-lg bg-white">
+                    <div>
+                      <p>
+                        <span className="text-2xl">알림📢 </span>
+                        {counterpartyNickname} !
+                      </p>
+                      <p>{user.nickname} 님이 안전결제를 승인했습니다.</p>
+                    </div>
+                    <div className="flex gap-8">
+                      <button
+                        className="btn bg-blue-500 text-white"
+                        onClick={() => cancel()}
+                      >
+                        결제 취소
+                      </button>
+                    </div>
+                  </div>
+                </div>
+
+                <time className="mt-1 text-xs opacity-50">
+                  {extractTime(chat.createdAt)}
+                </time>
+              </div>
+            );
+          } else if (
+            chat.MessageType === "SYSTEM_SAFE_PAYMENT_APPROVE" &&
+            chat.senderId.toString() !== user?.memberId
+          ) {
+            return (
+              <div className="chat chat-end" key={chat.createdAt}>
+                <div className="avatar chat-image">
+                  <div className="w-10 rounded-full">
+                    <img
+                      alt="Tailwind CSS chat bubble component"
+                      src="https://img.daisyui.com/images/stock/photo-1534528741775-53994a69daeb.webp"
+                    />
+                  </div>
+                </div>
+                <div className="chat-header mb-1">{user?.nickname}</div>
+                <div className="chat-bubble bg-blue-500 text-white"></div>
+                <div className="chat chat-start" key={chat.createdAt}>
+                  <div className="avatar chat-image overflow-hidden rounded-full">
+                    {user?.profileImageUrl ? (
+                      <ProfileImage src={user?.profileImageUrl} />
+                    ) : (
+                      <DefaultProfile width="10" />
+                    )}
+                  </div>
+                  <div className="chat-header mb-1 opacity-50">
+                    {counterpartyNickname}
+                  </div>
+                  <div className="chat-bubble bg-white text-gray-600">
+                    <div className="flex flex-col items-center justify-center gap-4 rounded-lg bg-white">
+                      <div>
+                        <p>
+                          <span className="text-2xl">알림📢 </span>
+                          {user.nickname} !
+                        </p>
+                        <p>
+                          {counterpartyNickname}님이 안전결제를 승인했습니다.
+                        </p>
+                      </div>
+                      <div className="flex gap-8">
+                        <button
+                          className="btn bg-blue-500 text-white"
+                          onClick={() => complete()}
+                        >
+                          구매 확정
+                        </button>
+                        <button
+                          className="btn bg-blue-500 text-white"
+                          onClick={() => cancel()}
+                        >
+                          결제 취소
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                  <div></div>
+                  <time className="ml-2 mt-1 text-xs opacity-50">
+                    {extractTime(chat.createdAt)}
+                  </time>
+                </div>
+                <time className="mt-1 text-xs opacity-50">
+                  {extractTime(chat.createdAt)}
+                </time>
+              </div>
+            );
+          } else if (chat.senderId.toString() === user?.memberId) {
+            return (
+              <div className="chat chat-end" key={chat.createdAt}>
+                <div className="avatar chat-image">
+                  <div className="w-10 rounded-full">
+                    <img
+                      alt="Tailwind CSS chat bubble component"
+                      src="https://img.daisyui.com/images/stock/photo-1534528741775-53994a69daeb.webp"
+                    />
+                  </div>
+                </div>
+                <div className="chat-header mb-1">{user.nickname}</div>
+                <div className="chat-bubble bg-blue-500 text-white">
+                  <div className="flex flex-col items-center justify-center gap-4 rounded-lg bg-white">
+                    <div>
+                      <p>
+                        <span className="text-2xl">알림📢 </span>
+                        {counterpartyNickname} !
+                      </p>
+                      <p>
+                        {user.name}님 {chat.content}
+                      </p>
+                    </div>
+                  </div>
                 </div>
 
                 <time className="mt-1 text-xs opacity-50">
@@ -262,7 +528,17 @@ export default function Chat({
                   {counterpartyNickname}
                 </div>
                 <div className="chat-bubble bg-white text-gray-600">
-                  {chat.content}
+                  <div className="flex flex-col items-center justify-center gap-4 rounded-lg bg-white">
+                    <div>
+                      <p>
+                        <span className="text-2xl">알림📢 </span>
+                        {user.nickname} !
+                      </p>
+                      <p>
+                        {counterpartyNickname}님이 {chat.content}
+                      </p>
+                    </div>
+                  </div>
                 </div>
                 <div></div>
                 <time className="ml-2 mt-1 text-xs opacity-50">

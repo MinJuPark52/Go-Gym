@@ -1,6 +1,7 @@
 "use client";
 
 import axiosInstance from "@/api/axiosInstance";
+import useUserStore from "@/store/useUserStore";
 import { useMutation } from "@tanstack/react-query";
 import { ChangeEvent, useState } from "react";
 import { AiOutlineExclamationCircle } from "react-icons/ai";
@@ -19,15 +20,19 @@ export default function ChatPostDetail({
     date: "",
     time: "",
   });
+  const { user } = useUserStore();
 
   const { mutate: paystart } = useMutation({
     mutationKey: ["payStart"],
     mutationFn: async () =>
       await axiosInstance.post(`/api/safe-payments/${chatRoomId}`, {
-        responderId: "1",
+        responderId: user?.memberId,
         amount: 10000,
       }),
-    onSuccess: () => alert("결제를 요청했습니다."),
+    onSuccess: (data: any) => {
+      alert("결제를 요청했습니다.");
+      localStorage.setItem("safePaymentId", data.safePaymentId);
+    },
   });
 
   const { mutate: tdStart } = useMutation({
