@@ -4,21 +4,23 @@ import { useState } from "react";
 import PortOne from "@portone/browser-sdk/v2";
 import axiosInstance from "@/api/axiosInstance";
 import { useMutation } from "@tanstack/react-query";
+import useUserStore from "@/store/useUserStore";
 
 export default function ChargePay() {
+  const { user } = useUserStore();
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const [data, setData] = useState<any>({
-    storeId: process.env.NEXT_PUBLIC_PORTONE_STORE_ID,
+    storeId: process.env.PORTONE_STORE_ID,
     orderName: "짐페이 충전",
     totalAmount: 0,
     currency: "KRW",
-    channelKey: process.env.NEXT_PUBLIC_PORTONE_CHANNAL_KEY,
+    channelKey: process.env.PORTONE_CHANNAL_KEY,
     payMethod: "CARD",
     //customer는 동적으로 받을 예정
     customer: {
-      fullName: "전민혁",
-      phoneNumber: "010-7634-7212",
-      email: "cwhite7230@gmail.com",
+      fullName: user?.name,
+      phoneNumber: user?.phone,
+      email: user?.email,
     },
   });
 
@@ -26,13 +28,7 @@ export default function ChargePay() {
     if (data) {
       const response = await PortOne.requestPayment({ ...data, paymentId });
 
-      //백엔드 엔드포인트
-      // const validation = await axiosInstance.post('/api/payments/webhook', {
-      //   txId: response?.txId,
-      //   paymentId: response?.paymentId,
-      // });
       console.log(response);
-      // console.log(validation);
     }
   }
 
@@ -54,8 +50,6 @@ export default function ChargePay() {
 
   //사전등록시 금액보내고, 주문번호(paymentId) 받고,결제 진행
   //주문번호 받았을때 sse구독요청
-
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
 
   const handleButtonClick = (e: React.MouseEvent<HTMLButtonElement>) => {
     const target = e.target as HTMLButtonElement;
@@ -81,11 +75,6 @@ export default function ChargePay() {
 
     mutate();
   };
-
-  // const pay = async () => {
-  //   const response = await axiosInstance.post("/api/gym-pays");
-  //   console.log(response);
-  // };
 
   return (
     <div className="flex w-[75%] justify-center">

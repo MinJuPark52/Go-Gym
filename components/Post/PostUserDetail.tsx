@@ -4,12 +4,14 @@ import { CgCloseO } from "react-icons/cg";
 import PostList from "./PostList";
 import { useQuery } from "@tanstack/react-query";
 import axios from "axios";
-import profile from "../../public/default_profile.png";
-import Image from "next/image";
 import { useRouter } from "next/navigation";
+import ProfileImage from "../UI/ProfileImage";
+import DefaultProfile from "../UI/DefaultProfile";
+import useUserStore from "@/store/useUserStore";
 
 export default function PostUserDetail() {
   const router = useRouter();
+  const { user } = useUserStore();
 
   const { data, isPending } = useQuery({
     queryKey: ["postDetailUser"],
@@ -43,13 +45,13 @@ export default function PostUserDetail() {
       </div>
       <div className="relative h-[60%] w-[70%] min-w-[900px] max-w-[1100px] animate-slide-down overflow-hidden overflow-y-auto rounded-lg bg-white">
         <div className="m-8 flex items-center gap-4">
-          <Image
-            src={profile}
-            alt="profile"
-            width={80}
-            className="cursor-pointer"
-            priority
-          />
+          <div className="avatar h-20 w-20 overflow-hidden rounded-full">
+            {user?.profileImageUrl ? (
+              <ProfileImage src={user?.profileImageUrl} />
+            ) : (
+              <DefaultProfile width="120" />
+            )}
+          </div>
           <p className="text-2xl text-gray-600">
             {data.nickname}님의 다른 게시글
           </p>
@@ -58,7 +60,9 @@ export default function PostUserDetail() {
           </button>
         </div>
         <div className="m-4 overflow-x-auto">
-          <PostList data={post} />
+          <div className="mb-20 flex min-h-96 w-[100%] gap-4 overflow-x-auto p-12 lg:grid lg:grid-cols-2 lg:justify-items-center 2xl:grid-cols-3">
+            <PostList data={post} />
+          </div>
         </div>
       </div>
     </div>

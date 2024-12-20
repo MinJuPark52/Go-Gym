@@ -1,10 +1,14 @@
 "use client";
 import { useEffect, useRef, useState } from "react";
 import useWebSocketStore from "@/store/useSocketStore";
-import DefaultProfile from "../UI/DefaultProfile";
 import axiosInstance from "@/api/axiosInstance";
-import { useInfiniteQuery } from "@tanstack/react-query";
+import { useInfiniteQuery, useMutation } from "@tanstack/react-query";
 import ChatPostDetail from "./ChatPostDetail";
+import useUserStore from "@/store/useUserStore";
+import UserMessages from "./Messages/UserMessages";
+import RequestMessages from "./Messages/RequestMessages";
+import ApprovetMessages from "./Messages/ApproveMessages";
+import NoticeMessages from "./Messages/NoticeMessages";
 
 interface props {
   chatRoomId: string;
@@ -28,6 +32,7 @@ export default function Chat({
   const [text, setText] = useState("");
   const { connect, messages, setAgoMessage, disconnect, initMessages } =
     useWebSocketStore();
+  const { user } = useUserStore();
   const scrollRef = useRef<HTMLDivElement>(null);
 
   const {
@@ -68,7 +73,7 @@ export default function Chat({
   useEffect(() => {
     // 숫자 부분만 chatroomid적어주면 됨
     if (chatRoomId) {
-      connect("/backend" + "/ws", chatRoomId, (message) => {
+      connect(process.env.BACKEND_URL + "/ws", chatRoomId, (message) => {
         console.log("New message:", message.body);
       });
     }
@@ -138,6 +143,9 @@ export default function Chat({
     }
     //senderId랑 chatRoomId 1번 고정
     onSendMessage({ chatRoomId, content: text });
+    if (scrollRef.current) {
+      scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
+    }
     setText("");
   };
 
@@ -146,10 +154,41 @@ export default function Chat({
     handleSendMessage();
   };
 
+  const { mutate: approve } = useMutation({
+    mutationKey: ["approve"],
+    mutationFn: async () =>
+      await axiosInstance.put(
+        `/api/safe-payments/${localStorage.getItem("safePaymentId")}/approve`,
+      ),
+    onSuccess: () => alert("승인"),
+  });
+  const { mutate: reject } = useMutation({
+    mutationKey: ["reject"],
+    mutationFn: async () =>
+      await axiosInstance.put(
+        `/api/safe-payments/${localStorage.getItem("safePaymentId")}/reject`,
+      ),
+    onSuccess: () => alert("거절"),
+  });
+  const { mutate: cancel } = useMutation({
+    mutationKey: ["cancel"],
+    mutationFn: async () =>
+      await axiosInstance.put(
+        `/api/safe-payments/${localStorage.getItem("safePaymentId")}/cancel`,
+      ),
+    onSuccess: () => alert("취소"),
+  });
+  const { mutate: complete } = useMutation({
+    mutationKey: ["complete"],
+    mutationFn: async () =>
+      await axiosInstance.put(
+        `/api/safe-payments/${localStorage.getItem("safePaymentId")}/complete`,
+      ),
+    onSuccess: () => alert("완료"),
+  });
   if (isPending) {
     return (
       <div className="relative flex h-[100%] w-[100%] flex-col border-r-2 bg-blue-200 bg-opacity-40 p-4">
-        <ChatPostDetail onOpenModal={onOpenModal} />
         <div className="flex h-[calc(100%-10rem)] items-center justify-center">
           <span className="loading loading-ring loading-lg"></span>
         </div>
@@ -177,49 +216,129 @@ export default function Chat({
       onSubmit={handleSubmitMessage}
       className="relative flex h-[100%] w-[100%] flex-col bg-blue-200 bg-opacity-40 p-4"
     >
-      <ChatPostDetail onOpenModal={onOpenModal} />
+      <ChatPostDetail onOpenModal={onOpenModal} chatRoomId={chatRoomId} />
       <div
         ref={scrollRef}
         onScroll={handleScroll}
         className="flex h-[calc(100%-6rem)] flex-col overflow-y-auto p-2 pt-36 scrollbar-hide sm:pt-32"
       >
         {messages.map((chat) => {
-          return chat.senderId === 1 ? (
-            <div className="chat chat-start" key={chat.createdAt}>
-              <div className="avatar chat-image">
-                <DefaultProfile width="10" />
-              </div>
-              <div className="chat-header mb-1 opacity-50">
-                {counterpartyNickname}
-              </div>
-              <div className="chat-bubble bg-white text-gray-600">
-                {chat.content}
-              </div>
-              <div></div>
-              <time className="ml-2 mt-1 text-xs opacity-50">
-                {extractTime(chat.createdAt)}
-              </time>
-            </div>
-          ) : (
-            <div className="chat chat-end" key={chat.createdAt}>
-              <div className="avatar chat-image">
-                <div className="w-10 rounded-full">
-                  <img
-                    alt="Tailwind CSS chat bubble component"
-                    src="https://img.daisyui.com/images/stock/photo-1534528741775-53994a69daeb.webp"
-                  />
-                </div>
-              </div>
-              <div className="chat-header mb-1">전민혁</div>
-              <div className="chat-bubble bg-blue-500 text-white">
-                {chat.content}
-              </div>
-
-              <time className="mt-1 text-xs opacity-50">
-                {extractTime(chat.createdAt)}
-              </time>
-            </div>
-          );
+          if (
+            chat.MessageType === "USER_SEND" &&
+            chat.senderId.toString() === user?.memberId
+          ) {
+            return (
+              <UserMessages
+                key={chat.createdAt}
+                createdAt={chat.createdAt}
+                nickname={user.nickname}
+                counterpartyNickname={counterpartyNickname}
+                content={chat.content}
+                send={true}
+              />
+            );
+          } else if (
+            chat.MessageType === "USER_SEND" &&
+            chat.senderId.toString() !== user?.memberId
+          ) {
+            return (
+              <UserMessages
+                key={chat.createdAt}
+                createdAt={chat.createdAt}
+                profileImageUrl={user.profileImageUrl || ""}
+                nickname={user.nickname}
+                counterpartyNickname={counterpartyNickname}
+                content={chat.content}
+                send={false}
+              />
+            );
+          } else if (
+            chat.MessageType === "SYSTEM_SAFE_PAYMENT_REQUEST" &&
+            chat.senderId.toString() === user?.memberId
+          ) {
+            return (
+              <RequestMessages
+                key={chat.createdAt}
+                createdAt={chat.createdAt}
+                nickname={user.nickname}
+                counterpartyNickname={counterpartyNickname}
+                content={chat.content}
+                approve={approve}
+                reject={reject}
+                send={true}
+              />
+            );
+          } else if (
+            chat.MessageType === "SYSTEM_SAFE_PAYMENT_REQUEST" &&
+            chat.senderId.toString() !== user?.memberId
+          ) {
+            return (
+              <RequestMessages
+                key={chat.createdAt}
+                createdAt={chat.createdAt}
+                nickname={user.nickname}
+                counterpartyNickname={counterpartyNickname}
+                content={chat.content}
+                approve={approve}
+                reject={reject}
+                send={false}
+              />
+            );
+          } else if (
+            chat.MessageType === "SYSTEM_SAFE_PAYMENT_APPROVE" &&
+            chat.senderId.toString() === user?.memberId
+          ) {
+            return (
+              <ApprovetMessages
+                key={chat.createdAt}
+                createdAt={chat.createdAt}
+                nickname={user.nickname}
+                counterpartyNickname={counterpartyNickname}
+                content={chat.content}
+                complete={complete}
+                cancel={cancel}
+                send={true}
+              />
+            );
+          } else if (
+            chat.MessageType === "SYSTEM_SAFE_PAYMENT_APPROVE" &&
+            chat.senderId.toString() !== user?.memberId
+          ) {
+            return (
+              <ApprovetMessages
+                key={chat.createdAt}
+                createdAt={chat.createdAt}
+                nickname={user.nickname}
+                counterpartyNickname={counterpartyNickname}
+                content={chat.content}
+                complete={complete}
+                cancel={cancel}
+                send={false}
+              />
+            );
+          } else if (chat.senderId.toString() === user?.memberId) {
+            return (
+              <NoticeMessages
+                key={chat.createdAt}
+                createdAt={chat.createdAt}
+                nickname={user.nickname}
+                counterpartyNickname={counterpartyNickname}
+                content={chat.content}
+                send={true}
+              />
+            );
+          } else if (chat.senderId.toString() !== user?.memberId) {
+            return (
+              <NoticeMessages
+                key={chat.createdAt}
+                createdAt={chat.createdAt}
+                nickname={user.nickname}
+                counterpartyNickname={counterpartyNickname}
+                content={chat.content}
+                send={false}
+              />
+            );
+          }
         })}
       </div>
       <div className="absolute bottom-0 left-0 flex h-24 w-full bg-white p-2">
@@ -243,9 +362,3 @@ export default function Chat({
     </form>
   );
 }
-
-const extractTime = (date: string) => {
-  const timePart = date.split("T")[1]; // "13:31:47.1590463"
-  const [hours, minutes] = timePart.split(":"); // ["13", "31"]
-  return `${hours}:${minutes}`;
-};

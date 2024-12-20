@@ -1,11 +1,12 @@
 "use client";
 
-import Image from "next/image";
-import profile from "@/public/default_profile.png";
 import useTimeAgo from "@/hooks/useTimeAgo";
 import { IoTrashBinOutline } from "react-icons/io5";
 import { useMutation } from "@tanstack/react-query";
 import axiosInstance from "@/api/axiosInstance";
+import useUserStore from "@/store/useUserStore";
+import ProfileImage from "../UI/ProfileImage";
+import DefaultProfile from "../UI/DefaultProfile";
 
 interface chatListProps {
   counterpartyNickname: string;
@@ -24,6 +25,7 @@ export default function ChatList({
   lastMessageAt,
   onCloseModal,
 }: chatListProps) {
+  const { user } = useUserStore();
   const timeago = useTimeAgo(lastMessageAt);
 
   const handleDelete = () => {
@@ -61,13 +63,13 @@ export default function ChatList({
             </p>
           </div>
           <div className="flex items-center gap-4">
-            <Image
-              src={profile}
-              alt="profile"
-              width={40}
-              className="cursor-pointer"
-              priority
-            />
+            <div className="avatar h-10 w-10 overflow-hidden rounded-full">
+              {user?.profileImageUrl ? (
+                <ProfileImage src={user?.profileImageUrl} />
+              ) : (
+                <DefaultProfile width="120" />
+              )}
+            </div>
 
             {lastMessage && (
               <p className="text-sm font-bold text-gray-600">

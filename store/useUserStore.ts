@@ -12,7 +12,7 @@ interface UserType {
 }
 
 interface userStore {
-  user: UserType | null;
+  user: UserType;
   InitUser: (data: UserType) => void;
   LogoutUser: () => void;
 }
@@ -21,12 +21,30 @@ const useUserStore = create(
   persist<userStore>(
     (set) => {
       return {
-        user: null,
+        user: {
+          memberId: "",
+          name: "",
+          email: "",
+          nickname: "",
+          phone: "",
+          profileImageUrl: "",
+          gymPayBalance: "",
+        },
         InitUser: (data) => {
           set(() => ({ user: data }));
         },
         LogoutUser: () => {
-          set(() => ({ user: null }));
+          set(() => ({
+            user: {
+              memberId: "",
+              name: "",
+              email: "",
+              nickname: "",
+              phone: "",
+              profileImageUrl: "",
+              gymPayBalance: "",
+            },
+          }));
         },
       };
     },

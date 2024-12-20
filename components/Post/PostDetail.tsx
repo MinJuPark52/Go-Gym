@@ -10,6 +10,7 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import axiosInstance from "@/api/axiosInstance";
 import useLoginStore from "@/store/useLoginStore";
+import useUserStore from "@/store/useUserStore";
 
 interface PostType {
   postId: string;
@@ -32,6 +33,7 @@ interface PostType {
 export default function PostDetail() {
   const { id } = useParams();
   const router = useRouter();
+  const { user } = useUserStore();
   const { loginState } = useLoginStore();
 
   //queryKey 상태 관리
@@ -105,11 +107,13 @@ export default function PostDetail() {
             <div className="mb-2 ml-2 mr-2 mt-12">
               <div className="flex justify-between">
                 <p className="text-2xl font-bold">{detail.title}</p>
-                <Link href={`/community/modifiedpost/${id}`}>
-                  <button className="btn bg-blue-500 text-white hover:bg-blue-600">
-                    수정하기
-                  </button>
-                </Link>
+                {user?.nickname === detail.authorNickname && (
+                  <Link href={`/community/modifiedpost/${id}`}>
+                    <button className="btn bg-blue-500 text-white hover:bg-blue-600">
+                      수정하기
+                    </button>
+                  </Link>
+                )}
               </div>
               <div className="badge border-none bg-blue-500 pb-3 pt-3 text-sm font-bold text-white">
                 {statusBox}
@@ -180,7 +184,7 @@ export default function PostDetail() {
             >
               <PostDetailImage imageUrl={detail.imageUrl1} />
             </Link>
-            {loginState && (
+            {loginState && user?.nickname !== detail.authorNickname && (
               <button
                 onClick={() => mutate()}
                 className="btn absolute bottom-4 right-4 bg-blue-500 p-1 pl-2 pr-2 text-white transition-all hover:bg-blue-600"

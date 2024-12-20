@@ -86,7 +86,7 @@ const Slider = () => {
                 ))}
               </div>
               <Link
-                href={`/`}
+                href={`/community`}
                 className="btn btn-info border-none bg-blue-500 text-white hover:bg-blue-700"
               >
                 바로가기
