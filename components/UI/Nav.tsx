@@ -11,11 +11,13 @@ import Notice from "../Notification/Notice";
 import { RxHamburgerMenu } from "react-icons/rx";
 import { useState } from "react";
 import MobileMenu from "./MoblieMenu";
+import axiosInstance from "@/api/axiosInstance";
 import useUserStore from "@/store/useUserStore";
 
 export default function Nav() {
   const { loginState, adminLoginState, logout } = useLoginStore();
   const { LogoutUser } = useUserStore();
+
   const [modal, setModal] = useState(false);
   const [menuModal, setMenuModal] = useState(false);
 
@@ -29,6 +31,24 @@ export default function Nav() {
   if (adminLoginState) {
     return <AdminNav />;
   }
+
+  // 로그아웃
+  const handleLogout = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!loginState) {
+      alert("이미 로그아웃 되었습니다.");
+      return;
+    }
+    try {
+      const response = await axiosInstance.post("/api/auth/sign-out");
+      console.log("Logout successful:", response.data);
+      logout();
+      LogoutUser();
+      alert("로그아웃 되었습니다.");
+    } catch (error) {
+      console.error("unknown error:", error);
+    }
+  };
 
   return (
     <div className="h-18 relative z-40 flex justify-center border-b border-[#ccc] shadow-md">
@@ -89,14 +109,9 @@ export default function Nav() {
                   </Link>
                 </li>
                 <li>
-                  <p
-                    onClick={() => {
-                      logout();
-                      LogoutUser();
-                    }}
-                  >
-                    Logout
-                  </p>
+
+                  <p onClick={handleLogout}>로그아웃</p>
+
                 </li>
               </ul>
             </div>

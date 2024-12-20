@@ -10,7 +10,7 @@ const nextConfig: NextConfig = {
       {
         source: "/backend/:path*", // Local API
 
-        destination: "https://a29a-211-234-196-179.ngrok-free.app/:path*",
+        destination: "https://283a-175-195-104-144.ngrok-free.app/:path*",
 
         // destination: "https://go-gym.site/:path*",
       },
