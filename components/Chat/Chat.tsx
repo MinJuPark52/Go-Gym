@@ -1,13 +1,10 @@
 "use client";
 import { useEffect, useRef, useState } from "react";
 import useWebSocketStore from "@/store/useSocketStore";
-import DefaultProfile from "../UI/DefaultProfile";
 import axiosInstance from "@/api/axiosInstance";
 import { useInfiniteQuery, useMutation } from "@tanstack/react-query";
 import ChatPostDetail from "./ChatPostDetail";
 import useUserStore from "@/store/useUserStore";
-import ProfileImage from "../UI/ProfileImage";
-import axios from "axios";
 import UserMessages from "./Messages/UserMessages";
 import RequestMessages from "./Messages/RequestMessages";
 import ApprovetMessages from "./Messages/ApproveMessages";
@@ -369,9 +366,3 @@ export default function Chat({
     </form>
   );
 }
-
-const extractTime = (date: string) => {
-  const timePart = date.split("T")[1]; // "13:31:47.1590463"
-  const [hours, minutes] = timePart.split(":"); // ["13", "31"]
-  return `${hours}:${minutes}`;
-};
