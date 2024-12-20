@@ -11,7 +11,6 @@ import form from "../../public/form.png";
 import useUserStore from "@/store/useUserStore";
 
 interface User {
-  memberId: string;
   email: string;
   password: string;
 }
@@ -45,7 +44,6 @@ const LoginInput = ({
 
 export default function LoginForm() {
   const [showPw, setShowPw] = useState(false);
-  const { InitUser } = useUserStore();
   const [loginFormData, setLoginFormData] = useState({
     email: "",
     password: "",
@@ -57,6 +55,7 @@ export default function LoginForm() {
   });
 
   const { login } = useLoginStore();
+  const { InitUser } = useUserStore();
 
   const handleLoginChange =
     (field: keyof typeof loginFormData) =>
@@ -108,10 +107,10 @@ export default function LoginForm() {
         console.log(response);
         if (response) {
           const authHeader = response.headers["authorization"];
-
           if (authHeader) {
             const token = authHeader.split(" ")[1];
             console.log("JWT Token:", token);
+
             sessionStorage.setItem("token", token);
 
             //백엔드 연결시 axiosInstance로 교체
@@ -204,7 +203,7 @@ export default function LoginForm() {
           </div>
 
           <button
-            type="submit"
+            type="button"
             className="mt-3 w-full rounded-md border border-blue-500 py-1.5"
           >
             <Link href="/signup"> 회원가입</Link>
