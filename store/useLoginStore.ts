@@ -38,7 +38,7 @@ const useLoginStore = create(
           // 1시간 후 만료
           const expirationTime = Date.now() + 3600000;
           set({
-            loginState: false,
+            loginState: true,
             token,
             expirationTime,
           });

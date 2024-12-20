@@ -22,7 +22,7 @@ export default function SearchKakaoMap({
 }) {
   const [loading, error] = useKakaoLoader({
     //에러나는거같네요
-    appkey: process.env.NEXT_PUBLIC_KAKAO_JAVASCRIPT_KEY!,
+    appkey: process.env.KAKAO_JAVASCRIPT_KEY!,
     libraries: ["services"],
   });
 
