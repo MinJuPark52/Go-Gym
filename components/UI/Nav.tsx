@@ -11,10 +11,10 @@ import Notice from "../Notification/Notice";
 import { RxHamburgerMenu } from "react-icons/rx";
 import { useState } from "react";
 import MobileMenu from "./MoblieMenu";
-import axios from "axios";
+import axiosInstance from "@/api/axiosInstance";
 
 export default function Nav() {
-  const { loginState, adminLoginState, logout } = useLoginStore();
+  const { loginState, adminLoginState } = useLoginStore();
   const [modal, setModal] = useState(false);
   const [menuModal, setMenuModal] = useState(false);
 
@@ -32,21 +32,16 @@ export default function Nav() {
   // 로그아웃
   const handleLogout = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!logout) {
+    if (!loginState) {
       alert("이미 로그아웃 되었습니다.");
       return;
     }
     try {
-      const response = await axios.post("/backend/api/auth/sign-out");
+      const response = await axiosInstance.post("/backend/api/auth/sign-out");
       console.log("Logout successful:", response.data);
       alert("로그아웃 되었습니다.");
     } catch (error) {
-      if (axios.isAxiosError(error)) {
-        console.error("Axios error:");
-      } else {
-        console.error("Unknown error:", error);
-      }
-      alert("로그아웃 중 오류가 발생했습니다. 다시 시도해주세요.");
+      console.error("unknown error:", error);
     }
   };
 
