@@ -173,7 +173,7 @@ export default function Chat({
   if (isPending) {
     return (
       <div className="relative flex h-[100%] w-[100%] flex-col border-r-2 bg-blue-200 bg-opacity-40 p-4">
-        <ChatPostDetail onOpenModal={onOpenModal} />
+        <ChatPostDetail onOpenModal={onOpenModal} chatRoomId={chatRoomId} />
         <div className="flex h-[calc(100%-10rem)] items-center justify-center">
           <span className="loading loading-ring loading-lg"></span>
           <div className="flex h-48 w-48 flex-wrap items-center justify-center gap-4 rounded-lg bg-white">
@@ -215,7 +215,7 @@ export default function Chat({
       onSubmit={handleSubmitMessage}
       className="relative flex h-[100%] w-[100%] flex-col bg-blue-200 bg-opacity-40 p-4"
     >
-      <ChatPostDetail onOpenModal={onOpenModal} />
+      <ChatPostDetail onOpenModal={onOpenModal} chatRoomId={chatRoomId} />
       <div
         ref={scrollRef}
         onScroll={handleScroll}
