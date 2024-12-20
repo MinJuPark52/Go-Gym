@@ -110,7 +110,18 @@ export default function LoginForm() {
             const token = authHeader.split(" ")[1];
             console.log("JWT Token:", token);
 
+
             sessionStorage.setItem("token", token);
+
+            //백엔드 연결시 axiosInstance로 교체
+            const userData = async () => {
+              // eslint-disable-next-line @typescript-eslint/no-explicit-any
+              const response: any = await axiosInstance.get(
+                "/api/members/me/profile",
+              );
+              InitUser(response);
+            };
+
 
             login(token);
             router.push("/");
