@@ -101,9 +101,7 @@ export default function LoginForm() {
 
     if (validateForm()) {
       try {
-
         const response = await axiosInstance.post<User[]>("/api/auth/sign-in", {
-
           email: loginFormData.email,
           password: loginFormData.password,
         });
@@ -111,7 +109,7 @@ export default function LoginForm() {
         console.log(response);
         if (response) {
           const authHeader = response.headers["authorization"];
-          localStorage.setItem("memberId", response.data.memberId); // 내정보 조회 , sse 테스트 끝나면 삭제
+
           if (authHeader) {
             const token = authHeader.split(" ")[1];
             console.log("JWT Token:", token);
@@ -120,10 +118,10 @@ export default function LoginForm() {
             //백엔드 연결시 axiosInstance로 교체
             const userData = async () => {
               // eslint-disable-next-line @typescript-eslint/no-explicit-any
-              const response: any = await axios.get(
-                "http://localhost:4000/user",
+              const response: any = await axiosInstance.get(
+                "/api/members/me/profile",
               );
-              InitUser(response.data);
+              InitUser(response);
             };
 
             userData();
