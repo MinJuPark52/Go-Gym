@@ -17,7 +17,7 @@ const useLoginStore = create(
   persist<LoginState>(
     (set) => {
       return {
-        loginState: true,
+        loginState: false,
         token: null,
         adminLoginState: false,
         expirationTime: 0,
@@ -38,7 +38,7 @@ const useLoginStore = create(
           // 1시간 후 만료
           const expirationTime = Date.now() + 3600000;
           set({
-            loginState: true,
+            loginState: false,
             token,
             expirationTime,
           });
