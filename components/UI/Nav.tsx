@@ -109,8 +109,7 @@ export default function Nav() {
               >
                 <li>
                   <Link href={"/mypage"} className="justify-between">
-                    Profile
-                    <span className="badge">New</span>
+                    프로필
                   </Link>
                 </li>
                 <li>
