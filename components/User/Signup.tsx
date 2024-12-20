@@ -319,7 +319,7 @@ export default function SignupPage() {
       try {
         const response = await axiosInstance.get<
           { regionId: string; name: string }[]
-        >(`backend/api/regions?name=${selectedRegionId1}`);
+        >(`/api/regions?name=${selectedRegionId1}`);
         if (response) {
           const regionsData = response.data.map((data) => ({
             id: data.regionId,
@@ -350,7 +350,7 @@ export default function SignupPage() {
       try {
         const response = await axiosInstance.get<
           { regionId: string; name: string }[]
-        >(`backend/api/regions?name=${selectedRegionId2}`);
+        >(`/api/regions?name=${selectedRegionId2}`);
         if (response) {
           const regionsData = response.data.map((data) => ({
             id: data.regionId,
