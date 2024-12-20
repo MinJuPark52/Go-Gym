@@ -29,6 +29,7 @@ export default function ChatPostDetail({
         responderId: user?.memberId,
         amount: 10000,
       }),
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     onSuccess: (data: any) => {
       alert("결제를 요청했습니다.");
       localStorage.setItem("safePaymentId", data.safePaymentId);
