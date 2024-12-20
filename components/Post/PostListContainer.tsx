@@ -93,7 +93,6 @@ export default function PostListContainer() {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const response: any = await axiosInstance.get(
         `api/posts/views?page=${page}&size=10`,
-        // "http://localhost:4000/posts",
       );
       return response.content;
     },

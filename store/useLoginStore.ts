@@ -17,7 +17,7 @@ const useLoginStore = create(
   persist<LoginState>(
     (set) => {
       return {
-        loginState: false,
+        loginState: true,
         token: null,
         adminLoginState: false,
         expirationTime: 0,

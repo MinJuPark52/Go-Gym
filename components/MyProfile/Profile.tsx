@@ -1,7 +1,5 @@
 "use client";
 
-import Image from "next/image";
-import profile from "../../public/default_profile.png";
 import { useMutation, useQuery } from "@tanstack/react-query";
 // import axiosInstance from "@/api/axiosInstance";
 import Link from "next/link";
@@ -9,6 +7,8 @@ import { useEffect } from "react";
 import useUserStore from "@/store/useUserStore";
 import axiosInstance from "@/api/axiosInstance";
 import useLoginStore from "@/store/useLoginStore";
+import ProfileImage from "../UI/ProfileImage";
+import DefaultProfile from "../UI/DefaultProfile";
 
 export default function Profile() {
   const { InitUser, user } = useUserStore();
@@ -20,7 +20,6 @@ export default function Profile() {
       const response: any = await axiosInstance.get("/api/members/me/profile");
       return response;
     },
-    // queryFn: async () => await axios.get("http://localhost:4000/user"),
     staleTime: 0,
   });
 
@@ -40,16 +39,15 @@ export default function Profile() {
   }, [isSuccess, user, InitUser]);
 
   return (
-    <div className="mt-4 flex min-w-[640px] items-center rounded-md border-2 border-gray-400 p-8">
-      <Image
-        src={profile}
-        alt="profile"
-        width={120}
-        height={120}
-        className="cursor-pointer"
-        priority
-      />
-      <div className="ml-8 flex flex-col gap-2">
+    <div className="mt-4 flex flex-col items-center gap-8 rounded-md border-2 border-gray-400 p-8 md:flex-row md:gap-4">
+      <div className="avatar h-32 w-32 overflow-hidden rounded-full">
+        {user?.profileImageUrl ? (
+          <ProfileImage src={user?.profileImageUrl} />
+        ) : (
+          <DefaultProfile width="120" />
+        )}
+      </div>
+      <div className="ml-8 mr-auto flex flex-col gap-2 md:mr-12">
         <p className="text-sm font-bold text-gray-600">이름: {user?.name}</p>
         <p className="text-sm font-bold text-gray-600">
           닉네임: {user?.nickname}

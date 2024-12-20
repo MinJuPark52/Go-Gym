@@ -9,6 +9,16 @@ interface WebSocketState {
     senderId: number;
     content: string;
     createdAt: string;
+    MessageType:
+      | "SYSTEM_SAFE_PAYMENT_REQUEST"
+      | "SYSTEM_SAFE_PAYMENT_APPROVE"
+      | "SYSTEM_SAFE_PAYMENT_REJECT"
+      | "SYSTEM_SAFE_PAYMENT_CANCEL"
+      | "SYSTEM_SAFE_PAYMENT_COMPLETE"
+      | "SYSTEM_TRANSACTION_DATE_CONFIRM"
+      | "SYSTEM_TRANSACTION_DATE_CHANGE"
+      | "SYSTEM_TRANSACTION_CANCEL"
+      | "USER_SEND";
   }[];
   initMessages: () => void;
   setAgoMessage: (
@@ -17,6 +27,16 @@ interface WebSocketState {
       senderId: number;
       content: string;
       createdAt: string;
+      MessageType:
+        | "SYSTEM_SAFE_PAYMENT_REQUEST"
+        | "SYSTEM_SAFE_PAYMENT_APPROVE"
+        | "SYSTEM_SAFE_PAYMENT_REJECT"
+        | "SYSTEM_SAFE_PAYMENT_CANCEL"
+        | "SYSTEM_SAFE_PAYMENT_COMPLETE"
+        | "SYSTEM_TRANSACTION_DATE_CONFIRM"
+        | "SYSTEM_TRANSACTION_DATE_CHANGE"
+        | "SYSTEM_TRANSACTION_CANCEL"
+        | "USER_SEND";
     }[],
   ) => void;
   connect: (

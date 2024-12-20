@@ -3,9 +3,11 @@
 import { useQuery } from "@tanstack/react-query";
 import ChatList from "./ChatList";
 import Chat from "./Chat";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import useWebSocketStore from "@/store/useSocketStore";
 import axiosInstance from "@/api/axiosInstance";
+import useLoginStore from "@/store/useLoginStore";
+import { useRouter } from "next/navigation";
 
 interface ChatItem {
   chatRoomId: string;
@@ -25,12 +27,24 @@ export default function ChatRoom() {
   const [currentChatRoom, setCurrentChatRoom] = useState("");
   const [currentChatNickname, setCurrentChatNickname] = useState("");
   const { messages, sendMessage } = useWebSocketStore();
+  const { loginState } = useLoginStore();
+  const [isLogin, setIsLogin] = useState(false);
+  const router = useRouter();
+
+  useEffect(() => {
+    if (isLogin && !loginState) {
+      alert("로그인이 필요합니다.");
+      router.push("/");
+    }
+    setIsLogin(true);
+  }, [loginState, isLogin]);
+
   //채팅방 목록 가져오기
   const { data: chatList, isSuccess: listSuccess } = useQuery<ChatItem[]>({
     queryKey: ["chatroom1", messages[messages.length - 1]],
     queryFn: async () => {
       const response: { content: ChatItem[] } = await axiosInstance.get(
-        "/api/chatroom?page=0&size=5",
+        "/api/chatroom?page=0&size=20",
       );
       return response.content;
     },
@@ -81,10 +95,6 @@ export default function ChatRoom() {
 
   return (
     <div className="border-l-1 relative flex h-[100%] w-[100%] md:w-[75%]">
-      {/* <button onClick={() => axiosInstance.post("/api/chatroom/1")}>
-        채팅방 생성
-      </button> */}
-
       <div
         className={`flex h-[100%] w-[100%] ${modal ? "" : "hidden"} animate-slide-down flex-col border-2 sm:block sm:w-[50%]`}
       >

@@ -15,6 +15,7 @@ import { getAccessToken } from "@/api/api";
 import axiosInstance from "@/api/axiosInstance";
 import { useParams, useRouter } from "next/navigation";
 import S3ImageUrl from "@/hooks/S3ImageUrl";
+import useLoginStore from "@/store/useLoginStore";
 
 interface PostType {
   postId: string;
@@ -58,8 +59,16 @@ interface categoryStateType {
 export default function ModifiedPost() {
   const params = useParams();
   const router = useRouter();
+  const { loginState } = useLoginStore();
+  const [isLogin, setIsLogin] = useState(false);
 
-  //status 추가하기
+  useEffect(() => {
+    if (isLogin && !loginState) {
+      alert("로그인이 필요합니다.");
+      router.push("/");
+    }
+    setIsLogin(true);
+  }, [loginState, isLogin]);
 
   const [values, setValues] = useState({
     title: "",
