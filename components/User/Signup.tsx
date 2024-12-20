@@ -1,11 +1,12 @@
 "use client";
 
-import { ChangeEvent, useState } from "react";
-import axios from "axios";
+import { ChangeEvent, useState, useRef } from "react";
+import axiosInstance from "@/api/axiosInstance";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 import form from "../../public/form.png";
 import { useMutation } from "@tanstack/react-query";
+import S3ImageUrl from "@/hooks/S3ImageUrl";
 
 interface Signup {
   email: string;
@@ -121,6 +122,9 @@ export default function SignupPage() {
     profileImageUrl: "",
   });
 
+  const [file, setFile] = useState<string>("");
+  const fileInputRef = useRef<HTMLInputElement | null>(null);
+
   const handleSignupChange =
     (field: keyof typeof signupFormData) =>
     (e: ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
@@ -184,8 +188,8 @@ export default function SignupPage() {
       }
 
       // 이메일 중복확인
-      const response = await axios.get<Signup[]>(
-        "/backend/api/auth/check-email",
+      const response = await axiosInstance.get<Signup[]>(
+        "/api/auth/check-email",
         {
           params: { email },
         },
@@ -215,7 +219,7 @@ export default function SignupPage() {
       }
 
       // 닉네임 중복확인
-      const response = await axios.get("/backend/api/auth/check-nickname", {
+      const response = await axiosInstance.get("/api/auth/check-nickname", {
         params: { nickname },
       });
       if (response.status === 200) {
@@ -234,7 +238,6 @@ export default function SignupPage() {
     },
   });
 
-
   // 프로필 이미지
   const handleButtonClick = () => {
     fileInputRef.current?.click(); // useRef를 사용하여 파일 입력 요소 클릭
@@ -250,7 +253,6 @@ export default function SignupPage() {
     }
   };
 
-
   // 회원가입
   const handleSignupSubmit = useMutation({
     mutationFn: async () => {
@@ -260,15 +262,16 @@ export default function SignupPage() {
 
       if (validateForm()) {
         setLoading(true);
+
         try {
-          const response = await axios.post<Signup[]>(
-            "/backend/api/auth/sign-up",
+          const response = await axiosInstance.post<Signup[]>(
+            "/api/auth/sign-up",
             signupFormData,
           );
 
           if (response.status === 200) {
-            const emailResponse = await axios.post(
-              "/backend/api/auth/send-verification-email",
+            const emailResponse = await axiosInstance.post(
+              "/api/auth/send-verification-email",
               null,
               { params: { email: signupFormData.email } },
             );
@@ -314,9 +317,9 @@ export default function SignupPage() {
 
     if (selectedRegionId1) {
       try {
-        const response = await axios.get<{ regionId: string; name: string }[]>(
-          `backend/api/regions?name=${selectedRegionId1}`,
-        );
+        const response = await axiosInstance.get<
+          { regionId: string; name: string }[]
+        >(`/api/regions?name=${selectedRegionId1}`);
         if (response) {
           const regionsData = response.data.map((data) => ({
             id: data.regionId,
@@ -345,9 +348,9 @@ export default function SignupPage() {
 
     if (selectedRegionId2) {
       try {
-        const response = await axios.get<{ regionId: string; name: string }[]>(
-          `backend/api/regions?name=${selectedRegionId2}`,
-        );
+        const response = await axiosInstance.get<
+          { regionId: string; name: string }[]
+        >(`/api/regions?name=${selectedRegionId2}`);
         if (response) {
           const regionsData = response.data.map((data) => ({
             id: data.regionId,
@@ -387,7 +390,6 @@ export default function SignupPage() {
               <div className="text-3xl text-gray-700">Loading..</div>
             </div>
           )}
-
           {file ? (
             <>
               <div className="relative ml-auto mr-auto flex h-[80px] w-[80px] justify-center overflow-hidden rounded-[100%] border border-gray-300">
@@ -413,7 +415,7 @@ export default function SignupPage() {
               </div>
             </>
           ) : (
-            <div className="relative ml-auto mr-auto flex h-[120px] w-[120px] justify-center overflow-hidden rounded-[100%] border border-gray-300">
+            <div className="relative ml-auto mr-auto flex h-[110px] w-[110px] justify-center overflow-hidden rounded-[100%] border border-gray-300">
               <div className="flex h-20 w-60 items-center justify-center">
                 <input
                   type="file"
@@ -434,7 +436,6 @@ export default function SignupPage() {
               </div>
             </div>
           )}
-
 
           <div>
             <SignupInput
@@ -506,7 +507,7 @@ export default function SignupPage() {
             />
           </div>
 
-          <div className="flex space-x-4">
+          <div className="flex space-x-4 text-gray-400">
             <div className="flex-1">
               <select
                 value={signupFormData.regionId1}
@@ -539,7 +540,7 @@ export default function SignupPage() {
             </div>
           </div>
 
-          <div className="flex space-x-4">
+          <div className="flex space-x-4 text-gray-400">
             <div className="flex-1">
               <select
                 value={signupFormData.regionId2}
