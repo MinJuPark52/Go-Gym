@@ -1,6 +1,9 @@
 "use client";
+import axiosInstance from "@/api/axiosInstance";
 import S3ImageUrl from "@/hooks/S3ImageUrl";
 import useUserStore from "@/store/useUserStore";
+import { useMutation } from "@tanstack/react-query";
+import axios from "axios";
 import Image from "next/image";
 import { useRef, useState } from "react";
 
@@ -10,6 +13,7 @@ const SignupInput: React.FC<InputProps> = ({
   placeholder,
   disabled,
   value,
+  style,
   onChange,
 }) => (
   <div>
@@ -17,7 +21,7 @@ const SignupInput: React.FC<InputProps> = ({
       type={type}
       name={name}
       placeholder={placeholder}
-      className="w-full rounded-md border border-gray-300 p-2"
+      className={`w-full rounded-md border border-gray-300 p-2 focus:outline-blue-500 ${style}`}
       onChange={onChange}
       value={value}
       disabled={disabled}
@@ -30,20 +34,92 @@ interface InputProps {
   name?: string;
   placeholder: string;
   disabled: boolean;
+  style?: string;
   value?: string;
   onChange?: (e: React.ChangeEvent<HTMLInputElement>) => void;
 }
 
 export default function ChangeProfile() {
   const { user } = useUserStore();
-
+  const [isNicknameAvailable, setIsNicknameAvailable] = useState(false);
+  const [isPasswordAvailable, setIsPasswordAvailable] = useState(false);
+  const [visiblePasswordChange, setVisiblePasswordChange] = useState(true);
   const [file, setFile] = useState<string>("");
+  const [preview, setPreview] = useState<File | null>(null);
   const [values, setValues] = useState({
     nickname: "",
     phone: "",
     password: "",
+    passwordConfirm: "",
   });
   const fileInputRef = useRef<HTMLInputElement | null>(null);
+
+  const { mutate: checkNickname } = useMutation<boolean, Error, string>({
+    mutationFn: async (nickname: string) => {
+      if (!nickname) {
+        throw new Error("닉네임을 입력해주세요.");
+      }
+
+      // 닉네임 중복확인
+      const response = await axios.get("/backend/api/auth/check-nickname", {
+        params: { nickname },
+      });
+      if (response.status === 200) {
+        return true;
+      } else {
+        throw new Error("닉네임 이미 존재합니다.");
+      }
+    },
+    onSuccess: () => {
+      setIsNicknameAvailable(true);
+      alert("닉네임 사용 가능합니다.");
+    },
+    onError: (error) => {
+      setIsNicknameAvailable(false);
+      alert(error.message);
+    },
+  });
+
+  const { mutate: checkPassword } = useMutation<boolean, Error, string>({
+    mutationFn: async (password) => {
+      if (!password) {
+        throw new Error("닉네임을 입력해주세요.");
+      }
+
+      // 비밀번호 재설정
+      const response = await axiosInstance.put("/api/auth/reset-password", {
+        email: user?.email,
+        password: values.password,
+      });
+      if (response.status === 200) {
+        return true;
+      } else {
+        throw new Error("비밀번호 이미 존재합니다.");
+      }
+    },
+    onSuccess: () => {
+      setIsPasswordAvailable(true);
+      alert("비밀번호 사용 가능합니다.");
+    },
+    onError: (error) => {
+      setIsPasswordAvailable(false);
+      alert(error.message);
+    },
+  });
+
+  const { mutate: submit } = useMutation({
+    mutationKey: ["submit"],
+    mutationFn: async () =>
+      await axiosInstance.put("/api/members/me/profile", {
+        name: user ? user.name : "",
+        nickname: values.nickname,
+        phone: values.phone,
+        profilImageUrl: file,
+      }),
+    onSuccess: () => {
+      alert("수정완료");
+    },
+  });
 
   const handleButtonClick = () => {
     fileInputRef.current?.click(); // useRef를 사용하여 파일 입력 요소 클릭
@@ -57,16 +133,18 @@ export default function ChangeProfile() {
         e.target.files[0],
         "members",
       );
+      setPreview(e.target.files[0]);
       setFile(newImg.toString());
     }
   };
 
   const handleChangeValue = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setValues({ ...values, [e.target.name]: [e.target.value] });
+    setValues({ ...values, [e.target.name]: e.target.value });
   };
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    submit();
   };
 
   return (
@@ -79,7 +157,7 @@ export default function ChangeProfile() {
         <>
           <div className="relative ml-auto mr-auto flex h-[240px] w-[240px] justify-center overflow-hidden rounded-[100%] border border-gray-300">
             <Image
-              src={file}
+              src={URL.createObjectURL(preview!)}
               alt="헬스장 이미지"
               className="rounded-lg"
               layout="fill"
@@ -137,50 +215,97 @@ export default function ChangeProfile() {
         />
       </div>
 
-      <div className="flex items-center space-x-2">
-        <div>
-          <SignupInput
-            type="text"
-            placeholder={user ? user.email : ""}
-            value={user ? user.email : ""}
-            disabled={true}
-          />
-        </div>
+      <div>
+        <SignupInput
+          type="text"
+          placeholder={user ? user.email : ""}
+          value={user ? user.email : ""}
+          disabled={true}
+        />
       </div>
 
-      <div className="flex items-center space-x-2">
+      <div className="flex items-center justify-between">
         <div>
           <SignupInput
             type="text"
-            placeholder="닉네임"
+            placeholder={user ? user.nickname : ""}
             disabled={false}
-            value={user ? user.nickname : ""}
+            value={values.nickname}
             name="nickname"
             onChange={handleChangeValue}
           />
         </div>
+        <button
+          type="button"
+          onClick={() => checkNickname(values.nickname)}
+          className="rounded-md bg-blue-500 px-4 py-2 text-white focus:outline-none"
+          disabled={isNicknameAvailable}
+        >
+          {isNicknameAvailable ? "사용 가능" : "중복확인"}
+        </button>
       </div>
 
       <div>
+        {/* 세자리 네자리 네자리 자동넘어가기 */}
         <SignupInput
           type="text"
-          placeholder="핸드폰 번호 ex)010-0000-0000"
+          placeholder={user ? user.phone : ""}
           disabled={false}
-          value={user ? user.phone : ""}
+          value={values.phone}
           name="phone"
           onChange={handleChangeValue}
         />
       </div>
 
-      <div>
-        <SignupInput
-          type="password"
-          placeholder="비밀번호"
-          disabled={false}
-          name="password"
-          onChange={handleChangeValue}
-        />
-      </div>
+      {visiblePasswordChange ? (
+        <div>
+          <button
+            type="button"
+            onClick={() => setVisiblePasswordChange(false)}
+            className="w-full rounded-md bg-blue-500 px-4 py-2 text-white focus:outline-none"
+          >
+            비밀번호 변경하기
+          </button>
+        </div>
+      ) : (
+        <>
+          <div>
+            <SignupInput
+              type="password"
+              placeholder="새 비밀번호"
+              disabled={false}
+              name="password"
+              value={values.password}
+              onChange={handleChangeValue}
+            />
+          </div>
+          <div className="flex justify-between">
+            <div>
+              <SignupInput
+                type="password"
+                placeholder="새 비밀번호 확인"
+                disabled={false}
+                value={values.passwordConfirm}
+                name="passwordConfirm"
+                onChange={handleChangeValue}
+              />
+              {values.password !== values.passwordConfirm && (
+                <p className="text-xs text-red-500">
+                  비밀번호가 일치하지않습니다.
+                </p>
+              )}
+            </div>
+            <button
+              type="button"
+              onClick={() => checkPassword(values.password)}
+              className="h-11 rounded-md bg-blue-500 px-4 py-2 text-white focus:outline-none"
+              disabled={isPasswordAvailable}
+            >
+              {!isPasswordAvailable ? "변경하기" : "변경완료"}
+            </button>
+          </div>
+        </>
+      )}
 
       <div className="flex space-x-4">
         <div className="w-full">
