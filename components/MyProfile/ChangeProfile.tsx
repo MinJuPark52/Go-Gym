@@ -157,7 +157,7 @@ export default function ChangeProfile() {
           <div className="relative ml-auto mr-auto flex h-[240px] w-[240px] justify-center overflow-hidden rounded-[100%] border border-gray-300">
             <Image
               src={URL.createObjectURL(preview!)}
-              alt="헬스장 이미지"
+              alt="프로필 이미지"
               className="rounded-lg"
               layout="fill"
             />

@@ -92,7 +92,6 @@ export default function LoginForm() {
       }
 
       setLoginErrors({ email: emailErr, password: passwordErr });
-
       return valid;
     };
 
