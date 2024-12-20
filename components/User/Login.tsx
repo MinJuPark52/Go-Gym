@@ -98,7 +98,7 @@ export default function LoginForm() {
 
     if (validateForm()) {
       try {
-        const response = await axios.post<User[]>("/backend/api/auth/sign-in", {
+        const response = await axios.post<User[]>("/api/auth/sign-in", {
           email: loginFormData.email,
           password: loginFormData.password,
         });

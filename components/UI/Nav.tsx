@@ -37,7 +37,7 @@ export default function Nav() {
       return;
     }
     try {
-      const response = await axiosInstance.post("/backend/api/auth/sign-out");
+      const response = await axiosInstance.post("/api/auth/sign-out");
       console.log("Logout successful:", response.data);
       alert("로그아웃 되었습니다.");
     } catch (error) {

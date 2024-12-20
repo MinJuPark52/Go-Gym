@@ -188,12 +188,9 @@ export default function SignupPage() {
       }
 
       // 이메일 중복확인
-      const response = await axios.get<Signup[]>(
-        "/backend/api/auth/check-email",
-        {
-          params: { email },
-        },
-      );
+      const response = await axios.get<Signup[]>("/api/auth/check-email", {
+        params: { email },
+      });
 
       if (response.status === 200) {
         return true;
@@ -219,7 +216,7 @@ export default function SignupPage() {
       }
 
       // 닉네임 중복확인
-      const response = await axios.get("/backend/api/auth/check-nickname", {
+      const response = await axios.get("/api/auth/check-nickname", {
         params: { nickname },
       });
       if (response.status === 200) {
@@ -262,13 +259,13 @@ export default function SignupPage() {
 
         try {
           const response = await axios.post<Signup[]>(
-            "/backend/api/auth/sign-up",
+            "/api/auth/sign-up",
             signupFormData,
           );
 
           if (response.status === 200) {
             const emailResponse = await axios.post(
-              "/backend/api/auth/send-verification-email",
+              "/api/auth/send-verification-email",
               null,
               { params: { email: signupFormData.email } },
             );
