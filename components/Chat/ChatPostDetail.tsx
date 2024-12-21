@@ -9,24 +9,27 @@ import { AiOutlineExclamationCircle } from "react-icons/ai";
 export default function ChatPostDetail({
   onOpenModal,
   chatRoomId,
+  postStatus,
+  counterpartyId,
 }: {
   onOpenModal: () => void;
   chatRoomId: string;
+  postStatus: string;
+  counterpartyId: string;
 }) {
   const [modal, setModal] = useState(false);
   const [modal1, setModal1] = useState(false);
-  const [status, setStatus] = useState("PEDING");
+  const [status, setStatus] = useState(postStatus);
   const [transactionDate, setTransactionDate] = useState({
     date: "",
     time: "",
   });
-  const { user } = useUserStore();
 
   const { mutate: paystart } = useMutation({
     mutationKey: ["payStart"],
     mutationFn: async () =>
       await axiosInstance.post(`/api/safe-payments/${chatRoomId}`, {
-        responderId: user?.memberId,
+        responderId: counterpartyId,
         amount: 10000,
       }),
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -149,7 +152,7 @@ export default function ChatPostDetail({
 
       {modal && (
         <div className="animate-slide-down">
-          <form onSubmit={handleSubmit} className="mt-8 flex">
+          <form className="mt-8 flex">
             <div className="flex w-full flex-col gap-2">
               <label
                 htmlFor={"transactionDate"}
@@ -176,7 +179,11 @@ export default function ChatPostDetail({
                   value={transactionDate.time}
                   placeholder="ex) 2025/02/24"
                 />
-                <button className="btn" type="submit">
+                <button
+                  className="btn"
+                  type="button"
+                  onClick={() => handleSubmit}
+                >
                   요청
                 </button>
               </div>

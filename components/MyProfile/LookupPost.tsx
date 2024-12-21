@@ -46,7 +46,7 @@ export default function LookupPost() {
       const response: any = await axiosInstance.get(
         `${url}?page=${currentPage}&size=5`,
       );
-      return response;
+      return response.content;
     },
     enabled: !!url,
   });

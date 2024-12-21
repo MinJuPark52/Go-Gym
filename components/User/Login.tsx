@@ -2,13 +2,14 @@
 
 import { ChangeEvent, useState } from "react";
 import Link from "next/link";
-import axiosInstance from "@/api/axiosInstance";
 import { BiSolidMessageRounded } from "react-icons/bi";
 import useLoginStore from "@/store/useLoginStore";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 import form from "../../public/form.png";
 import useUserStore from "@/store/useUserStore";
+import axios from "axios";
+import axiosInstance from "@/api/axiosInstance";
 
 interface User {
   email: string;
@@ -99,7 +100,7 @@ export default function LoginForm() {
 
     if (validateForm()) {
       try {
-        const response = await axiosInstance.post<User[]>("/api/auth/sign-in", {
+        const response = await axios.post<User[]>("backend/api/auth/sign-in", {
           email: loginFormData.email,
           password: loginFormData.password,
         });

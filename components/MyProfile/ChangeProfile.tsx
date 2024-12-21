@@ -3,8 +3,28 @@ import axiosInstance from "@/api/axiosInstance";
 import S3ImageUrl from "@/hooks/S3ImageUrl";
 import useUserStore from "@/store/useUserStore";
 import { useMutation } from "@tanstack/react-query";
+import axios from "axios";
 import Image from "next/image";
 import { useRef, useState } from "react";
+
+const regions: { id: string; name: string }[] = [
+  { id: "1", name: "서울특별시" },
+  { id: "2", name: "부산광역시" },
+  { id: "3", name: "대구광역시" },
+  { id: "4", name: "인천광역시" },
+  { id: "5", name: "광주광역시" },
+  { id: "6", name: "대전광역시" },
+  { id: "7", name: "울산광역시" },
+  { id: "8", name: "세종특별자치시" },
+  { id: "9", name: "경기도" },
+  { id: "10", name: "충청북도" },
+  { id: "11", name: "경상북도" },
+  { id: "12", name: "전라남도" },
+  { id: "13", name: "경상남도" },
+  { id: "14", name: "제주특별자치시" },
+  { id: "15", name: "강원특별자치도" },
+  { id: "16", name: "전북특별자치도" },
+];
 
 const SignupInput: React.FC<InputProps> = ({
   type,
@@ -60,9 +80,12 @@ export default function ChangeProfile() {
       }
 
       // 닉네임 중복확인
-      const response = await axiosInstance.get("/api/auth/check-nickname", {
-        params: { nickname },
-      });
+      const response = await axios.get(
+        "http://localhost:3000/backend/api/auth/check-nickname",
+        {
+          params: { nickname },
+        },
+      );
       if (response.status === 200) {
         return true;
       } else {
@@ -86,10 +109,20 @@ export default function ChangeProfile() {
       }
 
       // 비밀번호 재설정
-      const response = await axiosInstance.put("/api/auth/reset-password", {
-        email: user?.email,
-        password: values.password,
-      });
+      const response = await axios.put(
+        "/backend/api/auth/reset-password",
+        {
+          email: user?.email,
+          //수정하기
+          currentPassword: "alsgur123!",
+          newPassword: values.password,
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${sessionStorage.getItem("token")}`,
+          },
+        },
+      );
       if (response.status === 200) {
         return true;
       } else {
@@ -113,7 +146,7 @@ export default function ChangeProfile() {
         name: user ? user.name : "",
         nickname: values.nickname,
         phone: values.phone,
-        profilImageUrl: file,
+        profileImageUrl: file,
       }),
     onSuccess: () => {
       alert("수정완료");
@@ -310,14 +343,29 @@ export default function ChangeProfile() {
         <div className="w-full">
           <select className="w-full rounded-md border border-gray-300 p-3 focus:outline-none">
             <option value="">관심지역</option>
+            {regions?.map((region) => (
+              <option key={region.id} value={region.name}>
+                {region.name}
+              </option>
+            ))}
           </select>
         </div>
 
-        <div className="w-full">
-          <select className="mb-3 w-full rounded-md border border-gray-300 p-3 focus:outline-none">
-            <option value="">관심지역2</option>
-          </select>
-        </div>
+        {/* 세부지역 만들기 */}
+        {/* <div className="w-full">
+              <select
+                value={SubRegion1.regionId}
+                onChange={handleChangeSubRegionId1}
+                className="w-full rounded-md border border-gray-300 p-2"
+              >
+                <option value="">세부 지역 선택1</option>
+                {subRegion1?.map((subRegion) => (
+                  <option key={subRegion.name} value={subRegion.id}>
+                    {subRegion.name}
+                  </option>
+                ))}
+              </select>
+            </div> */}
       </div>
 
       <div>

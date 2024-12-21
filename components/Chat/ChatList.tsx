@@ -13,11 +13,17 @@ interface chatListProps {
   lastMessage: string;
   chatRoomId: string;
   lastMessageAt: string;
-  onClickChatRoom: (chatRoomId: string, counterpartyNickname: string) => void;
+  counterpartyId: string;
+  onClickChatRoom: (
+    chatRoomId: string,
+    counterpartyNickname: string,
+    counterpartyId: string,
+  ) => void;
   onCloseModal: () => void;
 }
 
 export default function ChatList({
+  counterpartyId,
   counterpartyNickname,
   chatRoomId,
   onClickChatRoom,
@@ -52,7 +58,7 @@ export default function ChatList({
       />
       <div
         onClick={() => {
-          onClickChatRoom(chatRoomId, counterpartyNickname);
+          onClickChatRoom(chatRoomId, counterpartyNickname, counterpartyId);
           onCloseModal();
         }}
       >

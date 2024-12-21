@@ -26,6 +26,7 @@ export default function ChatRoom() {
   const [modal, setModal] = useState(true);
   const [currentChatRoom, setCurrentChatRoom] = useState("");
   const [currentChatNickname, setCurrentChatNickname] = useState("");
+  const [counterpartyId, setCounterpartyId] = useState("");
   const { messages, sendMessage } = useWebSocketStore();
   const { loginState } = useLoginStore();
   const [isLogin, setIsLogin] = useState(false);
@@ -61,9 +62,14 @@ export default function ChatRoom() {
         })
       : [];
 
-  const handleClickChatRoom = (chatRoomId: string, chatNickname: string) => {
+  const handleClickChatRoom = (
+    chatRoomId: string,
+    chatNickname: string,
+    counterpartyId: string,
+  ) => {
     setCurrentChatRoom(chatRoomId);
     setCurrentChatNickname(chatNickname);
+    setCounterpartyId(counterpartyId);
     console.log(currentChatRoom);
   };
 
@@ -109,6 +115,7 @@ export default function ChatRoom() {
             <ChatList
               key={list.chatRoomId}
               chatRoomId={list.chatRoomId}
+              counterpartyId={list.counterpartyId}
               counterpartyNickname={list.counterpartyNickname}
               lastMessage={list.lastMessage}
               lastMessageAt={list.lastMessageAt}
@@ -120,6 +127,7 @@ export default function ChatRoom() {
 
       <div className={`h-full w-[100%] ${!modal ? "" : "hidden"} sm:block`}>
         <Chat
+          counterpartyId={counterpartyId}
           counterpartyNickname={currentChatNickname}
           chatRoomId={currentChatRoom}
           onSendMessage={handleSendMessage}

@@ -27,8 +27,9 @@ export default function Notice() {
       const EventSource = EventSourcePolyfill;
       const connectToSSE = () => {
         const eventSource = new EventSource(
-          "/backend/api/notifications/subscribe/memberId",
-          /*
+
+          "/backend/api/notifications/subscribe?id=3",
+
           {
             headers: {
               Authorization: `Bearer ${token}`,

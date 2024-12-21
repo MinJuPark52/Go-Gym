@@ -245,7 +245,7 @@ export default function ModifiedPost() {
       return;
     }
 
-    if (Number.isNaN(+values.amount.replace(/,/g, ""))) {
+    if (Number.isNaN(Number(values.amount.replace(/,/g, "")))) {
       alert("숫자만 입력해주세요");
       return;
     }
@@ -297,7 +297,7 @@ export default function ModifiedPost() {
       ...values,
       ...images,
       ...categoryValue,
-      [values.amount]: +values.amount.replace(/,/g, ""),
+      amount: +values.amount.replace(/,/g, ""),
     });
   };
 

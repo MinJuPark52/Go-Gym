@@ -20,16 +20,19 @@ interface props {
     content: string;
   }) => void;
   counterpartyNickname: string;
+  counterpartyId: string;
   onOpenModal: () => void;
 }
 
 export default function Chat({
   chatRoomId,
   onSendMessage,
+  counterpartyId,
   counterpartyNickname,
   onOpenModal,
 }: props) {
   const [text, setText] = useState("");
+  const [status, setStatus] = useState("");
   const { connect, messages, setAgoMessage, disconnect, initMessages } =
     useWebSocketStore();
   const { user } = useUserStore();
@@ -46,12 +49,11 @@ export default function Chat({
     queryKey: ["agomessages"],
     queryFn: async ({ pageParam = 0 }) => {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const res: { messages: any } = await axiosInstance.get(
-        `/api/chatroom/${chatRoomId}/messages`,
-        {
+      const res: { messages: any; postStatus: string } =
+        await axiosInstance.get(`/api/chatroom/${chatRoomId}/messages`, {
           params: { page: pageParam, size: 6 },
-        },
-      );
+        });
+      setStatus(res.postStatus);
       return res.messages;
     },
     getNextPageParam: (lastPage, pages) => {
@@ -73,7 +75,7 @@ export default function Chat({
   useEffect(() => {
     // 숫자 부분만 chatroomid적어주면 됨
     if (chatRoomId) {
-      connect(process.env.BACKEND_URL + "/ws", chatRoomId, (message) => {
+      connect("/backend" + "/ws", chatRoomId, (message) => {
         console.log("New message:", message.body);
       });
     }
@@ -122,6 +124,7 @@ export default function Chat({
     if (scrollRef.current && scrollRef.current.scrollTop !== 0) {
       scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
     }
+    console.log(messages);
   }, [messages]);
 
   //무한 스크롤 함수 끝
@@ -216,7 +219,12 @@ export default function Chat({
       onSubmit={handleSubmitMessage}
       className="relative flex h-[100%] w-[100%] flex-col bg-blue-200 bg-opacity-40 p-4"
     >
-      <ChatPostDetail onOpenModal={onOpenModal} chatRoomId={chatRoomId} />
+      <ChatPostDetail
+        counterpartyId={counterpartyId}
+        postStatus={status}
+        onOpenModal={onOpenModal}
+        chatRoomId={chatRoomId}
+      />
       <div
         ref={scrollRef}
         onScroll={handleScroll}
@@ -224,8 +232,8 @@ export default function Chat({
       >
         {messages.map((chat) => {
           if (
-            chat.MessageType === "USER_SEND" &&
-            chat.senderId.toString() === user?.memberId
+            chat.messageType === "TEXT_ONLY" &&
+            chat.senderId.toString() === user?.memberId.toString()
           ) {
             return (
               <UserMessages
@@ -238,8 +246,8 @@ export default function Chat({
               />
             );
           } else if (
-            chat.MessageType === "USER_SEND" &&
-            chat.senderId.toString() !== user?.memberId
+            chat.messageType === "TEXT_ONLY" &&
+            chat.senderId.toString() !== user?.memberId.toString()
           ) {
             return (
               <UserMessages
@@ -253,7 +261,7 @@ export default function Chat({
               />
             );
           } else if (
-            chat.MessageType === "SYSTEM_SAFE_PAYMENT_REQUEST" &&
+            chat.messageType === "SYSTEM_SAFE_PAYMENT_REQUEST" &&
             chat.senderId.toString() === user?.memberId
           ) {
             return (
@@ -269,7 +277,7 @@ export default function Chat({
               />
             );
           } else if (
-            chat.MessageType === "SYSTEM_SAFE_PAYMENT_REQUEST" &&
+            chat.messageType === "SYSTEM_SAFE_PAYMENT_REQUEST" &&
             chat.senderId.toString() !== user?.memberId
           ) {
             return (
@@ -285,7 +293,7 @@ export default function Chat({
               />
             );
           } else if (
-            chat.MessageType === "SYSTEM_SAFE_PAYMENT_APPROVE" &&
+            chat.messageType === "SYSTEM_SAFE_PAYMENT_APPROVE" &&
             chat.senderId.toString() === user?.memberId
           ) {
             return (
@@ -301,7 +309,7 @@ export default function Chat({
               />
             );
           } else if (
-            chat.MessageType === "SYSTEM_SAFE_PAYMENT_APPROVE" &&
+            chat.messageType === "SYSTEM_SAFE_PAYMENT_APPROVE" &&
             chat.senderId.toString() !== user?.memberId
           ) {
             return (
