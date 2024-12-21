@@ -27,7 +27,8 @@ export default function Notice() {
       const EventSource = EventSourcePolyfill;
       const connectToSSE = () => {
         const eventSource = new EventSource(
-          "/backend/api/notifications/subscribe",
+          "/backend/api/notifications/subscribe/memberId",
+          /*
           {
             headers: {
               Authorization: `Bearer ${token}`,
@@ -35,6 +36,7 @@ export default function Notice() {
               Accept: "text/event-stream",
             },
           },
+          */
         );
 
         eventSource.addEventListener("open", () => {
@@ -42,11 +44,8 @@ export default function Notice() {
           setError(null);
         });
 
-        // addEventListener('dummy', (event) => {
-        // 이벤트의 종류가 더미로 지정
         eventSource.addEventListener("message", (event) => {
           const data = JSON.parse(event.data);
-          // 더미 안에 데이터값이 더미인지 확인
           if (data.event === "dummy") {
             console.log("Dummy data:", event.data);
           } else if (data.event === "notification") {
@@ -75,7 +74,6 @@ export default function Notice() {
       const reconnectInterval = setInterval(() => {
         if (eventSource.readyState === EventSource.CLOSED) {
           console.log("Reconnecting SSE...");
-          eventSource.close();
           eventSource = connectToSSE();
         }
       }, 60000);
