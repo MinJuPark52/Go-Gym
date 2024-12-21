@@ -3,7 +3,7 @@ import axios from "axios";
 // Axios 인스턴스 생성
 const axiosInstance = axios.create({
   // baseURL: 'http://3.36.198.162:8080', // 기본 URL 백엔드 연동시
-  baseURL: "https://go-gym.site", //개발모드
+  baseURL: "/backend", //개발모드
   timeout: 10000, // 요청 제한 시간 (10초)
   headers: {
     "Content-Type": "application/json", // 기본 헤더

@@ -72,11 +72,6 @@ export default function PostDetail() {
     if (loginState) {
       try {
         wish();
-        if (detail?.isWished) {
-          alert("찜 취소");
-        } else {
-          alert("찜 성공");
-        }
       } catch (e) {
         console.log(e);
       }

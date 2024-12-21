@@ -1,13 +1,17 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import PortOne from "@portone/browser-sdk/v2";
 import axiosInstance from "@/api/axiosInstance";
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import useUserStore from "@/store/useUserStore";
+import { useRouter } from "next/navigation";
 
 export default function ChargePay() {
-  const { user } = useUserStore();
+  const { user, InitUser } = useUserStore();
+  const [init, setInit] = useState(0);
+  const router = useRouter();
+
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const [data, setData] = useState<any>({
     storeId: process.env.NEXT_PUBLIC_PORTONE_STORE_ID,
@@ -23,6 +27,22 @@ export default function ChargePay() {
       email: user?.email,
     },
   });
+
+  const { data: userData, isSuccess } = useQuery({
+    queryKey: ["user", init],
+    queryFn: async () => {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const response: any = await axiosInstance.get("/api/members/me/profile");
+      return response;
+    },
+    staleTime: 0,
+  });
+
+  useEffect(() => {
+    if (isSuccess) {
+      InitUser(userData);
+    }
+  }, [isSuccess, init]);
 
   async function requestPayment(paymentId: string) {
     if (data) {
@@ -45,6 +65,8 @@ export default function ChargePay() {
     },
     onSuccess: (response) => {
       requestPayment(response.paymentId);
+      alert("충전 되었습니다.");
+      router.push("/mypage");
     },
   });
 
@@ -74,6 +96,7 @@ export default function ChargePay() {
     }
 
     mutate();
+    setInit((prev) => prev + 1);
   };
 
   return (
