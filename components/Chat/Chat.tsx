@@ -154,8 +154,6 @@ export default function Chat({
     // }
   }, [chatRoomId]);
 
-  //무한스크롤 구현
-
   useEffect(() => {
     if (data && hasPreviousPage) {
       const allMessages = data.pages.flatMap((page) => page.content);
@@ -173,6 +171,7 @@ export default function Chat({
       const { scrollTop } = scrollRef.current;
       if (scrollTop === 0 && hasNextPage && !isFetchingNextPage) {
         fetchNextPage(); // 위로 스크롤 시 다음 페이지 데이터 불러오기
+        scrollRef.current.scrollTop = 400; // 400픽셀 정도 밑으로 이동
       }
     }
   };
@@ -184,8 +183,6 @@ export default function Chat({
     }
     console.log(messages);
   }, [messages]);
-
-  //무한 스크롤 함수 끝
 
   const handleText = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     setText(e.target.value);

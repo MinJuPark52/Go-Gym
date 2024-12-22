@@ -3,10 +3,12 @@ import axiosInstance from "@/api/axiosInstance";
 import useUserStore from "@/store/useUserStore";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 
 export default function GympayBox() {
   const { user, InitUser } = useUserStore();
+  const router = useRouter();
   const [createGympay, setCreateGympay] = useState(0);
 
   const { mutate } = useMutation({
@@ -39,17 +41,26 @@ export default function GympayBox() {
       {user ? (
         <div className="flex min-h-24 max-w-[660px] flex-col rounded-md bg-blue-500 p-4 text-white">
           <div className="flex justify-between">
-            <p>Gym Pay</p>
-            <p>
+            <p className="text-2xl font-bold">Gym Pay</p>
+            <p className="text-xl">
               {user.gymPayBalance
                 ? formatNumber(user.gymPayBalance.toString())
                 : 0}{" "}
               {"(원)"}
             </p>
           </div>
-          <Link href={"/mypage/addGymPay"} className="ml-auto">
-            <button>충전</button>
-          </Link>
+          <div className="ml-auto flex gap-2">
+            <Link href={"/mypage/addGymPay"}>
+              <button className="btn border-none bg-blue-500 text-white hover:bg-blue-600">
+                페이 충전
+              </button>
+            </Link>
+            <Link href={"/mypage/payhistory"}>
+              <button className="btn border-none bg-blue-500 text-white hover:bg-blue-600">
+                거래내역
+              </button>
+            </Link>
+          </div>
         </div>
       ) : (
         <div className="flex min-h-24 max-w-[660px] flex-col rounded-md bg-gray-300 p-4 text-white">

@@ -118,7 +118,7 @@ export default function PostListContainer() {
     );
   }
 
-  if (query !== "") {
+  if (query !== "" && data) {
     content = (
       <>
         <div className="mb-20 flex min-h-96 w-[100%] gap-4 overflow-x-auto p-12 lg:grid lg:grid-cols-2 lg:justify-items-center 2xl:grid-cols-3">
@@ -132,7 +132,7 @@ export default function PostListContainer() {
         />
       </>
     );
-  } else if (query === "") {
+  } else if (query === "" && defaultData) {
     content = (
       <>
         <div className="mb-20 flex min-h-96 w-[100%] gap-4 overflow-x-auto p-12 lg:grid lg:grid-cols-2 lg:justify-items-center 2xl:grid-cols-3">
