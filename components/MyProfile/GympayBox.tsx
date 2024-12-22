@@ -41,7 +41,10 @@ export default function GympayBox() {
           <div className="flex justify-between">
             <p>Gym Pay</p>
             <p>
-              {user.gymPayBalance} {"(원)"}
+              {user.gymPayBalance
+                ? formatNumber(user.gymPayBalance.toString())
+                : 0}{" "}
+              {"(원)"}
             </p>
           </div>
           <Link href={"/mypage/addGymPay"} className="ml-auto">
@@ -64,3 +67,7 @@ export default function GympayBox() {
     </>
   );
 }
+const formatNumber = (input: string) => {
+  const numericValue = input.replace(/,/g, "");
+  return numericValue.replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+};

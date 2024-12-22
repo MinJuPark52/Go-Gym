@@ -8,6 +8,7 @@ interface Props {
   send: boolean;
   profileImageUrl?: string;
   counterpartyNickname: string;
+  counterpartyProfileImageUrl: string;
   approve: () => void;
   reject: () => void;
 }
@@ -16,6 +17,7 @@ export default function RequestMessages({
   createdAt,
   nickname,
   counterpartyNickname,
+  counterpartyProfileImageUrl,
   profileImageUrl,
   send,
   approve,
@@ -34,7 +36,7 @@ export default function RequestMessages({
           </div>
 
           <div className="chat-header mb-1">{nickname}</div>
-          <div className="chat-bubble bg-blue-500 text-white">
+          <div className="chat-bubble bg-white text-black">
             <div className="flex flex-col items-center justify-center gap-4 rounded-lg bg-white">
               <div>
                 <p>
@@ -56,13 +58,12 @@ export default function RequestMessages({
         </div>
       ) : (
         <div className="chat chat-start" key={createdAt}>
-          <div className="avatar chat-image">
-            <div className="w-10 rounded-full">
-              <img
-                alt="Tailwind CSS chat bubble component"
-                src="https://img.daisyui.com/images/stock/photo-1534528741775-53994a69daeb.webp"
-              />
-            </div>
+          <div className="avatar chat-image overflow-hidden rounded-full">
+            {counterpartyProfileImageUrl ? (
+              <ProfileImage src={counterpartyProfileImageUrl} />
+            ) : (
+              <DefaultProfile width="10" />
+            )}
           </div>
           <div className="chat-header mb-1 opacity-50">
             {counterpartyNickname}

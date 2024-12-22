@@ -11,17 +11,8 @@ import ProfileImage from "../UI/ProfileImage";
 import DefaultProfile from "../UI/DefaultProfile";
 
 export default function Profile() {
-  const { InitUser, user } = useUserStore();
+  const { user, InitUser } = useUserStore();
   const { logout } = useLoginStore();
-  const { data: userData, isSuccess } = useQuery({
-    queryKey: ["user"],
-    queryFn: async () => {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const response: any = await axiosInstance.get("/api/members/me/profile");
-      return response;
-    },
-    staleTime: 0,
-  });
 
   const { mutate: deleteUser } = useMutation({
     mutationKey: ["deleteuser"],
@@ -32,11 +23,32 @@ export default function Profile() {
     },
   });
 
+  const { data: userData, isSuccess } = useQuery({
+    queryKey: ["user"],
+    queryFn: async () => {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const response: any = await axiosInstance.get("/api/members/me/profile");
+      return response;
+    },
+    staleTime: 0,
+    refetchOnMount: true, // 매번 컴포넌트 마운트 시 재요청
+    refetchOnWindowFocus: true,
+  });
+
   useEffect(() => {
-    if (isSuccess && userData) {
+    if (isSuccess) {
       InitUser(userData);
     }
-  }, [isSuccess, user, InitUser]);
+  }, [isSuccess]);
+
+  const handleUserDelete = () => {
+    const confirmDelete = confirm(
+      "회원 탈퇴 하시겠습니까? 같은 이메일과 닉네임은 사용하지 못합니다.",
+    );
+    if (confirmDelete) {
+      deleteUser();
+    }
+  };
 
   return (
     <div className="mt-4 flex flex-col items-center gap-8 rounded-md border-2 border-gray-400 p-8 md:flex-row md:gap-4">
@@ -68,7 +80,7 @@ export default function Profile() {
           </button>
         </Link>
         <button
-          onClick={() => deleteUser()}
+          onClick={handleUserDelete}
           className="btn btn-active bg-red-500 text-white hover:bg-red-600"
         >
           회원탈퇴

@@ -20,6 +20,7 @@ interface ChatItem {
   lastMessageAt: string;
   postAuthorActive: boolean;
   requestorActive: boolean;
+  counterpartyProfileImageUrl: string;
 }
 
 export default function ChatRoom() {
@@ -27,6 +28,8 @@ export default function ChatRoom() {
   const [currentChatRoom, setCurrentChatRoom] = useState("");
   const [currentChatNickname, setCurrentChatNickname] = useState("");
   const [counterpartyId, setCounterpartyId] = useState("");
+  const [counterpartyProfileImageUrl, setCounterpartyProfileImageUrl] =
+    useState("");
   const { messages, sendMessage } = useWebSocketStore();
   const { loginState } = useLoginStore();
   const [isLogin, setIsLogin] = useState(false);
@@ -66,10 +69,12 @@ export default function ChatRoom() {
     chatRoomId: string,
     chatNickname: string,
     counterpartyId: string,
+    counterpartyProfileImageUrl: string,
   ) => {
     setCurrentChatRoom(chatRoomId);
     setCurrentChatNickname(chatNickname);
     setCounterpartyId(counterpartyId);
+    setCounterpartyProfileImageUrl(counterpartyProfileImageUrl);
     console.log(currentChatRoom);
   };
 
@@ -106,7 +111,7 @@ export default function ChatRoom() {
       >
         <button
           onClick={handleCloseModal}
-          className={`${modal ? "" : "hidden"} sm:hidden`}
+          className={`btn ${modal ? "" : "hidden"} sm:hidden`}
         >
           닫기
         </button>
@@ -117,6 +122,7 @@ export default function ChatRoom() {
               chatRoomId={list.chatRoomId}
               counterpartyId={list.counterpartyId}
               counterpartyNickname={list.counterpartyNickname}
+              counterpartyProfileImageUrl={list.counterpartyProfileImageUrl}
               lastMessage={list.lastMessage}
               lastMessageAt={list.lastMessageAt}
               onClickChatRoom={handleClickChatRoom}
@@ -129,6 +135,7 @@ export default function ChatRoom() {
         <Chat
           counterpartyId={counterpartyId}
           counterpartyNickname={currentChatNickname}
+          counterpartyProfileImageUrl={counterpartyProfileImageUrl}
           chatRoomId={currentChatRoom}
           onSendMessage={handleSendMessage}
           onOpenModal={handleOpenModal}

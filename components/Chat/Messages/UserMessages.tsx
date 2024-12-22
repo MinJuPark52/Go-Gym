@@ -8,6 +8,7 @@ interface Props {
   content: string;
   send: boolean;
   profileImageUrl?: string;
+  counterpartyProfileImageUrl: string;
 }
 
 export default function UserMessages({
@@ -17,6 +18,7 @@ export default function UserMessages({
   content,
   send,
   profileImageUrl,
+  counterpartyProfileImageUrl,
 }: Props) {
   return send ? (
     <div className="chat chat-end" key={createdAt}>
@@ -35,13 +37,12 @@ export default function UserMessages({
     </div>
   ) : (
     <div className="chat chat-start" key={createdAt}>
-      <div className="avatar chat-image">
-        <div className="w-10 rounded-full">
-          <img
-            alt="Tailwind CSS chat bubble component"
-            src="https://img.daisyui.com/images/stock/photo-1534528741775-53994a69daeb.webp"
-          />
-        </div>
+      <div className="avatar chat-image overflow-hidden rounded-full">
+        {counterpartyProfileImageUrl ? (
+          <ProfileImage src={counterpartyProfileImageUrl} />
+        ) : (
+          <DefaultProfile width="10" />
+        )}
       </div>
       <div className="chat-header mb-1 opacity-50">{counterpartyNickname}</div>
       <div className="chat-bubble bg-white text-gray-600">{content}</div>
