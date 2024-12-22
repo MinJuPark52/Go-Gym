@@ -77,7 +77,7 @@ export default function PostListContainer() {
       const response: any = await axiosInstance.get(
         `/api/posts/filters?${query}`,
       );
-      return response.content;
+      return response;
     },
     staleTime: 10000,
     enabled: !!query,
@@ -94,7 +94,7 @@ export default function PostListContainer() {
       const response: any = await axiosInstance.get(
         `api/posts/views?page=${page}&size=10`,
       );
-      return response.content;
+      return response;
     },
     staleTime: 0,
     enabled: !query, // query가 없을 때만 실행
@@ -108,19 +108,43 @@ export default function PostListContainer() {
 
   if (defaultDataPending) {
     content = (
-      <div className="mb-20 flex min-h-96 w-[100%] gap-4 overflow-x-auto p-12 lg:grid lg:grid-cols-2 lg:justify-items-center 2xl:grid-cols-3">
-        {[...Array(6).keys()].map((idx) => (
-          <PostItemSkeleton key={idx} />
-        ))}
-      </div>
+      <>
+        <div className="mb-20 flex min-h-96 w-[100%] gap-4 overflow-x-auto p-12 lg:grid lg:grid-cols-2 lg:justify-items-center 2xl:grid-cols-3">
+          {[...Array(6).keys()].map((idx) => (
+            <PostItemSkeleton key={idx} />
+          ))}
+        </div>
+      </>
     );
   }
 
-  if (data || defaultData) {
+  if (query !== "") {
     content = (
-      <div className="mb-20 flex min-h-96 w-[100%] gap-4 overflow-x-auto p-12 lg:grid lg:grid-cols-2 lg:justify-items-center 2xl:grid-cols-3">
-        <PostList data={query !== "" ? data : defaultData} />
-      </div>
+      <>
+        <div className="mb-20 flex min-h-96 w-[100%] gap-4 overflow-x-auto p-12 lg:grid lg:grid-cols-2 lg:justify-items-center 2xl:grid-cols-3">
+          <PostList data={data.content} />
+        </div>
+        <Pagenation
+          size={3}
+          page={page}
+          onRadioChange={handleRadioChange}
+          totalPage={+data.totalPages}
+        />
+      </>
+    );
+  } else if (query === "") {
+    content = (
+      <>
+        <div className="mb-20 flex min-h-96 w-[100%] gap-4 overflow-x-auto p-12 lg:grid lg:grid-cols-2 lg:justify-items-center 2xl:grid-cols-3">
+          <PostList data={defaultData.content} />
+        </div>
+        <Pagenation
+          size={3}
+          page={page}
+          onRadioChange={handleRadioChange}
+          totalPage={+defaultData.totalPages}
+        />
+      </>
     );
   }
 
@@ -145,13 +169,6 @@ export default function PostListContainer() {
       </div>
 
       {content}
-
-      <Pagenation
-        size={5}
-        page={page}
-        onRadioChange={handleRadioChange}
-        totalPage={24}
-      />
     </div>
   );
 }

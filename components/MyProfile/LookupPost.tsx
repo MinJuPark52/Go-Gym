@@ -46,7 +46,7 @@ export default function LookupPost() {
       const response: any = await axiosInstance.get(
         `${url}?page=${currentPage}&size=5`,
       );
-      return response.content;
+      return response;
     },
     enabled: !!url,
   });
@@ -72,13 +72,13 @@ export default function LookupPost() {
     <div className="mt-8 flex flex-col gap-16">
       <h1 className="text-3xl">{title}</h1>
       <div className="mb-20 flex min-h-96 w-[100%] gap-4 overflow-x-auto p-12 lg:grid lg:grid-cols-2 lg:justify-items-center 2xl:grid-cols-3">
-        <PostList data={data} />
+        <PostList data={data.content} />
       </div>
       <Pagenation
         size={3}
         page={currentPage}
         onRadioChange={handleRadioChange}
-        totalPage={24}
+        totalPage={+data.totalPages}
       />
     </div>
   );
