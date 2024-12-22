@@ -27,28 +27,16 @@ export default function Notice() {
       const EventSource = EventSourcePolyfill;
       const connectToSSE = () => {
         const eventSource = new EventSource(
-
-          "/backend/api/notifications/subscribe?id=3",
-
-          {
-            headers: {
-              Authorization: `Bearer ${token}`,
-              Connection: "keep-alive",
-              Accept: "text/event-stream",
-            },
-          },
-          */
+          "/backend/api/notifications/subscribe?id=1",
         );
-
         eventSource.addEventListener("open", () => {
           console.log("SSE connected");
           setError(null);
         });
-
         eventSource.addEventListener("message", (event) => {
           const data = JSON.parse(event.data);
           if (data.event === "dummy") {
-            console.log("Dummy data:", event.data);
+            console.log("Dummy data:", data);
           } else if (data.event === "notification") {
             setNotifications((prevNotifications) => [
               ...prevNotifications,
@@ -60,6 +48,8 @@ export default function Notice() {
                 timestamp: data.timestamp,
               },
             ]);
+          } else {
+            console.log("Unexpected event data:", data);
           }
         });
 
@@ -67,6 +57,7 @@ export default function Notice() {
           setError("SSE connection error");
           eventSource.close();
         });
+
         return eventSource;
       };
 
