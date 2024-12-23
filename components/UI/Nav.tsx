@@ -7,13 +7,13 @@ import useLoginStore from "@/store/useLoginStore";
 import { FaBell } from "react-icons/fa";
 import DefaultProfile from "./DefaultProfile";
 import AdminNav from "./AdminNav";
-import App from "@/app/page";
 import { RxHamburgerMenu } from "react-icons/rx";
 import { useState } from "react";
 import MobileMenu from "./MoblieMenu";
 import axiosInstance from "@/api/axiosInstance";
 import useUserStore from "@/store/useUserStore";
 import ProfileImage from "./ProfileImage";
+import Notice from "../Notice/Notice";
 // import axios from "axios";
 
 export default function Nav() {
@@ -89,10 +89,17 @@ export default function Nav() {
             채팅방
           </Link>
 
-          <button>
-            <FaBell className="h-6 w-10 text-blue-400" onClick={toggleModal} />
-          </button>
-          {modal && <App />}
+          {loginState && (
+            <div className="relative">
+              <button>
+                <FaBell
+                  className="h-6 w-10 text-blue-400"
+                  onClick={toggleModal}
+                />
+              </button>
+              {modal && <Notice />}
+            </div>
+          )}
 
           {loginState ? (
             <div className="dropdown dropdown-end">

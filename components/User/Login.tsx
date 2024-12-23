@@ -141,20 +141,20 @@ export default function LoginForm() {
   };
 
   return (
-    <div className="flex items-center justify-center">
-      <div className="flex h-[30rem] w-[15rem] max-w-4xl shadow-lg">
+    <div className="mt-24 flex items-center justify-center">
+      <div className="hidden h-[30rem] w-[15rem] max-w-4xl overflow-hidden rounded-l-xl shadow-lg md:flex">
         <Image
           src={form}
           alt="Login Image"
           width={600}
           height={400}
-          className="h-full w-full rounded-l-xl object-cover"
+          className="h-full w-full object-cover"
         />
       </div>
-      <div className="flex items-center justify-center rounded-r-xl border-b-2 border-r-2 border-t-2 border-gray-200 bg-white">
+      <div className="flex items-center justify-center border-gray-200 bg-white md:rounded-r-xl md:border-2 md:border-l-0">
         <form
           onSubmit={handleLoginSubmit}
-          className="h-[30rem] w-[35rem] max-w-md p-8"
+          className="h-[30rem] w-[25rem] p-8 md:w-[35rem]"
         >
           <h2 className="mt-4 text-center text-2xl font-semibold">로그인</h2>
           <div>
@@ -207,13 +207,14 @@ export default function LoginForm() {
               <span className="text-center text-sm">카카오 로그인</span>
             </div>
           </div>
-
-          <button
-            type="button"
-            className="mt-3 w-full rounded-md border border-blue-500 py-1.5"
-          >
-            <Link href="/signup"> 회원가입</Link>
-          </button>
+          <Link href="/signup">
+            <button
+              type="button"
+              className="mt-3 w-full rounded-md border border-blue-500 py-1.5"
+            >
+              회원가입
+            </button>
+          </Link>
         </form>
       </div>
     </div>
