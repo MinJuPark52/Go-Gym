@@ -17,7 +17,7 @@ export default function ChargePay() {
     orderName: "짐페이 충전",
     totalAmount: 0,
     currency: "KRW",
-    channelKey: process.env.NEXT_PUBLIC_PORTONE_CHANNAL_KEY,
+    channelKey: process.env.PORTONE_CHANNAL_KEY,
     payMethod: "CARD",
     //customer는 동적으로 받을 예정
     customer: {

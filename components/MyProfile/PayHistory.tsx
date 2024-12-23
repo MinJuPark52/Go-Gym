@@ -52,6 +52,7 @@ export default function PayHistory() {
       {data &&
         data.content.map((history) => (
           <PayHistoryEl
+            key={history.historyId}
             historyId={history.historyId}
             transferType={history.transferType}
             amount={history.amount}

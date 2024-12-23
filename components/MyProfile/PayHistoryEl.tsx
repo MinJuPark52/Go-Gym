@@ -13,17 +13,17 @@ export default function PayHistoryEl({
 }: propsType) {
   let content = "짐페이 충전";
 
-  if ((transferType = "DEPOSIT")) {
+  if (transferType === "DEPOSIT") {
     content = "안전결제 입금";
-  } else if ((transferType = "WITHDRAWAL")) {
+  } else if (transferType === "WITHDRAWAL") {
     content = "안전결제 출금";
-  } else if ((transferType = "CHARGE")) {
+  } else if (transferType === "CHARGE") {
     content = "짐페이 충전";
-  } else if ((transferType = "CANCEL_DEPOSIT")) {
+  } else if (transferType === "CANCEL_DEPOSIT") {
     content = "안전결제 입금 취소";
-  } else if ((transferType = "CANCEL_WITHDRAWAL")) {
+  } else if (transferType === "CANCEL_WITHDRAWAL") {
     content = "안전결제 출금 취소";
-  } else if ((transferType = "CANCEL_CHARGE")) {
+  } else if (transferType === "CANCEL_CHARGE") {
     content = "짐페이 충전 취소";
   }
 

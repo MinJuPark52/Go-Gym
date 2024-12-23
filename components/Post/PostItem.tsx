@@ -41,9 +41,9 @@ export default function PostItem({
   }
   let itemPostType = "팝니다";
   if (postType === "SELL") {
-    postType = "팝니다";
+    itemPostType = "팝니다";
   } else if (postType === "BUY") {
-    postType = "삽니다";
+    itemPostType = "삽니다";
   }
 
   const { user } = useUserStore();

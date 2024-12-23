@@ -11,7 +11,6 @@ interface Props {
 export default function NoticeMessages({
   createdAt,
   nickname,
-  counterpartyNickname,
   send,
   content,
 }: Props) {

@@ -9,7 +9,7 @@ export const getAccessToken = async () => {
   const response = await axios.get(`${API_URL}/auth/authentication.json`, {
     params: {
       consumer_key: process.env.NEXT_PUBLIC_CONSUMER_ID,
-      consumer_secret: process.env.NEXT_PUBLIC_CONSUMER_SECRET,
+      consumer_secret: process.env.CONSUMER_SECRET,
     },
   });
 
