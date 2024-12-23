@@ -9,14 +9,15 @@ interface WebSocketState {
     senderId: number;
     content: string;
     createdAt: string;
+    safePaymentId: string;
     messageType:
       | "SYSTEM_SAFE_PAYMENT_REQUEST"
-      | "SYSTEM_SAFE_PAYMENT_APPROVE"
-      | "SYSTEM_SAFE_PAYMENT_REJECT"
+      | "SYSTEM_SAFE_PAYMENT_APPROVAL"
+      | "SYSTEM_SAFE_PAYMENT_REJECTION"
       | "SYSTEM_SAFE_PAYMENT_CANCEL"
       | "SYSTEM_SAFE_PAYMENT_COMPLETE"
-      | "SYSTEM_TRANSACTION_DATE_CONFIRM"
-      | "SYSTEM_TRANSACTION_DATE_CHANGE"
+      | "SYSTEM_TRANSACTION_DATE_CONFIRMED"
+      | "SYSTEM_TRANSACTION_DATE_CHANGED"
       | "SYSTEM_TRANSACTION_CANCEL"
       | "TEXT_ONLY";
   }[];
@@ -27,14 +28,15 @@ interface WebSocketState {
       senderId: number;
       content: string;
       createdAt: string;
+      safePaymentId: string;
       messageType:
         | "SYSTEM_SAFE_PAYMENT_REQUEST"
-        | "SYSTEM_SAFE_PAYMENT_APPROVE"
-        | "SYSTEM_SAFE_PAYMENT_REJECT"
+        | "SYSTEM_SAFE_PAYMENT_APPROVAL"
+        | "SYSTEM_SAFE_PAYMENT_REJECTION"
         | "SYSTEM_SAFE_PAYMENT_CANCEL"
         | "SYSTEM_SAFE_PAYMENT_COMPLETE"
-        | "SYSTEM_TRANSACTION_DATE_CONFIRM"
-        | "SYSTEM_TRANSACTION_DATE_CHANGE"
+        | "SYSTEM_TRANSACTION_DATE_CONFIRMED"
+        | "SYSTEM_TRANSACTION_DATE_CHANGED"
         | "SYSTEM_TRANSACTION_CANCEL"
         | "TEXT_ONLY";
     }[],

@@ -8,6 +8,8 @@ interface Props {
   content: string;
   send: boolean;
   profileImageUrl?: string;
+  counterpartyProfileImageUrl: string;
+  safePaymentId: string;
 }
 
 export default function UserMessages({
@@ -17,6 +19,7 @@ export default function UserMessages({
   content,
   send,
   profileImageUrl,
+  counterpartyProfileImageUrl,
 }: Props) {
   return send ? (
     <div className="chat chat-end" key={createdAt}>
@@ -31,30 +34,21 @@ export default function UserMessages({
       <div className="chat-header mb-1">{nickname}</div>
       <div className="chat-bubble bg-blue-500 text-white">{content}</div>
 
-      <time className="mt-1 text-xs opacity-50">{extractTime(createdAt)}</time>
+      <time className="mt-1 text-xs opacity-50">{createdAt}</time>
     </div>
   ) : (
     <div className="chat chat-start" key={createdAt}>
-      <div className="avatar chat-image">
-        <div className="w-10 rounded-full">
-          <img
-            alt="Tailwind CSS chat bubble component"
-            src="https://img.daisyui.com/images/stock/photo-1534528741775-53994a69daeb.webp"
-          />
-        </div>
+      <div className="avatar chat-image overflow-hidden rounded-full">
+        {counterpartyProfileImageUrl ? (
+          <ProfileImage src={counterpartyProfileImageUrl} />
+        ) : (
+          <DefaultProfile width="10" />
+        )}
       </div>
       <div className="chat-header mb-1 opacity-50">{counterpartyNickname}</div>
       <div className="chat-bubble bg-white text-gray-600">{content}</div>
       <div></div>
-      <time className="ml-2 mt-1 text-xs opacity-50">
-        {extractTime(createdAt)}
-      </time>
+      <time className="ml-2 mt-1 text-xs opacity-50">{createdAt}</time>
     </div>
   );
 }
-
-const extractTime = (date: string) => {
-  const timePart = date.split("T")[1]; // "13:31:47.1590463"
-  const [hours, minutes] = timePart.split(":"); // ["13", "31"]
-  return `${hours}:${minutes}`;
-};

@@ -1,15 +1,14 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import PortOne from "@portone/browser-sdk/v2";
 import axiosInstance from "@/api/axiosInstance";
-import { useMutation, useQuery } from "@tanstack/react-query";
+import { useMutation } from "@tanstack/react-query";
 import useUserStore from "@/store/useUserStore";
 import { useRouter } from "next/navigation";
 
 export default function ChargePay() {
-  const { user, InitUser } = useUserStore();
-  const [init, setInit] = useState(0);
+  const { user } = useUserStore();
   const router = useRouter();
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -28,27 +27,16 @@ export default function ChargePay() {
     },
   });
 
-  const { data: userData, isSuccess } = useQuery({
-    queryKey: ["user", init],
-    queryFn: async () => {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const response: any = await axiosInstance.get("/api/members/me/profile");
-      return response;
-    },
-    staleTime: 0,
-  });
-
-  useEffect(() => {
-    if (isSuccess) {
-      InitUser(userData);
-    }
-  }, [isSuccess, init]);
-
   async function requestPayment(paymentId: string) {
     if (data) {
       const response = await PortOne.requestPayment({ ...data, paymentId });
 
       console.log(response);
+      if (response) {
+        setTimeout(() => {
+          router.push("/mypage");
+        }, 500);
+      }
     }
   }
 
@@ -65,8 +53,6 @@ export default function ChargePay() {
     },
     onSuccess: (response) => {
       requestPayment(response.paymentId);
-      alert("충전 되었습니다.");
-      router.push("/mypage");
     },
   });
 
@@ -96,28 +82,27 @@ export default function ChargePay() {
     }
 
     mutate();
-    setInit((prev) => prev + 1);
   };
 
   return (
     <div className="flex w-[75%] justify-center">
       <form
         onSubmit={handleSubmit}
-        className="mt-8 flex w-[480px] flex-col gap-12 rounded-lg border-2 border-blue-300 p-4"
+        className="mt-8 flex w-[480px] flex-col gap-12 rounded-lg border-2 border-blue-500 p-4"
       >
         <p className="font-bold">Gym Pay 충전하기</p>
         <div className="flex flex-col items-center">
           <input
             type="number"
             placeholder="충전할 금액을 입력해주세요"
-            className="w-96 border border-gray-300 p-2 focus:outline-none"
+            className="w-96 border border-gray-500 p-2 focus:outline-none"
             onChange={handleChangeMoney}
             value={data.totalAmount}
           />
           <div className="mb-8 mt-8 flex w-[75%] justify-between">
             <button
               type="button"
-              className="rounded-lg bg-blue-300 p-1 text-sm font-bold text-white"
+              className="rounded-lg bg-blue-500 p-1 text-sm font-bold text-white"
               onClick={handleButtonClick}
               value={1000}
             >
@@ -125,7 +110,7 @@ export default function ChargePay() {
             </button>
             <button
               type="button"
-              className="rounded-lg bg-blue-300 p-1 text-sm font-bold text-white"
+              className="rounded-lg bg-blue-500 p-1 text-sm font-bold text-white"
               onClick={handleButtonClick}
               value={5000}
             >
@@ -133,7 +118,7 @@ export default function ChargePay() {
             </button>
             <button
               type="button"
-              className="rounded-lg bg-blue-300 p-1 text-sm font-bold text-white"
+              className="rounded-lg bg-blue-500 p-1 text-sm font-bold text-white"
               onClick={handleButtonClick}
               value={10000}
             >
@@ -143,7 +128,7 @@ export default function ChargePay() {
         </div>
         <button
           type="submit"
-          className="rounded-lg bg-blue-400 p-1 text-sm font-bold text-white transition-all hover:bg-blue-500"
+          className="rounded-lg bg-blue-500 p-1 text-sm font-bold text-white transition-all hover:bg-blue-500"
         >
           충전하기
         </button>

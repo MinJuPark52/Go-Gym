@@ -28,10 +28,10 @@ export default function LookupPost() {
       setUrl(`/api/members/me/recent-views`);
     } else if (category === "purchaselist") {
       setTitle("구매 목록");
-      setUrl(`/api/members/transactions/buy`);
+      setUrl(`/api/members/me/transactions/buy`);
     } else if (category === "salelist") {
       setTitle("판매 목록");
-      setUrl(`/api/members/transactions/sell`);
+      setUrl(`/api/members/me/transactions/sell`);
     }
   }, [category]);
 
@@ -40,13 +40,13 @@ export default function LookupPost() {
   }, [category]);
 
   const { data, isPending } = useQuery({
-    queryKey: ["post", user, url],
+    queryKey: ["post", user, url, currentPage],
     queryFn: async () => {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const response: any = await axiosInstance.get(
         `${url}?page=${currentPage}&size=5`,
       );
-      return response.content;
+      return response;
     },
     enabled: !!url,
   });
@@ -72,14 +72,16 @@ export default function LookupPost() {
     <div className="mt-8 flex flex-col gap-16">
       <h1 className="text-3xl">{title}</h1>
       <div className="mb-20 flex min-h-96 w-[100%] gap-4 overflow-x-auto p-12 lg:grid lg:grid-cols-2 lg:justify-items-center 2xl:grid-cols-3">
-        <PostList data={data} />
+        {data && <PostList data={data.content} />}
       </div>
-      <Pagenation
-        size={3}
-        page={currentPage}
-        onRadioChange={handleRadioChange}
-        totalPage={24}
-      />
+      {data && (
+        <Pagenation
+          size={3}
+          page={currentPage}
+          onRadioChange={handleRadioChange}
+          totalPage={+data.totalPages}
+        />
+      )}
     </div>
   );
 }

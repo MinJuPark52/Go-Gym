@@ -14,10 +14,12 @@ interface chatListProps {
   chatRoomId: string;
   lastMessageAt: string;
   counterpartyId: string;
+  counterpartyProfileImageUrl: string;
   onClickChatRoom: (
     chatRoomId: string,
     counterpartyNickname: string,
     counterpartyId: string,
+    counterpartyProfileImageUrl: string,
   ) => void;
   onCloseModal: () => void;
 }
@@ -29,6 +31,8 @@ export default function ChatList({
   onClickChatRoom,
   lastMessage,
   lastMessageAt,
+  counterpartyProfileImageUrl,
+
   onCloseModal,
 }: chatListProps) {
   const { user } = useUserStore();
@@ -41,6 +45,7 @@ export default function ChatList({
     }
   };
 
+  //채팅방 삭제하기
   const { mutate } = useMutation({
     mutationKey: ["chatList", chatRoomId],
     mutationFn: async () =>
@@ -58,7 +63,12 @@ export default function ChatList({
       />
       <div
         onClick={() => {
-          onClickChatRoom(chatRoomId, counterpartyNickname, counterpartyId);
+          onClickChatRoom(
+            chatRoomId,
+            counterpartyNickname,
+            counterpartyId,
+            counterpartyProfileImageUrl,
+          );
           onCloseModal();
         }}
       >
@@ -71,7 +81,7 @@ export default function ChatList({
           <div className="flex items-center gap-4">
             <div className="avatar h-10 w-10 overflow-hidden rounded-full">
               {user?.profileImageUrl ? (
-                <ProfileImage src={user?.profileImageUrl} />
+                <ProfileImage src={counterpartyProfileImageUrl} />
               ) : (
                 <DefaultProfile width="120" />
               )}

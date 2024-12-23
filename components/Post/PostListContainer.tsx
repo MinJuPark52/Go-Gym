@@ -10,6 +10,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import useLoginStore from "@/store/useLoginStore";
 import PostItemSkeleton from "../SkeletonUI/PostItemSkeleton";
 import Pagenation from "../UI/Pagination";
+import useUserStore from "@/store/useUserStore";
 
 interface categoryStateType {
   ["post-type"]: "default" | "SELL" | "BUY";
@@ -27,6 +28,7 @@ export default function PostListContainer() {
   const searchParams = useSearchParams();
   const router = useRouter();
   const { token, loginState } = useLoginStore();
+  const { user } = useUserStore();
 
   const [page, setPage] = useState(0);
   const [filter, setFilter] = useState<categoryStateType>({
@@ -77,7 +79,7 @@ export default function PostListContainer() {
       const response: any = await axiosInstance.get(
         `/api/posts/filters?${query}`,
       );
-      return response.content;
+      return response;
     },
     staleTime: 10000,
     enabled: !!query,
@@ -94,7 +96,7 @@ export default function PostListContainer() {
       const response: any = await axiosInstance.get(
         `api/posts/views?page=${page}&size=10`,
       );
-      return response.content;
+      return response;
     },
     staleTime: 0,
     enabled: !query, // query가 없을 때만 실행
@@ -108,19 +110,47 @@ export default function PostListContainer() {
 
   if (defaultDataPending) {
     content = (
-      <div className="mb-20 flex min-h-96 w-[100%] gap-4 overflow-x-auto p-12 lg:grid lg:grid-cols-2 lg:justify-items-center 2xl:grid-cols-3">
-        {[...Array(6).keys()].map((idx) => (
-          <PostItemSkeleton key={idx} />
-        ))}
-      </div>
+      <>
+        <div className="mb-20 flex min-h-96 w-[100%] gap-4 overflow-x-auto p-12 lg:grid lg:grid-cols-2 lg:justify-items-center 2xl:grid-cols-3">
+          {[...Array(6).keys()].map((idx) => (
+            <PostItemSkeleton key={idx} />
+          ))}
+        </div>
+      </>
     );
   }
 
-  if (data || defaultData) {
+  if (query !== "" && data) {
     content = (
-      <div className="mb-20 flex min-h-96 w-[100%] gap-4 overflow-x-auto p-12 lg:grid lg:grid-cols-2 lg:justify-items-center 2xl:grid-cols-3">
-        <PostList data={query !== "" ? data : defaultData} />
-      </div>
+      <>
+        <div className="mb-20 flex min-h-96 w-[100%] gap-4 overflow-x-auto p-12 lg:grid lg:grid-cols-2 lg:justify-items-center 2xl:grid-cols-3">
+          <PostList data={data.content} />
+        </div>
+        {data && (
+          <Pagenation
+            size={3}
+            page={page}
+            onRadioChange={handleRadioChange}
+            totalPage={+data.totalPages}
+          />
+        )}
+      </>
+    );
+  } else if (query === "" && defaultData) {
+    content = (
+      <>
+        <div className="mb-20 flex min-h-96 w-[100%] gap-4 overflow-x-auto p-12 lg:grid lg:grid-cols-2 lg:justify-items-center 2xl:grid-cols-3">
+          <PostList data={defaultData.content} />
+        </div>
+        {data && (
+          <Pagenation
+            size={3}
+            page={page}
+            onRadioChange={handleRadioChange}
+            totalPage={+defaultData.totalPages}
+          />
+        )}
+      </>
     );
   }
 
@@ -131,7 +161,21 @@ export default function PostListContainer() {
   return (
     <div className="mt-12 flex w-[70%] flex-col">
       <div className="flex items-center justify-between">
-        <p className="mb-12 text-2xl font-bold">양도 회원권</p>
+        <div className="mb-12 flex flex-col gap-4">
+          <p className="text-2xl font-bold">양도 회원권</p>
+          <div className="flex gap-4">
+            {user.regionName1 && (
+              <div className="badge border-none bg-blue-500 pb-3 pt-3 text-sm font-bold text-white">
+                {user.regionName1}
+              </div>
+            )}
+            {user.regionName2 && (
+              <div className="badge border-none bg-blue-500 pb-3 pt-3 text-sm font-bold text-white">
+                {user.regionName2}
+              </div>
+            )}
+          </div>
+        </div>
         {loginState && (
           <Link href={"/community/editpost"}>
             <button className="btn-inf0 btn bg-blue-500 text-white hover:bg-blue-700">
@@ -145,13 +189,6 @@ export default function PostListContainer() {
       </div>
 
       {content}
-
-      <Pagenation
-        size={5}
-        page={page}
-        onRadioChange={handleRadioChange}
-        totalPage={24}
-      />
     </div>
   );
 }

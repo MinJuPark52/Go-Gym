@@ -49,6 +49,9 @@ export default function Nav() {
       alert("로그아웃 되었습니다.");
     } catch (error) {
       console.error("unknown error:", error);
+    } finally {
+      logout();
+      LogoutUser();
     }
   };
 

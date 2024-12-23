@@ -2,13 +2,20 @@
 import { useEffect, useRef, useState } from "react";
 import useWebSocketStore from "@/store/useSocketStore";
 import axiosInstance from "@/api/axiosInstance";
-import { useInfiniteQuery, useMutation } from "@tanstack/react-query";
+import { useInfiniteQuery, useMutation, useQuery } from "@tanstack/react-query";
 import ChatPostDetail from "./ChatPostDetail";
 import useUserStore from "@/store/useUserStore";
 import UserMessages from "./Messages/UserMessages";
 import RequestMessages from "./Messages/RequestMessages";
 import ApprovetMessages from "./Messages/ApproveMessages";
 import NoticeMessages from "./Messages/NoticeMessages";
+
+interface PostType {
+  postId: string;
+  amount: string;
+  status: string;
+  title: string;
+}
 
 interface props {
   chatRoomId: string;
@@ -20,6 +27,7 @@ interface props {
     content: string;
   }) => void;
   counterpartyNickname: string;
+  counterpartyProfileImageUrl: string;
   counterpartyId: string;
   onOpenModal: () => void;
 }
@@ -27,17 +35,24 @@ interface props {
 export default function Chat({
   chatRoomId,
   onSendMessage,
-  counterpartyId,
   counterpartyNickname,
+  counterpartyProfileImageUrl,
   onOpenModal,
 }: props) {
   const [text, setText] = useState("");
-  const [status, setStatus] = useState("");
+  const [postValue, setPostValue] = useState({
+    postId: "",
+    title: "",
+    amount: "",
+    status: "",
+  });
+  const [memberId, setMemberId] = useState("");
   const { connect, messages, setAgoMessage, disconnect, initMessages } =
     useWebSocketStore();
   const { user } = useUserStore();
   const scrollRef = useRef<HTMLDivElement>(null);
 
+  //과거 메세지 무한스크롤
   const {
     data,
     fetchNextPage,
@@ -46,14 +61,14 @@ export default function Chat({
     isFetchingNextPage,
     isPending,
   } = useInfiniteQuery({
-    queryKey: ["agomessages"],
+    queryKey: ["agomessages", chatRoomId],
     queryFn: async ({ pageParam = 0 }) => {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const res: { messages: any; postStatus: string } =
         await axiosInstance.get(`/api/chatroom/${chatRoomId}/messages`, {
           params: { page: pageParam, size: 6 },
         });
-      setStatus(res.postStatus);
+
       return res.messages;
     },
     getNextPageParam: (lastPage, pages) => {
@@ -66,11 +81,44 @@ export default function Chat({
     enabled: !!chatRoomId,
   });
 
-  const chatLeave = async (createdAt: string) => {
-    await axiosInstance.post(`/api/chatroom/${chatRoomId}/leave`, {
-      leaveAt: createdAt,
-    });
-  };
+  //게시글 정보, 게시글 상태반환
+  const { data: extraData } = useQuery({
+    queryKey: ["extraData", chatRoomId],
+    queryFn: async () => {
+      const res: { postSummary: PostType } = await axiosInstance.get(
+        `/api/chatroom/${chatRoomId}/messages`,
+        {
+          params: { page: 0, size: 6 }, // 첫 번째 페이지 데이터 요청
+        },
+      );
+      return res.postSummary; // 필요한 데이터만 반환
+    },
+    enabled: !!chatRoomId,
+  });
+
+  // const chatLeave = async (createdAt: string) => {
+  //   await axiosInstance.post(`/api/chatroom/${chatRoomId}/leave`, {
+  //     leaveAt: createdAt,
+  //   });
+  // };
+
+  useEffect(() => {
+    console.log(extraData);
+    if (extraData) {
+      setPostValue({
+        postId: extraData.postId,
+        title: extraData.title,
+        status: extraData.status,
+        amount: extraData.amount,
+      });
+    }
+  }, [extraData]);
+
+  useEffect(() => {
+    if (user?.memberId) {
+      setMemberId(user.memberId); // 상태를 안전하게 설정
+    }
+  }, [user]);
 
   useEffect(() => {
     // 숫자 부분만 chatroomid적어주면 됨
@@ -80,23 +128,20 @@ export default function Chat({
       });
     }
 
-    return () => {
-      if (chatRoomId && messages) {
-        console.log(messages);
-        (async () => {
-          const latestCreatedAt = messages[messages.length - 1].createdAt
-            .slice(0, 19)
-            .replace("T", " ");
-          await chatLeave(latestCreatedAt);
-          disconnect();
-        })();
-      } else {
-        disconnect();
-      }
-    };
-  }, [chatRoomId]);
+    return () => disconnect();
+    // if (chatRoomId && messages) {
+    //   console.log(messages);
+    //   (async () => {
+    //     const latestCreatedAt = messages[messages.length - 1].createdAt
+    //       .slice(0, 19)
+    //       .replace("T", " ");
+    //     await chatLeave(latestCreatedAt);
+    //     disconnect();
+    //   })();
+    // } else {
 
-  //무한스크롤 구현
+    // }
+  }, [chatRoomId]);
 
   useEffect(() => {
     if (data && hasPreviousPage) {
@@ -127,8 +172,6 @@ export default function Chat({
     console.log(messages);
   }, [messages]);
 
-  //무한 스크롤 함수 끝
-
   const handleText = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     setText(e.target.value);
   };
@@ -157,41 +200,46 @@ export default function Chat({
     handleSendMessage();
   };
 
+  //safe-payments-Id를 따로 받아서 처리
   const { mutate: approve } = useMutation({
     mutationKey: ["approve"],
-    mutationFn: async () =>
+    mutationFn: async (safePaymentId: string) =>
       await axiosInstance.put(
-        `/api/safe-payments/${localStorage.getItem("safePaymentId")}/approve`,
+        `/api/chatrooms/${chatRoomId}/safe-payments/${safePaymentId}/approve`,
       ),
     onSuccess: () => alert("승인"),
   });
   const { mutate: reject } = useMutation({
     mutationKey: ["reject"],
-    mutationFn: async () =>
+    mutationFn: async (safePaymentId: string) =>
       await axiosInstance.put(
-        `/api/safe-payments/${localStorage.getItem("safePaymentId")}/reject`,
+        `/api/chatrooms/${chatRoomId}/safe-payments/${safePaymentId}/reject`,
       ),
     onSuccess: () => alert("거절"),
   });
   const { mutate: cancel } = useMutation({
     mutationKey: ["cancel"],
-    mutationFn: async () =>
+    mutationFn: async (safePaymentId: string) =>
       await axiosInstance.put(
-        `/api/safe-payments/${localStorage.getItem("safePaymentId")}/cancel`,
+        `/api/chatrooms/${chatRoomId}/safe-payments/${safePaymentId}/cancel`,
       ),
     onSuccess: () => alert("취소"),
   });
   const { mutate: complete } = useMutation({
     mutationKey: ["complete"],
-    mutationFn: async () =>
+    mutationFn: async (safePaymentId: string) =>
       await axiosInstance.put(
-        `/api/safe-payments/${localStorage.getItem("safePaymentId")}/complete`,
+        `/api/chatrooms/${chatRoomId}/safe-payments/${safePaymentId}/complete`,
       ),
     onSuccess: () => alert("완료"),
   });
+
   if (isPending) {
     return (
       <div className="relative flex h-[100%] w-[100%] flex-col border-r-2 bg-blue-200 bg-opacity-40 p-4">
+        <button className="btn btn-active sm:hidden" onClick={onOpenModal}>
+          채팅방 목록
+        </button>
         <div className="flex h-[calc(100%-10rem)] items-center justify-center">
           <span className="loading loading-ring loading-lg"></span>
         </div>
@@ -220,8 +268,10 @@ export default function Chat({
       className="relative flex h-[100%] w-[100%] flex-col bg-blue-200 bg-opacity-40 p-4"
     >
       <ChatPostDetail
-        counterpartyId={counterpartyId}
-        postStatus={status}
+        postId={postValue.postId}
+        title={postValue.title}
+        amount={postValue.amount}
+        postStatus={postValue.status || "PENDING"}
         onOpenModal={onOpenModal}
         chatRoomId={chatRoomId}
       />
@@ -230,124 +280,139 @@ export default function Chat({
         onScroll={handleScroll}
         className="flex h-[calc(100%-6rem)] flex-col overflow-y-auto p-2 pt-36 scrollbar-hide sm:pt-32"
       >
-        {messages.map((chat) => {
-          if (
-            chat.messageType === "TEXT_ONLY" &&
-            chat.senderId.toString() === user?.memberId.toString()
-          ) {
-            return (
-              <UserMessages
-                key={chat.createdAt}
-                createdAt={chat.createdAt}
-                nickname={user.nickname}
-                counterpartyNickname={counterpartyNickname}
-                content={chat.content}
-                send={true}
-              />
-            );
-          } else if (
-            chat.messageType === "TEXT_ONLY" &&
-            chat.senderId.toString() !== user?.memberId.toString()
-          ) {
-            return (
-              <UserMessages
-                key={chat.createdAt}
-                createdAt={chat.createdAt}
-                profileImageUrl={user.profileImageUrl || ""}
-                nickname={user.nickname}
-                counterpartyNickname={counterpartyNickname}
-                content={chat.content}
-                send={false}
-              />
-            );
-          } else if (
-            chat.messageType === "SYSTEM_SAFE_PAYMENT_REQUEST" &&
-            chat.senderId.toString() === user?.memberId
-          ) {
-            return (
-              <RequestMessages
-                key={chat.createdAt}
-                createdAt={chat.createdAt}
-                nickname={user.nickname}
-                counterpartyNickname={counterpartyNickname}
-                content={chat.content}
-                approve={approve}
-                reject={reject}
-                send={true}
-              />
-            );
-          } else if (
-            chat.messageType === "SYSTEM_SAFE_PAYMENT_REQUEST" &&
-            chat.senderId.toString() !== user?.memberId
-          ) {
-            return (
-              <RequestMessages
-                key={chat.createdAt}
-                createdAt={chat.createdAt}
-                nickname={user.nickname}
-                counterpartyNickname={counterpartyNickname}
-                content={chat.content}
-                approve={approve}
-                reject={reject}
-                send={false}
-              />
-            );
-          } else if (
-            chat.messageType === "SYSTEM_SAFE_PAYMENT_APPROVE" &&
-            chat.senderId.toString() === user?.memberId
-          ) {
-            return (
-              <ApprovetMessages
-                key={chat.createdAt}
-                createdAt={chat.createdAt}
-                nickname={user.nickname}
-                counterpartyNickname={counterpartyNickname}
-                content={chat.content}
-                complete={complete}
-                cancel={cancel}
-                send={true}
-              />
-            );
-          } else if (
-            chat.messageType === "SYSTEM_SAFE_PAYMENT_APPROVE" &&
-            chat.senderId.toString() !== user?.memberId
-          ) {
-            return (
-              <ApprovetMessages
-                key={chat.createdAt}
-                createdAt={chat.createdAt}
-                nickname={user.nickname}
-                counterpartyNickname={counterpartyNickname}
-                content={chat.content}
-                complete={complete}
-                cancel={cancel}
-                send={false}
-              />
-            );
-          } else if (chat.senderId.toString() === user?.memberId) {
-            return (
-              <NoticeMessages
-                key={chat.createdAt}
-                createdAt={chat.createdAt}
-                nickname={user.nickname}
-                counterpartyNickname={counterpartyNickname}
-                content={chat.content}
-                send={true}
-              />
-            );
-          } else if (chat.senderId.toString() !== user?.memberId) {
-            return (
-              <NoticeMessages
-                key={chat.createdAt}
-                createdAt={chat.createdAt}
-                nickname={user.nickname}
-                counterpartyNickname={counterpartyNickname}
-                content={chat.content}
-                send={false}
-              />
-            );
-          }
-        })}
+        {messages &&
+          messages.map((chat) => {
+            if (
+              chat.messageType === "TEXT_ONLY" &&
+              chat.senderId.toString() === memberId.toString()
+            ) {
+              return (
+                <UserMessages
+                  key={chat.createdAt}
+                  createdAt={extractTime(chat.createdAt)}
+                  nickname={user.nickname}
+                  counterpartyNickname={counterpartyNickname}
+                  counterpartyProfileImageUrl={counterpartyProfileImageUrl}
+                  safePaymentId={chat.safePaymentId}
+                  content={chat.content}
+                  send={true}
+                />
+              );
+            } else if (
+              chat.messageType === "TEXT_ONLY" &&
+              chat.senderId.toString() !== memberId.toString()
+            ) {
+              return (
+                <UserMessages
+                  key={chat.createdAt}
+                  createdAt={extractTime(chat.createdAt)}
+                  profileImageUrl={user.profileImageUrl || ""}
+                  nickname={user.nickname}
+                  counterpartyNickname={counterpartyNickname}
+                  counterpartyProfileImageUrl={counterpartyProfileImageUrl}
+                  safePaymentId={chat.safePaymentId}
+                  content={chat.content}
+                  send={false}
+                />
+              );
+            } else if (
+              chat.messageType === "SYSTEM_SAFE_PAYMENT_REQUEST" &&
+              chat.senderId.toString() === memberId.toString()
+            ) {
+              return (
+                <RequestMessages
+                  key={chat.createdAt}
+                  createdAt={chat.createdAt}
+                  nickname={user.nickname}
+                  counterpartyNickname={counterpartyNickname}
+                  counterpartyProfileImageUrl={counterpartyProfileImageUrl}
+                  safePaymentId={chat.safePaymentId}
+                  content={chat.content}
+                  approve={approve}
+                  reject={reject}
+                  send={true}
+                />
+              );
+            } else if (
+              chat.messageType === "SYSTEM_SAFE_PAYMENT_REQUEST" &&
+              chat.senderId.toString() !== memberId.toString()
+            ) {
+              return (
+                <RequestMessages
+                  key={chat.createdAt}
+                  createdAt={chat.createdAt}
+                  nickname={user.nickname}
+                  counterpartyNickname={counterpartyNickname}
+                  counterpartyProfileImageUrl={counterpartyProfileImageUrl}
+                  safePaymentId={chat.safePaymentId}
+                  content={chat.content}
+                  approve={approve}
+                  reject={reject}
+                  send={false}
+                />
+              );
+            } else if (
+              chat.messageType === "SYSTEM_SAFE_PAYMENT_APPROVAL" &&
+              chat.senderId.toString() === memberId.toString()
+            ) {
+              return (
+                <ApprovetMessages
+                  key={chat.createdAt}
+                  createdAt={chat.createdAt}
+                  nickname={user.nickname}
+                  counterpartyNickname={counterpartyNickname}
+                  counterpartyProfileImageUrl={counterpartyProfileImageUrl}
+                  safePaymentId={chat.safePaymentId}
+                  content={chat.content}
+                  complete={complete}
+                  cancel={cancel}
+                  send={true}
+                />
+              );
+            } else if (
+              chat.messageType === "SYSTEM_SAFE_PAYMENT_APPROVAL" &&
+              chat.senderId.toString() !== memberId.toString()
+            ) {
+              return (
+                <ApprovetMessages
+                  key={chat.createdAt}
+                  createdAt={chat.createdAt}
+                  nickname={user.nickname}
+                  counterpartyNickname={counterpartyNickname}
+                  counterpartyProfileImageUrl={counterpartyProfileImageUrl}
+                  safePaymentId={chat.safePaymentId}
+                  content={chat.content}
+                  complete={complete}
+                  cancel={cancel}
+                  send={false}
+                />
+              );
+            } else if (chat.senderId.toString() === memberId.toString()) {
+              return (
+                <NoticeMessages
+                  key={chat.createdAt}
+                  createdAt={chat.createdAt}
+                  nickname={user.nickname}
+                  counterpartyNickname={counterpartyNickname}
+                  counterpartyProfileImageUrl={counterpartyProfileImageUrl}
+                  content={chat.content}
+                  send={true}
+                />
+              );
+            } else if (chat.senderId.toString() !== memberId.toString()) {
+              return (
+                <NoticeMessages
+                  key={chat.createdAt}
+                  createdAt={chat.createdAt}
+                  nickname={user.nickname}
+                  counterpartyNickname={counterpartyNickname}
+                  counterpartyProfileImageUrl={counterpartyProfileImageUrl}
+                  content={chat.content}
+                  send={false}
+                />
+              );
+            }
+          })}
       </div>
       <div className="absolute bottom-0 left-0 flex h-24 w-full bg-white p-2">
         <textarea
@@ -370,3 +435,12 @@ export default function Chat({
     </form>
   );
 }
+
+const extractTime = (date: string) => {
+  if (date) {
+    const timePart = date.split("T")[1]; // "13:31:47.1590463"
+    const [hours, minutes] = timePart.split(":"); // ["13", "31"]
+    return `${hours}:${minutes}`;
+  }
+  return "";
+};
