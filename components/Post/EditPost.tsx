@@ -33,8 +33,7 @@ export default function EditPost() {
 
   useEffect(() => {
     if (isLogin && !loginState) {
-      alert("로그인이 필요합니다.");
-      router.push("/");
+      router.push("/login");
     }
     setIsLogin(true);
   }, [loginState, isLogin]);
@@ -372,11 +371,11 @@ export default function EditPost() {
               preview[el] ? (
                 <div
                   key={el}
-                  className="relative flex h-56 min-w-60 items-center justify-center"
+                  className="relative flex h-56 min-w-60 items-center justify-center overflow-hidden"
                 >
                   <button
                     type="button"
-                    className="absolute right-0 top-[-20px]"
+                    className="absolute right-0 top-0"
                     onClick={() => handleDeleteImage(el)}
                   >
                     ❌

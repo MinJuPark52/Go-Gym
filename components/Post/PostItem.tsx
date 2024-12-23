@@ -17,6 +17,7 @@ interface PostType {
   status: string;
   title: string;
   wishCount: number;
+  postType: string;
 }
 
 export default function PostItem({
@@ -28,8 +29,23 @@ export default function PostItem({
   status,
   title,
   wishCount,
+  postType,
 }: PostType) {
-  const postStatusKo = status === "PENDING" && "게시중";
+  let postStatusKo = "게시중";
+  if (status === "PENDING") {
+    postStatusKo = "게시중";
+  } else if (status === "IN_PROGRESS") {
+    postStatusKo = "거래중";
+  } else {
+    postStatusKo = "거래완료";
+  }
+  let itemPostType = "팝니다";
+  if (postType === "SELL") {
+    itemPostType = "팝니다";
+  } else if (postType === "BUY") {
+    itemPostType = "삽니다";
+  }
+
   const { user } = useUserStore();
   const timeago = useTimeAgo(createdAt);
 
@@ -38,8 +54,13 @@ export default function PostItem({
       <div className="h-80 w-80 cursor-pointer rounded-lg border border-[#ccc] shadow">
         <div>
           <div className="m-2 flex justify-between">
-            <div className="badge border-none bg-blue-500 pb-3 pt-3 text-sm font-bold text-white">
-              {postStatusKo}
+            <div>
+              <div className="badge border-none bg-blue-500 pb-3 pt-3 text-sm font-bold text-white">
+                {postStatusKo}
+              </div>
+              <div className="badge ml-2 border-none bg-green-500 pb-3 pt-3 text-sm font-bold text-white">
+                {itemPostType}
+              </div>
             </div>
             <p className="text-xs text-gray-500">{timeago}</p>
           </div>
@@ -50,7 +71,7 @@ export default function PostItem({
               </div>
             ) : (
               <div className="flex h-[140px] items-center justify-center bg-gray-400 bg-opacity-50">
-                기본 이미지
+                No-Image
               </div>
             )}
 

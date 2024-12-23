@@ -20,6 +20,8 @@ export default function MainPagePostContainer() {
       return response.content;
     },
     staleTime: 0,
+    refetchOnMount: true,
+    refetchOnWindowFocus: true,
   });
 
   if (isPending) {
@@ -46,6 +48,7 @@ export default function MainPagePostContainer() {
       <div className="mb-20 mt-8 flex min-h-96 w-[100%] gap-4 overflow-x-auto p-12 lg:grid lg:grid-cols-2 lg:justify-items-center 2xl:grid-cols-3">
         <PostItem
           postId="1"
+          postType="SELL"
           authorNickname="전빡빡"
           createdAt=""
           gymName="바디트랜스"

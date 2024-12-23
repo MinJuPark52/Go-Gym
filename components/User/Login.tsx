@@ -2,13 +2,14 @@
 
 import { ChangeEvent, useState } from "react";
 import Link from "next/link";
-import axiosInstance from "@/api/axiosInstance";
 import { BiSolidMessageRounded } from "react-icons/bi";
 import useLoginStore from "@/store/useLoginStore";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 import form from "../../public/form.png";
 import useUserStore from "@/store/useUserStore";
+import axios from "axios";
+import axiosInstance from "@/api/axiosInstance";
 
 interface User {
   email: string;
@@ -54,24 +55,26 @@ export default function LoginForm() {
     password: "",
   });
 
+  const router = useRouter();
   const { login } = useLoginStore();
   const { InitUser } = useUserStore();
 
+  // 카카오 로그인
+  // backend 부분 때문에 에러가 남 -> http://go-gym.site/api/kakao/sign-in 수정?
+  const redirect_uri = "http://localhost:3000/kakaoLogin";
+  const kakaoURL = `https://kauth.kakao.com/oauth/authorize?client_id=${process.env.KAKAO_RESTAPI_KEY}&redirect_uri=${redirect_uri}&response_type=code`;
+
+  const handleKakaoLogin = () => {
+    window.location.href = kakaoURL;
+  };
+
+  // 로그인
   const handleLoginChange =
     (field: keyof typeof loginFormData) =>
     (e: ChangeEvent<HTMLInputElement>) => {
       setLoginFormData({ ...loginFormData, [field]: e.target.value });
     };
 
-  const kakaoURL = `https://kauth.kakao.com/oauth/authorize?response_type=code
-  &client_id=${process.env.NEXT_PUBLIC_KAKAO_RESTAPI_KEY}
-  &redirect_uri=backend/api/kakao/sign-in`;
-
-  const handleKakaoLogin = () => {
-    window.location.href = kakaoURL;
-  };
-
-  const router = useRouter();
   const handleLoginSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
@@ -99,10 +102,13 @@ export default function LoginForm() {
 
     if (validateForm()) {
       try {
-        const response = await axiosInstance.post<User[]>("/api/auth/sign-in", {
-          email: loginFormData.email,
-          password: loginFormData.password,
-        });
+        const response = await axios.post<User[]>(
+          "https://go-gym.site/api/auth/sign-in",
+          {
+            email: loginFormData.email,
+            password: loginFormData.password,
+          },
+        );
 
         console.log(response);
         if (response) {
@@ -135,7 +141,7 @@ export default function LoginForm() {
   };
 
   return (
-    <div className="flex items-center justify-center bg-white">
+    <div className="flex items-center justify-center">
       <div className="flex h-[30rem] w-[15rem] max-w-4xl shadow-lg">
         <Image
           src={form}
@@ -145,7 +151,7 @@ export default function LoginForm() {
           className="h-full w-full rounded-l-xl object-cover"
         />
       </div>
-      <div className="flex items-center justify-center rounded-r-xl border-b-2 border-r-2 border-t-2 border-gray-200">
+      <div className="flex items-center justify-center rounded-r-xl border-b-2 border-r-2 border-t-2 border-gray-200 bg-white">
         <form
           onSubmit={handleLoginSubmit}
           className="h-[30rem] w-[35rem] max-w-md p-8"

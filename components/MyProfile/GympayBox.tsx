@@ -26,25 +26,43 @@ export default function GympayBox() {
       return response;
     },
     staleTime: 0,
+    refetchOnMount: true,
+    refetchOnWindowFocus: true,
   });
 
   useEffect(() => {
     if (isSuccess) {
       InitUser(userData);
     }
-  }, [createGympay, isSuccess]);
+  }, [isSuccess, userData, createGympay]);
+
+  useEffect(() => {}, []);
 
   return (
     <>
-      {user?.gymPayBalance ? (
+      {user.gymPayId ? (
         <div className="flex min-h-24 max-w-[660px] flex-col rounded-md bg-blue-500 p-4 text-white">
           <div className="flex justify-between">
-            <p>Gym Pay</p>
-            <p>{user.gymPayBalance}</p>
+            <p className="text-2xl font-bold">Gym Pay</p>
+            <p className="text-xl">
+              {user.gymPayBalance
+                ? formatNumber(user.gymPayBalance.toString())
+                : 0}{" "}
+              {"(원)"}
+            </p>
           </div>
-          <Link href={"/mypage/addGymPay"} className="ml-auto">
-            <button>충전</button>
-          </Link>
+          <div className="ml-auto flex gap-2">
+            <Link href={"/mypage/addGymPay"}>
+              <button className="btn border-none bg-blue-500 text-white hover:bg-blue-600">
+                페이 충전
+              </button>
+            </Link>
+            <Link href={"/mypage/payhistory"}>
+              <button className="btn border-none bg-blue-500 text-white hover:bg-blue-600">
+                거래내역
+              </button>
+            </Link>
+          </div>
         </div>
       ) : (
         <div className="flex min-h-24 max-w-[660px] flex-col rounded-md bg-gray-300 p-4 text-white">
@@ -62,3 +80,7 @@ export default function GympayBox() {
     </>
   );
 }
+const formatNumber = (input: string) => {
+  const numericValue = input.replace(/,/g, "");
+  return numericValue.replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+};

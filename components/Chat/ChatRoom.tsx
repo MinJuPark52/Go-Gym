@@ -20,12 +20,16 @@ interface ChatItem {
   lastMessageAt: string;
   postAuthorActive: boolean;
   requestorActive: boolean;
+  counterpartyProfileImageUrl: string;
 }
 
 export default function ChatRoom() {
   const [modal, setModal] = useState(true);
   const [currentChatRoom, setCurrentChatRoom] = useState("");
   const [currentChatNickname, setCurrentChatNickname] = useState("");
+  const [counterpartyId, setCounterpartyId] = useState("");
+  const [counterpartyProfileImageUrl, setCounterpartyProfileImageUrl] =
+    useState("");
   const { messages, sendMessage } = useWebSocketStore();
   const { loginState } = useLoginStore();
   const [isLogin, setIsLogin] = useState(false);
@@ -33,8 +37,7 @@ export default function ChatRoom() {
 
   useEffect(() => {
     if (isLogin && !loginState) {
-      alert("로그인이 필요합니다.");
-      router.push("/");
+      router.push("/login");
     }
     setIsLogin(true);
   }, [loginState, isLogin]);
@@ -61,9 +64,16 @@ export default function ChatRoom() {
         })
       : [];
 
-  const handleClickChatRoom = (chatRoomId: string, chatNickname: string) => {
+  const handleClickChatRoom = (
+    chatRoomId: string,
+    chatNickname: string,
+    counterpartyId: string,
+    counterpartyProfileImageUrl: string,
+  ) => {
     setCurrentChatRoom(chatRoomId);
     setCurrentChatNickname(chatNickname);
+    setCounterpartyId(counterpartyId);
+    setCounterpartyProfileImageUrl(counterpartyProfileImageUrl);
     console.log(currentChatRoom);
   };
 
@@ -96,11 +106,11 @@ export default function ChatRoom() {
   return (
     <div className="border-l-1 relative flex h-[100%] w-[100%] md:w-[75%]">
       <div
-        className={`flex h-[100%] w-[100%] ${modal ? "" : "hidden"} animate-slide-down flex-col border-2 sm:block sm:w-[50%]`}
+        className={`flex h-[100%] w-[100%] ${modal ? "" : "hidden"} animate-slide-down flex-col overflow-y-auto border-2 scrollbar-hide sm:block sm:w-[50%]`}
       >
         <button
           onClick={handleCloseModal}
-          className={`${modal ? "" : "hidden"} sm:hidden`}
+          className={`btn ${modal ? "" : "hidden"} sm:hidden`}
         >
           닫기
         </button>
@@ -109,7 +119,9 @@ export default function ChatRoom() {
             <ChatList
               key={list.chatRoomId}
               chatRoomId={list.chatRoomId}
+              counterpartyId={list.counterpartyId}
               counterpartyNickname={list.counterpartyNickname}
+              counterpartyProfileImageUrl={list.counterpartyProfileImageUrl}
               lastMessage={list.lastMessage}
               lastMessageAt={list.lastMessageAt}
               onClickChatRoom={handleClickChatRoom}
@@ -120,7 +132,9 @@ export default function ChatRoom() {
 
       <div className={`h-full w-[100%] ${!modal ? "" : "hidden"} sm:block`}>
         <Chat
+          counterpartyId={counterpartyId}
           counterpartyNickname={currentChatNickname}
+          counterpartyProfileImageUrl={counterpartyProfileImageUrl}
           chatRoomId={currentChatRoom}
           onSendMessage={handleSendMessage}
           onOpenModal={handleOpenModal}

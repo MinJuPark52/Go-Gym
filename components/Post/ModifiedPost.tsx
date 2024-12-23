@@ -64,8 +64,7 @@ export default function ModifiedPost() {
 
   useEffect(() => {
     if (isLogin && !loginState) {
-      alert("로그인이 필요합니다.");
-      router.push("/");
+      router.push("/login");
     }
     setIsLogin(true);
   }, [loginState, isLogin]);
@@ -150,7 +149,7 @@ export default function ModifiedPost() {
         content: "",
         expirationDate: data.expirationDate,
         remainingSessions: data.remainingSessions,
-        amount: data.amount,
+        amount: data.amount.toString(),
       });
       setMapValue({
         latitude: data.latitude,
@@ -245,7 +244,7 @@ export default function ModifiedPost() {
       return;
     }
 
-    if (Number.isNaN(+values.amount.replace(/,/g, ""))) {
+    if (Number.isNaN(Number(values.amount.replace(/,/g, "")))) {
       alert("숫자만 입력해주세요");
       return;
     }
@@ -297,7 +296,7 @@ export default function ModifiedPost() {
       ...values,
       ...images,
       ...categoryValue,
-      [values.amount]: +values.amount.replace(/,/g, ""),
+      amount: +values.amount.replace(/,/g, ""),
     });
   };
 
@@ -393,11 +392,11 @@ export default function ModifiedPost() {
               preview[el] ? (
                 <div
                   key={el}
-                  className="relative flex h-56 min-w-60 items-center justify-center"
+                  className="relative flex h-56 min-w-60 items-center justify-center overflow-hidden"
                 >
                   <button
                     type="button"
-                    className="absolute right-0 top-[-20px]"
+                    className="absolute right-0 top-0"
                     onClick={() => handleDeleteImage(el)}
                   >
                     ❌
@@ -418,9 +417,9 @@ export default function ModifiedPost() {
             )}
             <button
               type="submit"
-              className="rounded-lg bg-blue-300 p-1 pl-6 pr-6 text-xl text-white transition-all hover:bg-blue-500"
+              className="bt-active btn bg-blue-500 text-white hover:bg-blue-700"
             >
-              수정하기
+              작성하기
             </button>
           </div>
         </div>

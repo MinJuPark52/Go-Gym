@@ -8,6 +8,7 @@ interface PostType {
   createdAt: string;
   gymName: string;
   postId: string;
+  postType: string;
   imageUrl1: string;
   status: string;
   title: string;
@@ -16,7 +17,9 @@ interface PostType {
 
 export default function PostList({ data }: { data?: PostType[] }) {
   return (
-    data &&
-    data.map((post: PostType) => <PostItem key={post.postId} {...post} />)
+    <>
+      {data &&
+        data.map((post: PostType) => <PostItem key={post.postId} {...post} />)}
+    </>
   );
 }

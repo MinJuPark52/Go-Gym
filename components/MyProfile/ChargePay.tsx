@@ -5,16 +5,19 @@ import PortOne from "@portone/browser-sdk/v2";
 import axiosInstance from "@/api/axiosInstance";
 import { useMutation } from "@tanstack/react-query";
 import useUserStore from "@/store/useUserStore";
+import { useRouter } from "next/navigation";
 
 export default function ChargePay() {
   const { user } = useUserStore();
+  const router = useRouter();
+
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const [data, setData] = useState<any>({
     storeId: process.env.NEXT_PUBLIC_PORTONE_STORE_ID,
     orderName: "짐페이 충전",
     totalAmount: 0,
     currency: "KRW",
-    channelKey: process.env.NEXT_PUBLIC_PORTONE_CHANNAL_KEY,
+    channelKey: process.env.PORTONE_CHANNAL_KEY,
     payMethod: "CARD",
     //customer는 동적으로 받을 예정
     customer: {
@@ -29,6 +32,11 @@ export default function ChargePay() {
       const response = await PortOne.requestPayment({ ...data, paymentId });
 
       console.log(response);
+      if (response) {
+        setTimeout(() => {
+          router.push("/mypage");
+        }, 500);
+      }
     }
   }
 
@@ -80,21 +88,21 @@ export default function ChargePay() {
     <div className="flex w-[75%] justify-center">
       <form
         onSubmit={handleSubmit}
-        className="mt-8 flex w-[480px] flex-col gap-12 rounded-lg border-2 border-blue-300 p-4"
+        className="mt-8 flex w-[480px] flex-col gap-12 rounded-lg border-2 border-blue-500 p-4"
       >
         <p className="font-bold">Gym Pay 충전하기</p>
         <div className="flex flex-col items-center">
           <input
             type="number"
             placeholder="충전할 금액을 입력해주세요"
-            className="w-96 border border-gray-300 p-2 focus:outline-none"
+            className="w-96 border border-gray-500 p-2 focus:outline-none"
             onChange={handleChangeMoney}
             value={data.totalAmount}
           />
           <div className="mb-8 mt-8 flex w-[75%] justify-between">
             <button
               type="button"
-              className="rounded-lg bg-blue-300 p-1 text-sm font-bold text-white"
+              className="rounded-lg bg-blue-500 p-1 text-sm font-bold text-white"
               onClick={handleButtonClick}
               value={1000}
             >
@@ -102,7 +110,7 @@ export default function ChargePay() {
             </button>
             <button
               type="button"
-              className="rounded-lg bg-blue-300 p-1 text-sm font-bold text-white"
+              className="rounded-lg bg-blue-500 p-1 text-sm font-bold text-white"
               onClick={handleButtonClick}
               value={5000}
             >
@@ -110,7 +118,7 @@ export default function ChargePay() {
             </button>
             <button
               type="button"
-              className="rounded-lg bg-blue-300 p-1 text-sm font-bold text-white"
+              className="rounded-lg bg-blue-500 p-1 text-sm font-bold text-white"
               onClick={handleButtonClick}
               value={10000}
             >
@@ -120,7 +128,7 @@ export default function ChargePay() {
         </div>
         <button
           type="submit"
-          className="rounded-lg bg-blue-400 p-1 text-sm font-bold text-white transition-all hover:bg-blue-500"
+          className="rounded-lg bg-blue-500 p-1 text-sm font-bold text-white transition-all hover:bg-blue-500"
         >
           충전하기
         </button>

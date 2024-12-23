@@ -3,31 +3,43 @@
 import axiosInstance from "@/api/axiosInstance";
 import useUserStore from "@/store/useUserStore";
 import { useMutation } from "@tanstack/react-query";
-import { ChangeEvent, useState } from "react";
+import { useRouter } from "next/navigation";
+import { ChangeEvent, useEffect, useState } from "react";
 import { AiOutlineExclamationCircle } from "react-icons/ai";
 
 export default function ChatPostDetail({
   onOpenModal,
   chatRoomId,
+  postStatus,
+  title,
+  amount,
+  postId,
 }: {
   onOpenModal: () => void;
   chatRoomId: string;
+  postStatus: string;
+  title: string;
+  amount: string;
+  postId: string;
 }) {
   const [modal, setModal] = useState(false);
+  const [paymodal, setPayModal] = useState(false);
   const [modal1, setModal1] = useState(false);
-  const [status, setStatus] = useState("PEDING");
+  const [status, setStatus] = useState("PENDING");
+  const [payAmount, setPayAmount] = useState("");
   const [transactionDate, setTransactionDate] = useState({
     date: "",
     time: "",
   });
+
   const { user } = useUserStore();
+  const router = useRouter();
 
   const { mutate: paystart } = useMutation({
     mutationKey: ["payStart"],
     mutationFn: async () =>
-      await axiosInstance.post(`/api/safe-payments/${chatRoomId}`, {
-        responderId: user?.memberId,
-        amount: 10000,
+      await axiosInstance.post(`/api/chatrooms/${chatRoomId}/safe-payments`, {
+        amount: +payAmount.replace(/,/g, ""),
       }),
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     onSuccess: (data: any) => {
@@ -39,8 +51,8 @@ export default function ChatPostDetail({
   const { mutate: tdStart } = useMutation({
     mutationKey: ["tdStart"],
     mutationFn: async () =>
-      await axiosInstance.put(`/api/safe-payments/${chatRoomId}`, {
-        dateTIme: `${transactionDate.date} ${transactionDate.time}:00`,
+      await axiosInstance.put(`/api/transactions/${chatRoomId}/date`, {
+        dateTime: `${transactionDate.date} ${transactionDate.time}:00`,
       }),
     onSuccess: () => console.log("거래 일정을 잡았습니다."),
   });
@@ -48,11 +60,19 @@ export default function ChatPostDetail({
   const { mutate: changeStatus } = useMutation({
     mutationKey: ["changeStatus"],
     mutationFn: async (status: string) =>
-      await axiosInstance.patch(
-        `/api/posts/postId/change?chat-room-id=${chatRoomId}&status=${status}`,
+      await axiosInstance.put(
+        // 5는 postId로 교체
+        `/api/posts/${postId}/change?chat-room-id=${chatRoomId}&status=${status}`,
       ),
     onSuccess: () => console.log("상태변경"),
   });
+
+  useEffect(() => {
+    if (postStatus) {
+      setStatus(postStatus); // 상태를 안전하게 설정
+    }
+    console.log(status);
+  }, [postStatus]);
 
   const handleClick = () => {
     setModal(true);
@@ -60,6 +80,33 @@ export default function ChatPostDetail({
 
   const handleClose = () => {
     setModal(false);
+  };
+
+  const handlePayClick = () => {
+    setPayModal(true);
+  };
+
+  const handlePayClose = () => {
+    setPayModal(false);
+  };
+
+  const handlePayAmount = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setPayAmount(e.target.value);
+  };
+
+  const handlePayStrat = () => {
+    if (status !== "IN_PROGRESS") {
+      alert("게시글 상태를 거래중으로 바꿔주세요");
+      return;
+    }
+    if (user.gymPayId) {
+      paystart();
+    } else {
+      const gymPayConfirm = confirm("짐페이를 생성해주세요.이동하시겠습니까?");
+      if (gymPayConfirm) {
+        router.push("/mypage");
+      }
+    }
   };
 
   const handleDateChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -85,8 +132,7 @@ export default function ChatPostDetail({
     console.log(status);
   };
 
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
+  const handleSubmit = () => {
     // const realAmount = +amount.replace(/,/g, "");
 
     tdStart();
@@ -111,10 +157,10 @@ export default function ChatPostDetail({
               <option value="IN_PROGRESS">거래중</option>
               <option value="COMPLETED">거래완료</option>
             </select>
-            <p className="text-sm font-bold text-gray-500">제목이요</p>
+            <p className="text-sm font-bold text-gray-500">{title}</p>
           </div>
           <div className="flex items-center justify-between">
-            <p className="font-semibold">{formatNumber("10000")}원</p>
+            <p className="font-semibold">{formatNumber(amount.toString())}원</p>
           </div>
         </div>
         <div className="flex items-center gap-2">
@@ -138,7 +184,7 @@ export default function ChatPostDetail({
               거래 일정 잡기
             </button>
             <button
-              onClick={() => paystart()}
+              onClick={handlePayClick}
               className="btn btn-active border-blue-500 bg-white hover:bg-blue-500 hover:text-white"
             >
               안전결제 요청
@@ -149,7 +195,7 @@ export default function ChatPostDetail({
 
       {modal && (
         <div className="animate-slide-down">
-          <form onSubmit={handleSubmit} className="mt-8 flex">
+          <div className="mt-8 flex">
             <div className="flex w-full flex-col gap-2">
               <label
                 htmlFor={"transactionDate"}
@@ -176,16 +222,59 @@ export default function ChatPostDetail({
                   value={transactionDate.time}
                   placeholder="ex) 2025/02/24"
                 />
-                <button className="btn" type="submit">
+                <button
+                  className="btn"
+                  type="button"
+                  onClick={() => handleSubmit()}
+                >
                   요청
                 </button>
               </div>
             </div>
-          </form>
+          </div>
           <div className="flex w-full justify-center">
             <button>
               <kbd
                 onClick={handleClose}
+                className="kbd border-none bg-white text-gray-500"
+              >
+                ▲
+              </kbd>
+            </button>
+          </div>
+        </div>
+      )}
+
+      {paymodal && (
+        <div className="animate-slide-down">
+          <div className="mt-8 flex">
+            <div className="flex w-full flex-col gap-2">
+              <label
+                htmlFor={"transactionDate"}
+                className="text-sm text-gray-500"
+              >
+                결제 금액
+              </label>
+              <div className="flex w-full justify-between gap-2">
+                <input
+                  type="text"
+                  className="h-12 w-48 cursor-pointer rounded-md border border-gray-400 pl-2 text-gray-600 focus:outline-blue-400"
+                  name={"amount"}
+                  id={"amount"}
+                  value={formatNumber(payAmount.toString())}
+                  onChange={handlePayAmount}
+                  placeholder="ex) 250000"
+                />
+                <button className="btn" type="button" onClick={handlePayStrat}>
+                  요청
+                </button>
+              </div>
+            </div>
+          </div>
+          <div className="flex w-full justify-center">
+            <button>
+              <kbd
+                onClick={handlePayClose}
                 className="kbd border-none bg-white text-gray-500"
               >
                 ▲

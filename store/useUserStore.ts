@@ -9,6 +9,11 @@ interface UserType {
   phone: string;
   profileImageUrl: string | null;
   gymPayBalance: string | null;
+  gymPayId: string;
+  regionId1: string;
+  regionId2: string;
+  regionName1: string;
+  regionName2: string;
 }
 
 interface userStore {
@@ -29,6 +34,11 @@ const useUserStore = create(
           phone: "",
           profileImageUrl: "",
           gymPayBalance: "",
+          gymPayId: "",
+          regionId1: "",
+          regionId2: "",
+          regionName1: "",
+          regionName2: "",
         },
         InitUser: (data) => {
           set(() => ({ user: data }));
@@ -43,6 +53,11 @@ const useUserStore = create(
               phone: "",
               profileImageUrl: "",
               gymPayBalance: "",
+              gymPayId: "",
+              regionId1: "",
+              regionId2: "",
+              regionName1: "",
+              regionName2: "",
             },
           }));
         },
