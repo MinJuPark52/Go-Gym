@@ -207,7 +207,7 @@ export default function Chat({
       await axiosInstance.put(
         `/api/chatrooms/${chatRoomId}/safe-payments/${safePaymentId}/approve`,
       ),
-    onSuccess: () => alert("승인"),
+    onSuccess: () => console.log("승인"),
   });
   const { mutate: reject } = useMutation({
     mutationKey: ["reject"],
@@ -215,7 +215,7 @@ export default function Chat({
       await axiosInstance.put(
         `/api/chatrooms/${chatRoomId}/safe-payments/${safePaymentId}/reject`,
       ),
-    onSuccess: () => alert("거절"),
+    onSuccess: () => console.log("거절"),
   });
   const { mutate: cancel } = useMutation({
     mutationKey: ["cancel"],
@@ -223,7 +223,7 @@ export default function Chat({
       await axiosInstance.put(
         `/api/chatrooms/${chatRoomId}/safe-payments/${safePaymentId}/cancel`,
       ),
-    onSuccess: () => alert("취소"),
+    onSuccess: () => console.log("취소"),
   });
   const { mutate: complete } = useMutation({
     mutationKey: ["complete"],
@@ -231,7 +231,7 @@ export default function Chat({
       await axiosInstance.put(
         `/api/chatrooms/${chatRoomId}/safe-payments/${safePaymentId}/complete`,
       ),
-    onSuccess: () => alert("완료"),
+    onSuccess: () => console.log("완료"),
   });
 
   if (isPending) {
@@ -291,6 +291,7 @@ export default function Chat({
                   key={chat.createdAt}
                   createdAt={extractTime(chat.createdAt)}
                   nickname={user.nickname}
+                  profileImageUrl={user.profileImageUrl || ""}
                   counterpartyNickname={counterpartyNickname}
                   counterpartyProfileImageUrl={counterpartyProfileImageUrl}
                   safePaymentId={chat.safePaymentId}
