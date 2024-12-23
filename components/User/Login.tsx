@@ -59,38 +59,51 @@ export default function LoginForm() {
   const { login } = useLoginStore();
   const { InitUser } = useUserStore();
 
-  const kakaoURL = `https://kauth.kakao.com/oauth/authorize?client_id=${process.env.NEXT_PUBLIC_KAKAO_RESTAPI_KEY}&redirect_uri=http://localhost:3000/api/kakao/sign-in&response_type=code`;
+  // 카카오 로그인
+  // backend 부분 때문에 에러가 남 -> http://go-gym.site/api/kakao/sign-in 수정?
+  const redirect_uri = "http://localhost:3000/backend/api/kakao/sign-in";
+  const kakaoURL = `https://kauth.kakao.com/oauth/authorize?client_id=${process.env.NEXT_PUBLIC_KAKAO_RESTAPI_KEY}&redirect_uri=${redirect_uri}&response_type=code`;
 
   const handleKakaoLogin = () => {
     window.location.href = kakaoURL;
   };
 
-  const handleKakaoAuth = async (code: string) => {
-    try {
-      const response = await axiosInstance.get(`/api/kakao/sign-in`, {
-        params: { code },
-      });
-
-      if (response.status === 200 && response.data.token) {
-        sessionStorage.setItem("token", response.data.token);
-        router.push("/");
-      } else {
-        router.push("/signup");
-      }
-    } catch (error) {
-      console.error("Token check failed", error);
-      router.push("/signup");
-    }
-  };
-
   useEffect(() => {
-    const url = new URL(window.location.href);
-    const code = url.searchParams.get("code");
+    const query = new URLSearchParams(window.location.search);
+    const code = query.get("code");
 
     if (code) {
-      handleKakaoAuth(code);
-    } else {
-      console.log("No code found in the URL");
+      const processKakaoLogin = async () => {
+        try {
+          const response = await axios.get(
+            `backend/api/kakao/sign-in?code=${code}`,
+          );
+
+          if (response.data === false) {
+            alert("회원 등록이 필요합니다. 회원가입 페이지로 이동합니다.");
+            router.push("/signup"); // 회원가입 페이지로 리다이렉트
+          } else {
+            const authHeader = response.headers["authorization"];
+            if (authHeader) {
+              const token = authHeader.split(" ")[1];
+              sessionStorage.setItem("token", token);
+
+              // 사용자 정보 가져오기
+              const userData = await axios.get(
+                "backend/api/members/me/profile",
+              );
+              InitUser(userData.data); // 상태 저장
+              login(token);
+              router.push("/"); // 메인 페이지로 리다이렉트
+            }
+          }
+        } catch (error) {
+          console.error("카카오 로그인 처리 중 오류:", error);
+          alert("카카오 로그인에 실패했습니다. 다시 시도해주세요.");
+        }
+      };
+
+      processKakaoLogin();
     }
   }, [router]);
 
@@ -100,7 +113,7 @@ export default function LoginForm() {
     (e: ChangeEvent<HTMLInputElement>) => {
       setLoginFormData({ ...loginFormData, [field]: e.target.value });
     };
-  
+
   const handleLoginSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
