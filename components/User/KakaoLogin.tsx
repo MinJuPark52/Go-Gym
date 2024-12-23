@@ -25,6 +25,9 @@ export default function KakaoLogin() {
           const response = await axios.get(
             `https://go-gym.site/api/kakao/sign-in?code=${code}`,
           );
+          if (response) {
+            console.log(response);
+          }
 
           if (response.data === false) {
             alert("회원 등록이 필요합니다. 회원가입 페이지로 이동합니다.");
