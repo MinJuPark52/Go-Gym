@@ -33,13 +33,18 @@ export default function HomePage() {
         return;
       }
 
-      const url = "/backend/api/notifications/subscribe?id=1";
+      const url = "https://go-gym.site/api/notifications/subscribe?id=2";
       eventSource = new EventSourcePolyfill(url);
 
       eventSource.onopen = () => {
         console.log("SSE connected");
         setError(null);
       };
+
+      eventSource.addEventListener("dummy", (event) => {
+        console.log("1");
+        console.log(event);
+      });
 
       eventSource.onmessage = (event) => {
         const data = JSON.parse(event.data);
