@@ -81,6 +81,7 @@ const regions: { id: string; name: string }[] = [
 export default function SignupPage() {
   const [loading, setLoading] = useState(false);
   const router = useRouter();
+  const [preview, setPreview] = useState<File | null>(null);
   const [isEmailAvailable, setIsEmailAvailable] = useState(false);
   const [isNicknameAvailable, setIsNicknameAvailable] = useState(false);
 
@@ -249,13 +250,15 @@ export default function SignupPage() {
   const handleButtonClick = () => {
     fileInputRef.current?.click(); // useRef를 사용하여 파일 입력 요소 클릭
   };
-  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFileSelect = async (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
+      // 백엔드 연동시 파일자체 보내기
       const newImg = await S3ImageUrl(
         e.target.files[0].name,
         e.target.files[0],
         "members",
       );
+      setPreview(e.target.files[0]);
       setFile(newImg.toString());
     }
   };
@@ -278,6 +281,7 @@ export default function SignupPage() {
               email: signupFormData.email,
               nickname: signupFormData.nickname,
               phone: signupFormData.phone,
+              profileImageUrl: signupFormData.profileImageUrl,
               password: signupFormData.password,
               regionId1: signupFormData.subRegionId1,
               regionId2: signupFormData.subRegionId2,
@@ -390,70 +394,75 @@ export default function SignupPage() {
   };
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-gray-50">
-      <div className="flex max-w-4xl rounded-l-lg shadow-lg">
+    <div className="flex min-h-screen items-center justify-center">
+      <div className="hidden max-w-4xl overflow-hidden rounded-l-lg border-2 shadow-lg md:flex md:border-r-0">
         <Image
           src={form}
           alt="Login Image"
           width={600}
           height={400}
-          className="h-[40rem] w-[18rem] rounded-l-xl object-cover"
+          className="h-[43rem] w-[18rem] object-cover"
         />
       </div>
-      <div className="flex items-center justify-center rounded-r-xl bg-white">
+      <div className="flex items-center justify-center md:rounded-xl md:rounded-l-none md:border-2 md:border-l-0 md:bg-white">
         <form
           onSubmit={(e) => {
             e.preventDefault();
             handleSignupSubmit.mutate();
           }}
-          className="h-[40rem] w-[40rem] max-w-md space-y-2 rounded-r-xl border-b-2 border-r-2 border-t-2 border-gray-200 p-8"
+          className="h-[43rem] max-w-md space-y-2 border-gray-200 p-8"
         >
           <h2 className="text-center text-2xl font-semibold">회원가입</h2>
 
           {loading && (
-            <div className="absolute inset-0 flex items-center justify-center bg-white bg-opacity-90">
+            <div className="fixed bottom-0 left-0 right-0 top-0 z-50 flex items-center justify-center bg-white bg-opacity-90">
               <div className="text-3xl text-gray-700">Loading..</div>
             </div>
           )}
           {file ? (
             <>
-              <div className="relative ml-auto mr-auto flex h-[80px] w-[80px] justify-center overflow-hidden rounded-[100%] border border-gray-300">
-                <div className="flex justify-center">
-                  <button
-                    type="button"
-                    onClick={handleButtonClick}
-                    className="rounded bg-blue-500 px-4 py-2 text-white hover:bg-blue-600"
-                  >
-                    다시 선택
-                  </button>
+              <div className="relative z-20 ml-auto mr-auto flex h-[120px] w-[120px] justify-center overflow-hidden rounded-[100%] border border-gray-300">
+                <Image
+                  src={URL.createObjectURL(preview!)}
+                  alt="프로필 이미지"
+                  className="rounded-lg"
+                  layout="fill"
+                />
+              </div>
+              <div className="flex justify-center">
+                <button
+                  type="button"
+                  onClick={handleButtonClick} // 클릭 핸들러 호출
+                  className="rounded bg-blue-500 px-4 py-2 text-white hover:bg-blue-600"
+                >
+                  다시 선택
+                </button>
 
-                  <input
-                    type="file"
-                    accept="image/*"
-                    id="file-input"
-                    name="file-input"
-                    onChange={handleImageUpload}
-                    ref={fileInputRef}
-                    style={{ display: "none" }}
-                  />
-                </div>
+                <input
+                  type="file"
+                  accept="image/*"
+                  id="file-input"
+                  name="file-input"
+                  onChange={handleFileSelect}
+                  ref={fileInputRef} // ref 연결
+                  style={{ display: "none" }} // 숨김
+                />
               </div>
             </>
           ) : (
-            <div className="relative ml-auto mr-auto flex h-[110px] w-[110px] justify-center overflow-hidden rounded-[100%] border border-gray-300">
-              <div className="h-21 flex w-60 items-center justify-center">
+            <div className="relative ml-auto mr-auto flex h-[120px] w-[120px] justify-center overflow-hidden rounded-[100%] border border-gray-300 bg-white">
+              <div className="flex items-center justify-center">
                 <input
                   type="file"
                   accept="image/*"
                   id="file-input"
                   className="absolute inset-0 h-full w-full cursor-pointer opacity-0"
-                  onChange={handleImageUpload}
+                  onChange={handleFileSelect}
                 />
                 <label
                   htmlFor="file-input"
                   className="flex cursor-pointer flex-col items-center justify-center text-gray-600"
                 >
-                  <span className="text-4xl text-green-500">+</span>
                   <span className="mt-2 text-sm font-semibold">
                     {"프로필 사진"}
                   </span>
