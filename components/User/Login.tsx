@@ -61,7 +61,7 @@ export default function LoginForm() {
 
   // 카카오 로그인
   // backend 부분 때문에 에러가 남 -> http://go-gym.site/api/kakao/sign-in 수정?
-  const redirect_uri = "https://go-gym.site/kakaoLogin";
+  const redirect_uri = "https://gogym-eight.vercel.app/kakaoLogin";
   const kakaoURL = `https://kauth.kakao.com/oauth/authorize?client_id=${process.env.KAKAO_RESTAPI_KEY}&redirect_uri=${redirect_uri}&response_type=code`;
 
   const handleKakaoLogin = () => {
