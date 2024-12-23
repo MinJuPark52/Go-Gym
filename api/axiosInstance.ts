@@ -2,7 +2,7 @@ import axios from "axios";
 
 // Axios 인스턴스 생성
 const axiosInstance = axios.create({
-  baseURL: "/https://go-gym.site", //개발모드
+  baseURL: "https://go-gym.site", //개발모드
   timeout: 10000, // 요청 제한 시간 (10초)
   headers: {
     "Content-Type": "application/json", // 기본 헤더
