@@ -94,7 +94,7 @@ export default function ChangeProfile() {
 
       // 닉네임 중복확인
       const response = await axios.get(
-        "http://localhost:3000/backend/api/auth/check-nickname",
+        "https://go-gym.site/api/auth/check-nickname",
         {
           params: { nickname },
         },
@@ -123,7 +123,7 @@ export default function ChangeProfile() {
 
       // 비밀번호 재설정
       const response = await axios.put(
-        "/backend/api/auth/reset-password",
+        "https://go-gym.site/api/auth/reset-password",
         {
           email: user?.email,
           //수정하기

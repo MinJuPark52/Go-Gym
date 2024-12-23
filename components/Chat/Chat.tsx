@@ -123,7 +123,7 @@ export default function Chat({
   useEffect(() => {
     // 숫자 부분만 chatroomid적어주면 됨
     if (chatRoomId) {
-      connect("/backend" + "/ws", chatRoomId, (message) => {
+      connect("https://go-gym.site" + "/ws", chatRoomId, (message) => {
         console.log("New message:", message.body);
       });
     }
