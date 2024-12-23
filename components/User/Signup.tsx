@@ -273,7 +273,15 @@ export default function SignupPage() {
         try {
           const response = await axios.post<Signup[]>(
             "https://go-gym.site/api/auth/sign-up",
-            signupFormData,
+            {
+              name: signupFormData.name,
+              email: signupFormData.email,
+              nickname: signupFormData.nickname,
+              phone: signupFormData.phone,
+              password: signupFormData.password,
+              regionId1: signupFormData.subRegionId1,
+              regionId2: signupFormData.subRegionId2,
+            },
           );
 
           if (response.status === 200) {
