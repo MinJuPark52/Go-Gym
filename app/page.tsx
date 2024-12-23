@@ -26,59 +26,64 @@ export default function HomePage() {
 
   // 3. 구독 SSE
   useEffect(() => {
-    if (loginState && token) {
-      const EventSource = EventSourcePolyfill;
-      const connectToSSE = () => {
-        const eventSource = new EventSource(
-          "/backend/api/notifications/subscribe?id=1",
-        );
-        eventSource.addEventListener("open", () => {
-          console.log("SSE connected");
-          setError(null);
-        });
-        eventSource.addEventListener("message", (event) => {
-          const data = JSON.parse(event.data);
-          if (data.event === "dummy") {
-            console.log("Dummy data:", data);
-          } else if (data.event === "notification") {
-            setNotifications((prevNotifications) => [
-              ...prevNotifications,
-              {
-                id: data.id,
-                message: data.message,
-                isRead: false,
-                type: data.type,
-                timestamp: data.timestamp,
-              },
-            ]);
-          } else {
-            console.log("Unexpected event data:", data);
-          }
-        });
+    let eventSource: EventSourcePolyfill | null = null;
 
-        eventSource.addEventListener("error", () => {
-          setError("SSE connection error");
-          eventSource.close();
-        });
+    const connectToSSE = () => {
+      if (!loginState || !token) {
+        return;
+      }
 
-        return eventSource;
+      const url = "/backend/api/notifications/subscribe?id=1";
+      eventSource = new EventSourcePolyfill(url);
+
+      eventSource.onopen = () => {
+        console.log("SSE connected");
+        setError(null);
       };
 
-      let eventSource = connectToSSE();
+      eventSource.onmessage = (event) => {
+        const data = JSON.parse(event.data);
 
-      const reconnectInterval = setInterval(() => {
-        if (eventSource.readyState === EventSource.CLOSED) {
-          console.log("Reconnecting SSE...");
-          eventSource = connectToSSE();
+        if (data.event === "dummy") {
+          console.log("Dummy event received:", event);
+        } else if (data.event === "notification") {
+          setNotifications((prevNotifications) => [
+            ...prevNotifications,
+            {
+              id: data.id,
+              message: data.message,
+              isRead: false,
+              type: data.type,
+              timestamp: data.timestamp,
+            },
+          ]);
+        } else {
+          console.log("Unexpected event data:", data);
         }
-      }, 60000);
-
-      return () => {
-        clearInterval(reconnectInterval);
-        eventSource.close();
-        console.log("end...");
       };
-    }
+
+      eventSource.onerror = () => {
+        console.error("SSE connection error");
+        setError("SSE connection error");
+
+        if (eventSource) {
+          eventSource.close();
+        }
+
+        setTimeout(() => {
+          console.log("Reconnecting SSE...");
+          connectToSSE();
+        }, 60000);
+      };
+    };
+
+    connectToSSE();
+
+    return () => {
+      if (eventSource) {
+        eventSource.close();
+      }
+    };
   }, [loginState, token]);
 
   // 2. 알림 읽음 상태 변경

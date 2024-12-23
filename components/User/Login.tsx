@@ -64,9 +64,7 @@ export default function LoginForm() {
       setLoginFormData({ ...loginFormData, [field]: e.target.value });
     };
 
-  const kakaoURL = `https://kauth.kakao.com/oauth/authorize?response_type=code
-  &client_id=${process.env.NEXT_PUBLIC_KAKAO_RESTAPI_KEY}
-  &redirect_uri=/api/kakao/sign-in`;
+  const kakaoURL = `https://kauth.kakao.com/oauth/authorize?client_id=${process.env.NEXT_PUBLIC_KAKAO_RESTAPI_KEY}&redirect_uri=http://localhost:3000/api/kakao/sign-in&response_type=code`;
 
   const handleKakaoLogin = () => {
     window.location.href = kakaoURL;
