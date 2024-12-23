@@ -33,7 +33,9 @@ export default function ChargePay() {
 
       console.log(response);
       if (response) {
-        router.push("/mypage");
+        setTimeout(() => {
+          router.push("/mypage");
+        }, 500);
       }
     }
   }

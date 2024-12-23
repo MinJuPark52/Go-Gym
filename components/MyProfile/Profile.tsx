@@ -31,7 +31,7 @@ export default function Profile() {
       return response;
     },
     staleTime: 0,
-    refetchOnMount: true, // 매번 컴포넌트 마운트 시 재요청
+    refetchOnMount: true,
     refetchOnWindowFocus: true,
   });
 
@@ -39,7 +39,7 @@ export default function Profile() {
     if (isSuccess) {
       InitUser(userData);
     }
-  }, [isSuccess]);
+  }, [isSuccess, userData]);
 
   const handleUserDelete = () => {
     const confirmDelete = confirm(
@@ -71,6 +71,18 @@ export default function Profile() {
               {user?.interestArea1}
             </p>
           </div> */}
+        </div>
+        <div className="flex gap-4">
+          {user.regionName1 && (
+            <div className="badge border-none bg-green-500 pb-3 pt-3 text-sm font-bold text-green-700">
+              {user.regionName1}
+            </div>
+          )}
+          {user.regionName2 && (
+            <div className="badge border-none bg-green-500 pb-3 pt-3 text-sm font-bold text-green-700">
+              {user.regionName2}
+            </div>
+          )}
         </div>
       </div>
       <div className="ml-auto flex flex-col gap-2">

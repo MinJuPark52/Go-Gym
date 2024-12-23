@@ -19,7 +19,6 @@ interface PostType {
   amount: string;
   createdAt: string;
   gymName: string;
-  imageUrl1: string;
   postType: string;
   expirationDate: string;
   status: string;
@@ -27,7 +26,9 @@ interface PostType {
   wishCount: number;
   isWished: boolean;
   content: string;
-  imageUrl: string;
+  imageUrl1: string;
+  imageUrl2: string;
+  imageUrl3: string;
 }
 
 export default function PostDetail() {
@@ -94,6 +95,13 @@ export default function PostDetail() {
     statusBox = "거래완료";
   }
 
+  let postType = "팝니다";
+  if (detail && detail.postType === "SELL") {
+    postType = "팝니다";
+  } else if (detail && detail.postType === "BUY") {
+    postType = "삽니다";
+  }
+
   return (
     <>
       {detail && (
@@ -113,6 +121,9 @@ export default function PostDetail() {
               <div className="badge border-none bg-blue-500 pb-3 pt-3 text-sm font-bold text-white">
                 {statusBox}
               </div>
+              <div className="badge ml-2 border-none bg-green-500 pb-3 pt-3 text-sm font-bold text-white">
+                {postType}
+              </div>
               <p className="text-right text-sm font-bold text-gray-500">
                 작성일 : {detail.createdAt.slice(0, 16).replace("T", " ")}
               </p>
@@ -127,11 +138,10 @@ export default function PostDetail() {
               <p className="text-xs font-bold sm:text-base">
                 <span className="text-gray-500">작성자 : </span>
 
-                <Link href={`/community/${id}/userdetail`}>
-                  <button className="btn btn-active h-2 p-2 text-xs sm:text-base">
-                    {detail.authorNickname}
-                  </button>
-                </Link>
+                {/* <Link href={`/community/${id}/userdetail`}> */}
+                <span className="h-2 p-2 text-xs sm:text-base">
+                  {detail.authorNickname}
+                </span>
               </p>
             </div>
             <p className="text-xs font-bold sm:text-base">
@@ -170,15 +180,37 @@ export default function PostDetail() {
             </div>
           </div>
 
-          <div className="relative flex min-h-40 p-4">
-            <Link
-              href={{
-                pathname: `/community/${id}/imagedetail`,
-                query: { imageUrl: detail.imageUrl },
-              }}
-            >
-              <PostDetailImage imageUrl={detail.imageUrl1} />
-            </Link>
+          <div className="relative flex min-h-40 gap-4 p-4">
+            {detail.imageUrl1 && (
+              <Link
+                href={{
+                  pathname: `/community/${id}/imagedetail`,
+                  query: { imageUrl: detail.imageUrl1 },
+                }}
+              >
+                <PostDetailImage imageUrl={detail.imageUrl1} />
+              </Link>
+            )}
+            {detail.imageUrl2 && (
+              <Link
+                href={{
+                  pathname: `/community/${id}/imagedetail`,
+                  query: { imageUrl: detail.imageUrl3 },
+                }}
+              >
+                <PostDetailImage imageUrl={detail.imageUrl2} />
+              </Link>
+            )}
+            {detail.imageUrl3 && (
+              <Link
+                href={{
+                  pathname: `/community/${id}/imagedetail`,
+                  query: { imageUrl: detail.imageUrl3 },
+                }}
+              >
+                <PostDetailImage imageUrl={detail.imageUrl3} />
+              </Link>
+            )}
             {loginState && user?.nickname !== detail.authorNickname && (
               <button
                 onClick={() => mutate()}

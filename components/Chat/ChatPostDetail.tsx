@@ -1,7 +1,9 @@
 "use client";
 
 import axiosInstance from "@/api/axiosInstance";
+import useUserStore from "@/store/useUserStore";
 import { useMutation } from "@tanstack/react-query";
+import { useRouter } from "next/navigation";
 import { ChangeEvent, useEffect, useState } from "react";
 import { AiOutlineExclamationCircle } from "react-icons/ai";
 
@@ -30,10 +32,13 @@ export default function ChatPostDetail({
     time: "",
   });
 
+  const { user } = useUserStore();
+  const router = useRouter();
+
   const { mutate: paystart } = useMutation({
     mutationKey: ["payStart"],
     mutationFn: async () =>
-      await axiosInstance.post(`/api/chat-rooms/${chatRoomId}/safe-payments`, {
+      await axiosInstance.post(`/api/chatrooms/${chatRoomId}/safe-payments`, {
         amount: +payAmount.replace(/,/g, ""),
       }),
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -90,10 +95,17 @@ export default function ChatPostDetail({
   };
 
   const handlePayStrat = () => {
-    if (status === "IN_PROGRESS") {
+    if (status !== "IN_PROGRESS") {
+      alert("게시글 상태를 거래중으로 바꿔주세요");
+      return;
+    }
+    if (user.gymPayId) {
       paystart();
     } else {
-      alert("게시글 상태를 거래중으로 바꿔주세요");
+      const gymPayConfirm = confirm("짐페이를 생성해주세요.이동하시겠습니까?");
+      if (gymPayConfirm) {
+        router.push("/mypage");
+      }
     }
   };
 
@@ -148,7 +160,7 @@ export default function ChatPostDetail({
             <p className="text-sm font-bold text-gray-500">{title}</p>
           </div>
           <div className="flex items-center justify-between">
-            <p className="font-semibold">{formatNumber(amount)}원</p>
+            <p className="font-semibold">{formatNumber(amount.toString())}원</p>
           </div>
         </div>
         <div className="flex items-center gap-2">

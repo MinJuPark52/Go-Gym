@@ -12,20 +12,9 @@ import NoticeMessages from "./Messages/NoticeMessages";
 
 interface PostType {
   postId: string;
-  authorNickname: string;
-  authorId: number;
   amount: string;
-  createdAt: string;
-  gymName: string;
-  imageUrl1: string;
-  postType: string;
-  expirationDate: string;
   status: string;
   title: string;
-  wishCount: number;
-  isWished: boolean;
-  content: string;
-  imageUrl: string;
 }
 
 interface props {
@@ -96,13 +85,13 @@ export default function Chat({
   const { data: extraData } = useQuery({
     queryKey: ["extraData", chatRoomId],
     queryFn: async () => {
-      const res: { posts: PostType } = await axiosInstance.get(
+      const res: { postSummary: PostType } = await axiosInstance.get(
         `/api/chatroom/${chatRoomId}/messages`,
         {
           params: { page: 0, size: 6 }, // 첫 번째 페이지 데이터 요청
         },
       );
-      return res.posts; // 필요한 데이터만 반환
+      return res.postSummary; // 필요한 데이터만 반환
     },
     enabled: !!chatRoomId,
   });
@@ -171,7 +160,6 @@ export default function Chat({
       const { scrollTop } = scrollRef.current;
       if (scrollTop === 0 && hasNextPage && !isFetchingNextPage) {
         fetchNextPage(); // 위로 스크롤 시 다음 페이지 데이터 불러오기
-        scrollRef.current.scrollTop = 400; // 400픽셀 정도 밑으로 이동
       }
     }
   };
@@ -215,36 +203,37 @@ export default function Chat({
   //safe-payments-Id를 따로 받아서 처리
   const { mutate: approve } = useMutation({
     mutationKey: ["approve"],
-    mutationFn: async () =>
+    mutationFn: async (safePaymentId: string) =>
       await axiosInstance.put(
-        `/api/chat-rooms/${chatRoomId}/safe-payments/3/approve`,
+        `/api/chatrooms/${chatRoomId}/safe-payments/${safePaymentId}/approve`,
       ),
     onSuccess: () => alert("승인"),
   });
   const { mutate: reject } = useMutation({
     mutationKey: ["reject"],
-    mutationFn: async () =>
+    mutationFn: async (safePaymentId: string) =>
       await axiosInstance.put(
-        `/api/chat-rooms/${chatRoomId}/safe-payments/3/reject`,
+        `/api/chatrooms/${chatRoomId}/safe-payments/${safePaymentId}/reject`,
       ),
     onSuccess: () => alert("거절"),
   });
   const { mutate: cancel } = useMutation({
     mutationKey: ["cancel"],
-    mutationFn: async () =>
+    mutationFn: async (safePaymentId: string) =>
       await axiosInstance.put(
-        `/api/chat-rooms/${chatRoomId}/safe-payments/4/cancel`,
+        `/api/chatrooms/${chatRoomId}/safe-payments/${safePaymentId}/cancel`,
       ),
     onSuccess: () => alert("취소"),
   });
   const { mutate: complete } = useMutation({
     mutationKey: ["complete"],
-    mutationFn: async () =>
+    mutationFn: async (safePaymentId: string) =>
       await axiosInstance.put(
-        `/api/chat-rooms/${chatRoomId}/safe-payments/4/complete`,
+        `/api/chatrooms/${chatRoomId}/safe-payments/${safePaymentId}/complete`,
       ),
     onSuccess: () => alert("완료"),
   });
+
   if (isPending) {
     return (
       <div className="relative flex h-[100%] w-[100%] flex-col border-r-2 bg-blue-200 bg-opacity-40 p-4">
@@ -300,10 +289,11 @@ export default function Chat({
               return (
                 <UserMessages
                   key={chat.createdAt}
-                  createdAt={chat.createdAt}
+                  createdAt={extractTime(chat.createdAt)}
                   nickname={user.nickname}
                   counterpartyNickname={counterpartyNickname}
                   counterpartyProfileImageUrl={counterpartyProfileImageUrl}
+                  safePaymentId={chat.safePaymentId}
                   content={chat.content}
                   send={true}
                 />
@@ -315,11 +305,12 @@ export default function Chat({
               return (
                 <UserMessages
                   key={chat.createdAt}
-                  createdAt={chat.createdAt}
+                  createdAt={extractTime(chat.createdAt)}
                   profileImageUrl={user.profileImageUrl || ""}
                   nickname={user.nickname}
                   counterpartyNickname={counterpartyNickname}
                   counterpartyProfileImageUrl={counterpartyProfileImageUrl}
+                  safePaymentId={chat.safePaymentId}
                   content={chat.content}
                   send={false}
                 />
@@ -335,6 +326,7 @@ export default function Chat({
                   nickname={user.nickname}
                   counterpartyNickname={counterpartyNickname}
                   counterpartyProfileImageUrl={counterpartyProfileImageUrl}
+                  safePaymentId={chat.safePaymentId}
                   content={chat.content}
                   approve={approve}
                   reject={reject}
@@ -352,6 +344,7 @@ export default function Chat({
                   nickname={user.nickname}
                   counterpartyNickname={counterpartyNickname}
                   counterpartyProfileImageUrl={counterpartyProfileImageUrl}
+                  safePaymentId={chat.safePaymentId}
                   content={chat.content}
                   approve={approve}
                   reject={reject}
@@ -369,6 +362,7 @@ export default function Chat({
                   nickname={user.nickname}
                   counterpartyNickname={counterpartyNickname}
                   counterpartyProfileImageUrl={counterpartyProfileImageUrl}
+                  safePaymentId={chat.safePaymentId}
                   content={chat.content}
                   complete={complete}
                   cancel={cancel}
@@ -386,6 +380,7 @@ export default function Chat({
                   nickname={user.nickname}
                   counterpartyNickname={counterpartyNickname}
                   counterpartyProfileImageUrl={counterpartyProfileImageUrl}
+                  safePaymentId={chat.safePaymentId}
                   content={chat.content}
                   complete={complete}
                   cancel={cancel}
@@ -440,3 +435,12 @@ export default function Chat({
     </form>
   );
 }
+
+const extractTime = (date: string) => {
+  if (date) {
+    const timePart = date.split("T")[1]; // "13:31:47.1590463"
+    const [hours, minutes] = timePart.split(":"); // ["13", "31"]
+    return `${hours}:${minutes}`;
+  }
+  return "";
+};

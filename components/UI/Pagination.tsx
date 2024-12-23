@@ -54,7 +54,9 @@ export default function Pagenation({
         >
           {"<"}
         </button>
-        {[...Array(Math.min(size, totalPage - startPage)).keys()].map((num) => (
+        {[
+          ...Array(Math.max(0, Math.min(size, totalPage - startPage))).keys(),
+        ].map((num) => (
           <input
             key={num}
             className="btn btn-square join-item checked:!border-blue-500 checked:!bg-blue-500"

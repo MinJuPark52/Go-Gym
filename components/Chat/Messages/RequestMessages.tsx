@@ -1,6 +1,3 @@
-import DefaultProfile from "@/components/UI/DefaultProfile";
-import ProfileImage from "@/components/UI/ProfileImage";
-
 interface Props {
   createdAt: string;
   nickname: string;
@@ -9,16 +6,16 @@ interface Props {
   profileImageUrl?: string;
   counterpartyNickname: string;
   counterpartyProfileImageUrl: string;
-  approve: () => void;
-  reject: () => void;
+  safePaymentId: string;
+  approve: (safePaymentId: string) => void;
+  reject: (safePaymentId: string) => void;
 }
 
 export default function RequestMessages({
   createdAt,
   nickname,
   counterpartyNickname,
-  counterpartyProfileImageUrl,
-  profileImageUrl,
+  safePaymentId,
   send,
   approve,
   reject,
@@ -26,85 +23,48 @@ export default function RequestMessages({
   return (
     <>
       {send ? (
-        <div className="chat chat-end" key={createdAt}>
-          <div className="avatar chat-image overflow-hidden rounded-full">
-            {profileImageUrl ? (
-              <ProfileImage src={profileImageUrl} />
-            ) : (
-              <DefaultProfile width="10" />
-            )}
-          </div>
-
-          <div className="chat-header mb-1">{nickname}</div>
-          <div className="chat-bubble bg-white text-black">
-            <div className="flex flex-col items-center justify-center gap-4 rounded-lg bg-white">
+        <div className="ml-auto mr-auto mt-4 w-[80%]" key={createdAt}>
+          <div className="w-full rounded-lg bg-gray-400 bg-opacity-20 p-4 text-black">
+            <div className="flex flex-col items-center justify-center gap-4 rounded-lg">
               <div>
-                <p>
-                  <span className="text-2xl">알림📢 </span>
-                  {counterpartyNickname} !
-                </p>
-                <p>{nickname} 님이 안전결제를 신청했습니다.</p>
-              </div>
-              <div className="flex gap-8">
-                <button className="btn bg-blue-500 text-white">승인</button>
-                <button className="btn bg-blue-500 text-white">거절</button>
+                <div>
+                  <p className="text-2xl">알림📢 </p>
+                  <p>{counterpartyNickname} 님!</p>
+                </div>
+                <p>{nickname} 님에게 안전결제를 신청했습니다.</p>
               </div>
             </div>
           </div>
-
-          <time className="mt-1 text-xs opacity-50">
-            {extractTime(createdAt)}
-          </time>
         </div>
       ) : (
-        <div className="chat chat-start" key={createdAt}>
-          <div className="avatar chat-image overflow-hidden rounded-full">
-            {counterpartyProfileImageUrl ? (
-              <ProfileImage src={counterpartyProfileImageUrl} />
-            ) : (
-              <DefaultProfile width="10" />
-            )}
-          </div>
-          <div className="chat-header mb-1 opacity-50">
-            {counterpartyNickname}
-          </div>
-          <div className="chat-bubble bg-white text-gray-600">
-            <div className="flex flex-col items-center justify-center gap-4 rounded-lg bg-white">
+        <div className="ml-auto mr-auto mt-4 w-[80%]" key={createdAt}>
+          <div className="w-full rounded-lg bg-gray-400 bg-opacity-20 p-4 text-black">
+            <div className="flex flex-col items-center justify-center gap-4 rounded-lg">
               <div>
-                <p>
-                  <span className="text-2xl">알림📢 </span>
-                  {nickname} !
-                </p>
+                <div>
+                  <div className="text-2xl">알림📢 </div>
+                  <p>{nickname} 님!</p>
+                </div>
                 <p>{counterpartyNickname}님이 안전결제를 신청했습니다.</p>
               </div>
               <div className="flex gap-8">
                 <button
-                  className="btn bg-blue-500 text-white"
-                  onClick={() => approve()}
+                  className="btn bg-blue-500 text-white hover:bg-blue-600"
+                  onClick={() => approve(safePaymentId)}
                 >
                   승인
                 </button>
                 <button
-                  className="btn bg-blue-500 text-white"
-                  onClick={() => reject()}
+                  className="btn bg-blue-500 text-white hover:bg-blue-600"
+                  onClick={() => reject(safePaymentId)}
                 >
                   거절
                 </button>
               </div>
             </div>
           </div>
-          <div></div>
-          <time className="ml-2 mt-1 text-xs opacity-50">
-            {extractTime(createdAt)}
-          </time>
         </div>
       )}
     </>
   );
 }
-
-const extractTime = (date: string) => {
-  const timePart = date.split("T")[1]; // "13:31:47.1590463"
-  const [hours, minutes] = timePart.split(":"); // ["13", "31"]
-  return `${hours}:${minutes}`;
-};

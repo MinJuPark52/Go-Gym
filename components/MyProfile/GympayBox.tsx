@@ -3,12 +3,10 @@ import axiosInstance from "@/api/axiosInstance";
 import useUserStore from "@/store/useUserStore";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 
 export default function GympayBox() {
   const { user, InitUser } = useUserStore();
-  const router = useRouter();
   const [createGympay, setCreateGympay] = useState(0);
 
   const { mutate } = useMutation({
@@ -28,17 +26,21 @@ export default function GympayBox() {
       return response;
     },
     staleTime: 0,
+    refetchOnMount: true,
+    refetchOnWindowFocus: true,
   });
 
   useEffect(() => {
     if (isSuccess) {
       InitUser(userData);
     }
-  }, [createGympay, isSuccess]);
+  }, [isSuccess, userData, createGympay]);
+
+  useEffect(() => {}, []);
 
   return (
     <>
-      {user ? (
+      {user.gymPayId ? (
         <div className="flex min-h-24 max-w-[660px] flex-col rounded-md bg-blue-500 p-4 text-white">
           <div className="flex justify-between">
             <p className="text-2xl font-bold">Gym Pay</p>

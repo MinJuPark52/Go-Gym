@@ -9,6 +9,7 @@ interface WebSocketState {
     senderId: number;
     content: string;
     createdAt: string;
+    safePaymentId: string;
     messageType:
       | "SYSTEM_SAFE_PAYMENT_REQUEST"
       | "SYSTEM_SAFE_PAYMENT_APPROVAL"
@@ -27,6 +28,7 @@ interface WebSocketState {
       senderId: number;
       content: string;
       createdAt: string;
+      safePaymentId: string;
       messageType:
         | "SYSTEM_SAFE_PAYMENT_REQUEST"
         | "SYSTEM_SAFE_PAYMENT_APPROVAL"

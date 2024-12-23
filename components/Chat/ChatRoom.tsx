@@ -37,8 +37,7 @@ export default function ChatRoom() {
 
   useEffect(() => {
     if (isLogin && !loginState) {
-      alert("로그인이 필요합니다.");
-      router.push("/");
+      router.push("/login");
     }
     setIsLogin(true);
   }, [loginState, isLogin]);

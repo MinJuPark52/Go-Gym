@@ -43,11 +43,12 @@ export default function Nav() {
     try {
       const response = await axiosInstance.post("/api/auth/sign-out");
       console.log("Logout successful:", response.data);
-      logout();
-      LogoutUser();
       alert("로그아웃 되었습니다.");
     } catch (error) {
       console.error("unknown error:", error);
+    } finally {
+      logout();
+      LogoutUser();
     }
   };
 

@@ -144,7 +144,7 @@ export default function ChangeProfile() {
     },
     onSuccess: () => {
       setIsPasswordAvailable(true);
-      alert("비밀번호 사용 가능합니다.");
+      alert("비밀번호 변경 되었습니다.");
     },
     onError: (error) => {
       setIsPasswordAvailable(false);
@@ -157,11 +157,11 @@ export default function ChangeProfile() {
     mutationFn: async () =>
       await axiosInstance.put("/api/members/me/profile", {
         name: user ? user.name : "",
-        nickname: values.nickname,
-        phone: values.phone,
-        profileImageUrl: file || "",
-        regionId1: subRegion1State.id,
-        regionId2: subRegion2State.id,
+        nickname: values.nickname || user.nickname,
+        phone: values.phone || user.phone,
+        profileImageUrl: file || user.profileImageUrl,
+        regionId1: subRegion1State.id || user.regionId1,
+        regionId2: subRegion2State.id || user.regionId2,
       }),
     onSuccess: () => {
       alert("수정완료");
@@ -405,7 +405,13 @@ export default function ChangeProfile() {
             </div>
             <button
               type="button"
-              onClick={() => checkPassword(values.newPassword)}
+              onClick={() => {
+                if (values.newPassword !== values.newPassword) {
+                  alert("비밀번호가 다릅니다.");
+                  return;
+                }
+                checkPassword(values.newPassword);
+              }}
               className="h-11 rounded-md bg-blue-500 px-4 py-2 text-white focus:outline-none"
               disabled={isPasswordAvailable}
             >
