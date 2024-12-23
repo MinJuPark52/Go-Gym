@@ -25,9 +25,8 @@ export default function NoticeMessages({
                 <div className="flex flex-col">
                   <p className="text-2xl">알림📢 </p>
                 </div>
-                <p>
-                  {nickname} 님! {content}
-                </p>
+                <p>{nickname} 님!</p>
+                <p>{content}</p>
               </div>
             </div>
           </div>
@@ -40,9 +39,8 @@ export default function NoticeMessages({
                 <div className="flex flex-col">
                   <p className="text-2xl">알림📢 </p>
                 </div>
-                <p>
-                  {counterpartyNickname} 님! {content}
-                </p>
+                <p>{nickname} 님!</p>
+                <p>{content}</p>
               </div>
             </div>
           </div>
