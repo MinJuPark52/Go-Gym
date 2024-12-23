@@ -1,7 +1,7 @@
 "use client";
 
 import { ChangeEvent, useState, useRef } from "react";
-import axiosInstance from "@/api/axiosInstance";
+// import axiosInstance from "@/api/axiosInstance";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 import form from "../../public/form.png";
@@ -110,6 +110,8 @@ export default function SignupPage() {
     regionId1: "",
     regionId2: "",
     profileImageUrl: "",
+    subRegionId1: "",
+    subRegionId2: "",
   });
 
   const [signupErrors, setsignupErrors] = useState<SignupErrors>({
@@ -304,15 +306,7 @@ export default function SignupPage() {
     },
   });
 
-  // 관심지역 1
-  const handleChangeSubRegionId1 = async (
-    e: ChangeEvent<HTMLSelectElement>,
-  ) => {
-    setSelectSubRegion1({ regionId: e.target.value, name: "" });
-    setsignupFormData({ ...signupFormData, regionId1: e.target.value });
-    console.log("id:" + selectSubRegion1.regionId);
-  };
-
+  // 지역선택1
   const handleChangeRegionId1 = async (e: ChangeEvent<HTMLSelectElement>) => {
     const selectedRegionId1 = e.target.value;
     setsignupFormData({ ...signupFormData, regionId1: selectedRegionId1 });
@@ -335,15 +329,20 @@ export default function SignupPage() {
     }
   };
 
-  // 관심지역2
-  const handleChangeSubRegionId2 = async (
+  // 세부 지역1
+  const handleChangeSubRegionId1 = async (
     e: ChangeEvent<HTMLSelectElement>,
   ) => {
-    setSelectSubRegion2({ regionId: e.target.value, name: "" });
-    setsignupFormData({ ...signupFormData, regionId2: e.target.value });
-    console.log("id:" + selectSubRegion2.regionId);
+    const selectedSubRegionId1 = e.target.value;
+    setSelectSubRegion1({ regionId: e.target.value, name: "" });
+    setsignupFormData({
+      ...signupFormData,
+      subRegionId1: selectedSubRegionId1,
+    });
+    console.log("id:" + selectedSubRegionId1);
   };
 
+  // 지역선택2
   const handleChangeRegionId2 = async (e: ChangeEvent<HTMLSelectElement>) => {
     const selectedRegionId2 = e.target.value;
     setsignupFormData({ ...signupFormData, regionId2: selectedRegionId2 });
@@ -364,6 +363,19 @@ export default function SignupPage() {
         console.error("API 호출에 실패했습니다.", error);
       }
     }
+  };
+
+  // 세부 지역2
+  const handleChangeSubRegionId2 = async (
+    e: ChangeEvent<HTMLSelectElement>,
+  ) => {
+    const selectedSubRegionId2 = e.target.value;
+    setSelectSubRegion2({ regionId: e.target.value, name: "" });
+    setsignupFormData({
+      ...signupFormData,
+      subRegionId2: selectedSubRegionId2,
+    });
+    console.log("id:" + selectedSubRegionId2);
   };
 
   return (
@@ -516,7 +528,6 @@ export default function SignupPage() {
                 onChange={handleChangeRegionId1}
                 className="w-full rounded-md border border-gray-300 p-2"
               >
-                {/* 아이디 값을 보냄 */}
                 <option value="">지역 선택1</option>
                 {regions?.map((region) => (
                   <option key={region.id} value={region.name}>
@@ -549,7 +560,6 @@ export default function SignupPage() {
                 onChange={handleChangeRegionId2}
                 className="w-full rounded-md border border-gray-300 p-2"
               >
-                {/* 아이디 값을 보냄 */}
                 <option value="">지역 선택2</option>
                 {regions?.map((region) => (
                   <option key={region.id} value={region.name}>

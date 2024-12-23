@@ -1,6 +1,6 @@
 "use client";
 
-import { ChangeEvent, useState } from "react";
+import { ChangeEvent, useState, useEffect } from "react";
 import Link from "next/link";
 import { BiSolidMessageRounded } from "react-icons/bi";
 import useLoginStore from "@/store/useLoginStore";
@@ -55,14 +55,9 @@ export default function LoginForm() {
     password: "",
   });
 
+  const router = useRouter();
   const { login } = useLoginStore();
   const { InitUser } = useUserStore();
-
-  const handleLoginChange =
-    (field: keyof typeof loginFormData) =>
-    (e: ChangeEvent<HTMLInputElement>) => {
-      setLoginFormData({ ...loginFormData, [field]: e.target.value });
-    };
 
   const kakaoURL = `https://kauth.kakao.com/oauth/authorize?client_id=${process.env.NEXT_PUBLIC_KAKAO_RESTAPI_KEY}&redirect_uri=http://localhost:3000/api/kakao/sign-in&response_type=code`;
 
@@ -70,7 +65,42 @@ export default function LoginForm() {
     window.location.href = kakaoURL;
   };
 
-  const router = useRouter();
+  const handleKakaoAuth = async (code: string) => {
+    try {
+      const response = await axiosInstance.get(`/api/kakao/sign-in`, {
+        params: { code },
+      });
+
+      if (response.status === 200 && response.data.token) {
+        sessionStorage.setItem("token", response.data.token);
+        router.push("/");
+      } else {
+        router.push("/signup");
+      }
+    } catch (error) {
+      console.error("Token check failed", error);
+      router.push("/signup");
+    }
+  };
+
+  useEffect(() => {
+    const url = new URL(window.location.href);
+    const code = url.searchParams.get("code");
+
+    if (code) {
+      handleKakaoAuth(code);
+    } else {
+      console.log("No code found in the URL");
+    }
+  }, [router]);
+
+  // 로그인
+  const handleLoginChange =
+    (field: keyof typeof loginFormData) =>
+    (e: ChangeEvent<HTMLInputElement>) => {
+      setLoginFormData({ ...loginFormData, [field]: e.target.value });
+    };
+  
   const handleLoginSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
