@@ -1,6 +1,6 @@
 "use client";
 
-import { ChangeEvent, useState } from "react";
+import { ChangeEvent, useState, useEffect } from "react";
 import Link from "next/link";
 import { BiSolidMessageRounded } from "react-icons/bi";
 import useLoginStore from "@/store/useLoginStore";
@@ -55,24 +55,65 @@ export default function LoginForm() {
     password: "",
   });
 
+  const router = useRouter();
   const { login } = useLoginStore();
   const { InitUser } = useUserStore();
 
+  // 카카오 로그인
+  // backend 부분 때문에 에러가 남 -> http://go-gym.site/api/kakao/sign-in 수정?
+  const redirect_uri = "http://localhost:3000/backend/api/kakao/sign-in";
+  const kakaoURL = `https://kauth.kakao.com/oauth/authorize?client_id=${process.env.NEXT_PUBLIC_KAKAO_RESTAPI_KEY}&redirect_uri=${redirect_uri}&response_type=code`;
+
+  const handleKakaoLogin = () => {
+    window.location.href = kakaoURL;
+  };
+
+  useEffect(() => {
+    const query = new URLSearchParams(window.location.search);
+    const code = query.get("code");
+
+    if (code) {
+      const processKakaoLogin = async () => {
+        try {
+          const response = await axios.get(
+            `backend/api/kakao/sign-in?code=${code}`,
+          );
+
+          if (response.data === false) {
+            alert("회원 등록이 필요합니다. 회원가입 페이지로 이동합니다.");
+            router.push("/signup"); // 회원가입 페이지로 리다이렉트
+          } else {
+            const authHeader = response.headers["authorization"];
+            if (authHeader) {
+              const token = authHeader.split(" ")[1];
+              sessionStorage.setItem("token", token);
+
+              // 사용자 정보 가져오기
+              const userData = await axios.get(
+                "backend/api/members/me/profile",
+              );
+              InitUser(userData.data); // 상태 저장
+              login(token);
+              router.push("/"); // 메인 페이지로 리다이렉트
+            }
+          }
+        } catch (error) {
+          console.error("카카오 로그인 처리 중 오류:", error);
+          alert("카카오 로그인에 실패했습니다. 다시 시도해주세요.");
+        }
+      };
+
+      processKakaoLogin();
+    }
+  }, [router]);
+
+  // 로그인
   const handleLoginChange =
     (field: keyof typeof loginFormData) =>
     (e: ChangeEvent<HTMLInputElement>) => {
       setLoginFormData({ ...loginFormData, [field]: e.target.value });
     };
 
-  const kakaoURL = `https://kauth.kakao.com/oauth/authorize?response_type=code
-  &client_id=${process.env.NEXT_PUBLIC_KAKAO_RESTAPI_KEY}
-  &redirect_uri=backend/api/kakao/sign-in`;
-
-  const handleKakaoLogin = () => {
-    window.location.href = kakaoURL;
-  };
-
-  const router = useRouter();
   const handleLoginSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
@@ -136,7 +177,7 @@ export default function LoginForm() {
   };
 
   return (
-    <div className="flex items-center justify-center bg-white">
+    <div className="flex items-center justify-center">
       <div className="flex h-[30rem] w-[15rem] max-w-4xl shadow-lg">
         <Image
           src={form}
@@ -146,7 +187,7 @@ export default function LoginForm() {
           className="h-full w-full rounded-l-xl object-cover"
         />
       </div>
-      <div className="flex items-center justify-center rounded-r-xl border-b-2 border-r-2 border-t-2 border-gray-200">
+      <div className="flex items-center justify-center rounded-r-xl border-b-2 border-r-2 border-t-2 border-gray-200 bg-white">
         <form
           onSubmit={handleLoginSubmit}
           className="h-[30rem] w-[35rem] max-w-md p-8"

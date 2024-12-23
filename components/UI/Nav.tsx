@@ -7,13 +7,14 @@ import useLoginStore from "@/store/useLoginStore";
 import { FaBell } from "react-icons/fa";
 import DefaultProfile from "./DefaultProfile";
 import AdminNav from "./AdminNav";
-import Notice from "../Notification/Notice";
+import App from "@/app/page";
 import { RxHamburgerMenu } from "react-icons/rx";
 import { useState } from "react";
 import MobileMenu from "./MoblieMenu";
 import axiosInstance from "@/api/axiosInstance";
 import useUserStore from "@/store/useUserStore";
 import ProfileImage from "./ProfileImage";
+// import axios from "axios";
 
 export default function Nav() {
   const { loginState, adminLoginState, logout } = useLoginStore();
@@ -40,6 +41,8 @@ export default function Nav() {
       alert("이미 로그아웃 되었습니다.");
       return;
     }
+    logout();
+    LogoutUser();
     try {
       const response = await axiosInstance.post("/api/auth/sign-out");
       console.log("Logout successful:", response.data);
@@ -89,7 +92,7 @@ export default function Nav() {
           <button>
             <FaBell className="h-6 w-10 text-blue-400" onClick={toggleModal} />
           </button>
-          {modal && <Notice />}
+          {modal && <App />}
 
           {loginState ? (
             <div className="dropdown dropdown-end">

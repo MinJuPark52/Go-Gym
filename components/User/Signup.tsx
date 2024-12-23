@@ -1,7 +1,7 @@
 "use client";
 
 import { ChangeEvent, useState, useRef } from "react";
-import axiosInstance from "@/api/axiosInstance";
+// import axiosInstance from "@/api/axiosInstance";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 import form from "../../public/form.png";
@@ -110,6 +110,8 @@ export default function SignupPage() {
     regionId1: "",
     regionId2: "",
     profileImageUrl: "",
+    subRegionId1: "",
+    subRegionId2: "",
   });
 
   const [signupErrors, setsignupErrors] = useState<SignupErrors>({
@@ -304,15 +306,7 @@ export default function SignupPage() {
     },
   });
 
-  // 관심지역 1
-  const handleChangeSubRegionId1 = async (
-    e: ChangeEvent<HTMLSelectElement>,
-  ) => {
-    setSelectSubRegion1({ regionId: e.target.value, name: "" });
-    setsignupFormData({ ...signupFormData, regionId1: e.target.value });
-    console.log("id:" + selectSubRegion1.regionId);
-  };
-
+  // 지역선택1
   const handleChangeRegionId1 = async (e: ChangeEvent<HTMLSelectElement>) => {
     const selectedRegionId1 = e.target.value;
     setsignupFormData({ ...signupFormData, regionId1: selectedRegionId1 });
@@ -335,15 +329,20 @@ export default function SignupPage() {
     }
   };
 
-  // 관심지역2
-  const handleChangeSubRegionId2 = async (
+  // 세부 지역1
+  const handleChangeSubRegionId1 = async (
     e: ChangeEvent<HTMLSelectElement>,
   ) => {
-    setSelectSubRegion2({ regionId: e.target.value, name: "" });
-    setsignupFormData({ ...signupFormData, regionId2: e.target.value });
-    console.log("id:" + selectSubRegion2.regionId);
+    const selectedSubRegionId1 = e.target.value;
+    setSelectSubRegion1({ regionId: e.target.value, name: "" });
+    setsignupFormData({
+      ...signupFormData,
+      subRegionId1: selectedSubRegionId1,
+    });
+    console.log("id:" + selectedSubRegionId1);
   };
 
+  // 지역선택2
   const handleChangeRegionId2 = async (e: ChangeEvent<HTMLSelectElement>) => {
     const selectedRegionId2 = e.target.value;
     setsignupFormData({ ...signupFormData, regionId2: selectedRegionId2 });
@@ -366,6 +365,19 @@ export default function SignupPage() {
     }
   };
 
+  // 세부 지역2
+  const handleChangeSubRegionId2 = async (
+    e: ChangeEvent<HTMLSelectElement>,
+  ) => {
+    const selectedSubRegionId2 = e.target.value;
+    setSelectSubRegion2({ regionId: e.target.value, name: "" });
+    setsignupFormData({
+      ...signupFormData,
+      subRegionId2: selectedSubRegionId2,
+    });
+    console.log("id:" + selectedSubRegionId2);
+  };
+
   return (
     <div className="flex min-h-screen items-center justify-center bg-gray-50">
       <div className="flex max-w-4xl rounded-l-lg shadow-lg">
@@ -374,7 +386,7 @@ export default function SignupPage() {
           alt="Login Image"
           width={600}
           height={400}
-          className="h-[35rem] w-[18rem] rounded-l-xl object-cover"
+          className="h-[40rem] w-[18rem] rounded-l-xl object-cover"
         />
       </div>
       <div className="flex items-center justify-center rounded-r-xl bg-white">
@@ -383,7 +395,7 @@ export default function SignupPage() {
             e.preventDefault();
             handleSignupSubmit.mutate();
           }}
-          className="h-[35rem] w-[40rem] max-w-md space-y-2 rounded-r-xl border-b-2 border-r-2 border-t-2 border-gray-200 p-8"
+          className="h-[40rem] w-[40rem] max-w-md space-y-2 rounded-r-xl border-b-2 border-r-2 border-t-2 border-gray-200 p-8"
         >
           <h2 className="text-center text-2xl font-semibold">회원가입</h2>
 
@@ -418,7 +430,7 @@ export default function SignupPage() {
             </>
           ) : (
             <div className="relative ml-auto mr-auto flex h-[110px] w-[110px] justify-center overflow-hidden rounded-[100%] border border-gray-300">
-              <div className="flex h-20 w-60 items-center justify-center">
+              <div className="h-21 flex w-60 items-center justify-center">
                 <input
                   type="file"
                   accept="image/*"
@@ -516,7 +528,6 @@ export default function SignupPage() {
                 onChange={handleChangeRegionId1}
                 className="w-full rounded-md border border-gray-300 p-2"
               >
-                {/* 아이디 값을 보냄 */}
                 <option value="">지역 선택1</option>
                 {regions?.map((region) => (
                   <option key={region.id} value={region.name}>
@@ -549,7 +560,6 @@ export default function SignupPage() {
                 onChange={handleChangeRegionId2}
                 className="w-full rounded-md border border-gray-300 p-2"
               >
-                {/* 아이디 값을 보냄 */}
                 <option value="">지역 선택2</option>
                 {regions?.map((region) => (
                   <option key={region.id} value={region.name}>
