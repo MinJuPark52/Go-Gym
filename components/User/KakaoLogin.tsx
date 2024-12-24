@@ -1,10 +1,26 @@
 "use client";
 
+import axiosInstance from "@/api/axiosInstance";
 import useLoginStore from "@/store/useLoginStore";
 import useUserStore from "@/store/useUserStore";
 import axios from "axios";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect } from "react";
+
+interface UserType {
+  memberId: string;
+  name: string;
+  email: string;
+  nickname: string;
+  phone: string;
+  profileImageUrl: string | null;
+  gymPayBalance: string | null;
+  gymPayId: string;
+  regionId1: string;
+  regionId2: string;
+  regionName1: string;
+  regionName2: string;
+}
 
 export default function KakaoLogin() {
   const query = useSearchParams();
@@ -25,8 +41,11 @@ export default function KakaoLogin() {
           const response = await axios.get(
             `https://go-gym.site/api/kakao/sign-in?code=${code}`,
           );
+          if (response) {
+            console.log(response);
+          }
 
-          if (response.data === false) {
+          if (response.data.existingUser === false) {
             alert("회원 등록이 필요합니다. 회원가입 페이지로 이동합니다.");
             router.push("/signup"); // 회원가입 페이지로 리다이렉트
           } else {
@@ -36,10 +55,10 @@ export default function KakaoLogin() {
               sessionStorage.setItem("token", token);
 
               // 사용자 정보 가져오기
-              const userData = await axios.get(
-                "https://go-gym.site/api/members/me/profile",
+              const userData: UserType = await axiosInstance.get(
+                "/api/members/me/profile",
               );
-              InitUser(userData.data); // 상태 저장
+              InitUser(userData); // 상태 저장
               login(token);
               router.push("/"); // 메인 페이지로 리다이렉트
             }
