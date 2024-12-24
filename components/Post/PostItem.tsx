@@ -58,7 +58,9 @@ export default function PostItem({
               <div className="badge border-none bg-blue-500 pb-3 pt-3 text-sm font-bold text-white">
                 {postStatusKo}
               </div>
-              <div className="badge ml-2 border-none bg-green-500 pb-3 pt-3 text-sm font-bold text-white">
+              <div
+                className={`badge ml-2 border-none bg-green-500 pb-3 pt-3 text-sm font-bold text-white ${postType === "BUY" ? "bg-red-500" : ""}`}
+              >
                 {itemPostType}
               </div>
             </div>
