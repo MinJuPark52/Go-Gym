@@ -43,6 +43,7 @@ export default function KakaoLogin() {
           );
           if (response) {
             console.log(response);
+            console.log(response.data);
           }
 
           if (response.data.existingUser === false) {
