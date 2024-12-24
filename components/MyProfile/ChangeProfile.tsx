@@ -283,26 +283,60 @@ export default function ChangeProfile() {
           </div>
         </>
       ) : (
-        <div className="relative ml-auto mr-auto flex h-[240px] w-[240px] justify-center overflow-hidden rounded-[100%] border border-gray-300">
-          <div className="flex h-56 w-60 items-center justify-center">
-            <input
-              type="file"
-              accept="image/*"
-              id="file-input"
-              className="absolute inset-0 h-full w-full cursor-pointer opacity-0"
-              onChange={handleFileSelect}
-            />
-            <label
-              htmlFor="file-input"
-              className="flex cursor-pointer flex-col items-center justify-center text-gray-600"
-            >
-              <span className="text-4xl text-green-500">+</span>
-              <span className="mt-2 text-sm font-semibold">
-                {"프로필 사진 선택하세요"}
-              </span>
-            </label>
-          </div>
-        </div>
+        <>
+          {user.profileImageUrl ? (
+            <>
+              <div className="relative ml-auto mr-auto flex h-[240px] w-[240px] justify-center overflow-hidden rounded-[100%] border border-gray-300">
+                <Image
+                  src={user.profileImageUrl}
+                  alt="프로필 이미지"
+                  className="rounded-lg"
+                  layout="fill"
+                />
+              </div>
+              <div className="flex justify-center">
+                <button
+                  type="button"
+                  onClick={handleButtonClick} // 클릭 핸들러 호출
+                  className="rounded bg-blue-500 px-4 py-2 text-white hover:bg-blue-600"
+                >
+                  다시 선택
+                </button>
+
+                <input
+                  type="file"
+                  accept="image/*"
+                  id="file-input"
+                  name="file-input"
+                  onChange={handleFileSelect}
+                  ref={fileInputRef} // ref 연결
+                  style={{ display: "none" }} // 숨김
+                />
+              </div>
+            </>
+          ) : (
+            <div className="relative ml-auto mr-auto flex h-[240px] w-[240px] justify-center overflow-hidden rounded-[100%] border border-gray-300">
+              <div className="flex h-56 w-60 items-center justify-center">
+                <input
+                  type="file"
+                  accept="image/*"
+                  id="file-input"
+                  className="absolute inset-0 h-full w-full cursor-pointer opacity-0"
+                  onChange={handleFileSelect}
+                />
+                <label
+                  htmlFor="file-input"
+                  className="flex cursor-pointer flex-col items-center justify-center text-gray-600"
+                >
+                  <span className="text-4xl text-green-500">+</span>
+                  <span className="mt-2 text-sm font-semibold">
+                    {"프로필 사진 선택하세요"}
+                  </span>
+                </label>
+              </div>
+            </div>
+          )}
+        </>
       )}
 
       <div>
