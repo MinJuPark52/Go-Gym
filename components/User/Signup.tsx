@@ -281,7 +281,7 @@ export default function SignupPage() {
               email: signupFormData.email,
               nickname: signupFormData.nickname,
               phone: signupFormData.phone,
-              profileImageUrl: signupFormData.profileImageUrl,
+              profileImageUrl: file || "",
               password: signupFormData.password,
               regionId1: signupFormData.subRegionId1,
               regionId2: signupFormData.subRegionId2,

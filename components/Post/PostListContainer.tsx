@@ -77,7 +77,7 @@ export default function PostListContainer() {
     queryFn: async () => {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const response: any = await axiosInstance.get(
-        `/api/posts/filters?${query}`,
+        `/api/posts/filters?${query}?page=${page}&size=6`,
       );
       return response;
     },
@@ -94,7 +94,7 @@ export default function PostListContainer() {
     queryFn: async () => {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const response: any = await axiosInstance.get(
-        `api/posts/views?page=${page}&size=10`,
+        `api/posts/views?page=${page}&size=6`,
       );
       return response;
     },

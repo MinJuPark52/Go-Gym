@@ -49,6 +49,7 @@ export default function MainPagePostContainer() {
         <PostItem
           postId="1"
           postType="SELL"
+          authorProfileImageUrl=""
           authorNickname="전빡빡"
           createdAt=""
           gymName="바디트랜스"

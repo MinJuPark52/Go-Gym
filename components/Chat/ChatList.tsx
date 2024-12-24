@@ -7,6 +7,7 @@ import axiosInstance from "@/api/axiosInstance";
 import useUserStore from "@/store/useUserStore";
 import ProfileImage from "../UI/ProfileImage";
 import DefaultProfile from "../UI/DefaultProfile";
+import { useRouter } from "next/navigation";
 
 interface chatListProps {
   counterpartyNickname: string;
@@ -36,6 +37,7 @@ export default function ChatList({
   onCloseModal,
 }: chatListProps) {
   const { user } = useUserStore();
+  const router = useRouter();
   const timeago = useTimeAgo(lastMessageAt);
 
   const handleDelete = () => {
@@ -52,6 +54,7 @@ export default function ChatList({
       await axiosInstance.delete(`/api/chatroom/${chatRoomId}`),
     onSuccess: () => {
       alert("채팅방을 삭제했습니다.");
+      router.refresh();
     },
   });
 

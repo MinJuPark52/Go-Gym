@@ -6,12 +6,12 @@ import Link from "next/link";
 import useTimeAgo from "@/hooks/useTimeAgo";
 import DefaultProfile from "../UI/DefaultProfile";
 import ProfileImage from "../UI/ProfileImage";
-import useUserStore from "@/store/useUserStore";
 
 interface PostType {
   postId: string;
   authorNickname: string;
   createdAt: string;
+  authorProfileImageUrl: string;
   gymName: string;
   imageUrl1: string;
   status: string;
@@ -24,6 +24,7 @@ export default function PostItem({
   postId,
   authorNickname,
   createdAt,
+  authorProfileImageUrl,
   gymName,
   imageUrl1,
   status,
@@ -46,7 +47,6 @@ export default function PostItem({
     itemPostType = "삽니다";
   }
 
-  const { user } = useUserStore();
   const timeago = useTimeAgo(createdAt);
 
   return (
@@ -93,8 +93,8 @@ export default function PostItem({
 
           <div className="flex items-center gap-2 text-sm font-bold text-gray-500">
             <div className="avatar overflow-hidden rounded-full">
-              {user?.profileImageUrl ? (
-                <ProfileImage src={user?.profileImageUrl} />
+              {authorProfileImageUrl ? (
+                <ProfileImage src={authorProfileImageUrl} />
               ) : (
                 <DefaultProfile width="10" />
               )}

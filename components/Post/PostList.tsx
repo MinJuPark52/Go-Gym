@@ -6,6 +6,7 @@ interface PostType {
   amount: number;
   authorNickname: string;
   createdAt: string;
+  authorProfileImageUrl: string;
   gymName: string;
   postId: string;
   postType: string;

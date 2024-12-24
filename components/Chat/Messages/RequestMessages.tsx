@@ -46,6 +46,7 @@ export default function RequestMessages({
                   <p>{nickname} 님!</p>
                 </div>
                 <p>{counterpartyNickname}님이 안전결제를 신청했습니다.</p>
+                <p>승인을 누르기 전 짐페이가 충분한지 확인해주세요 !</p>
               </div>
               <div className="flex gap-8">
                 <button
