@@ -22,6 +22,7 @@ interface PostType {
   postType: string;
   expirationDate: string;
   status: string;
+  remainingSessions: string;
   title: string;
   wishCount: number;
   isWished: boolean;
@@ -77,7 +78,7 @@ export default function PostDetail() {
         title: detail?.title,
         content: detail?.content,
         expirationDate: detail?.expirationDate,
-        remainingSessions: detail,
+        remainingSessions: detail?.remainingSessions,
         amount: detail?.amount,
         imageUrl1: detail?.imageUrl1,
         imageUrl2: detail?.imageUrl2,
