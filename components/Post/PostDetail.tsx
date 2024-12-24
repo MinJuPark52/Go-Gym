@@ -113,7 +113,7 @@ export default function PostDetail() {
                 {user?.nickname === detail.authorNickname && (
                   <Link href={`/community/modifiedpost/${id}`}>
                     <button className="btn bg-blue-500 text-white hover:bg-blue-600">
-                      수정하기
+                      수정
                     </button>
                   </Link>
                 )}
