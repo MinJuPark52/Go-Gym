@@ -14,11 +14,13 @@ import axiosInstance from "@/api/axiosInstance";
 import useUserStore from "@/store/useUserStore";
 import ProfileImage from "./ProfileImage";
 import Notice from "../Notice/Notice";
+import { useRouter } from "next/navigation";
 // import axios from "axios";
 
 export default function Nav() {
   const { loginState, adminLoginState, logout } = useLoginStore();
   const { LogoutUser, user } = useUserStore();
+  const router = useRouter();
 
   const [modal, setModal] = useState(false);
   const [menuModal, setMenuModal] = useState(false);
@@ -41,8 +43,6 @@ export default function Nav() {
       alert("이미 로그아웃 되었습니다.");
       return;
     }
-    logout();
-    LogoutUser();
     try {
       const response = await axiosInstance.post("/api/auth/sign-out");
       console.log("Logout successful:", response.data);
@@ -52,6 +52,7 @@ export default function Nav() {
     } finally {
       logout();
       LogoutUser();
+      router.push("/");
     }
   };
 
