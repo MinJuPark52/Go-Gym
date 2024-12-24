@@ -96,12 +96,6 @@ export default function Chat({
     enabled: !!chatRoomId,
   });
 
-  // const chatLeave = async (createdAt: string) => {
-  //   await axiosInstance.post(`/api/chatroom/${chatRoomId}/leave`, {
-  //     leaveAt: createdAt,
-  //   });
-  // };
-
   useEffect(() => {
     console.log(extraData);
     if (extraData) {
@@ -129,18 +123,6 @@ export default function Chat({
     }
 
     return () => disconnect();
-    // if (chatRoomId && messages) {
-    //   console.log(messages);
-    //   (async () => {
-    //     const latestCreatedAt = messages[messages.length - 1].createdAt
-    //       .slice(0, 19)
-    //       .replace("T", " ");
-    //     await chatLeave(latestCreatedAt);
-    //     disconnect();
-    //   })();
-    // } else {
-
-    // }
   }, [chatRoomId]);
 
   useEffect(() => {

@@ -16,7 +16,6 @@ interface content {
 export default function Notice() {
   const { loginState, token } = useLoginStore();
   const { user } = useUserStore();
-  const [page, setPage] = useState(0);
 
   const pageSize = 10;
 
@@ -70,34 +69,34 @@ export default function Notice() {
   }, [loginState, token, user]);
 
   // 1. 전체 알림 목록 조회
-  const { data, isSuccess } = useQuery({
+  const { data } = useQuery({
     queryKey: ["notification"],
     queryFn: async () => {
       const response: { content: content[] } = await axiosInstance.get(
-        `/api/notifications?page=${page}&size=${pageSize}`,
+        `/api/notifications?page=0&size=${pageSize}`,
       );
       return response.content;
     },
     staleTime: 0,
   });
 
-  useEffect(() => {
-    // const fetchNotifications = async () => {
-    //   setLoading(true);
-    //   try {
-    //     const response: { content: content[] } = await axiosInstance.get(
-    //       `/api/notifications?page=${page}&size=${pageSize}`,
-    //     );
-    //     console.log("Fetched notifications:", response);
-    //     const { content } = response;
-    //   } catch (error) {
-    //     console.error("알림을 불러오는 중 오류 발생:", error);
-    //   } finally {
-    //     setLoading(false);
-    //   }
-    // };
-    // fetchNotifications();
-  }, [page]);
+  // useEffect(() => {
+  // const fetchNotifications = async () => {
+  //   setLoading(true);
+  //   try {
+  //     const response: { content: content[] } = await axiosInstance.get(
+  //       `/api/notifications?page=${page}&size=${pageSize}`,
+  //     );
+  //     console.log("Fetched notifications:", response);
+  //     const { content } = response;
+  //   } catch (error) {
+  //     console.error("알림을 불러오는 중 오류 발생:", error);
+  //   } finally {
+  //     setLoading(false);
+  //   }
+  // };
+  // fetchNotifications();
+  // }, [page]);
 
   // const loadMoreNotifications = () => {
   //   if (hasNext && !loading) {
