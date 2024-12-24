@@ -87,7 +87,10 @@ export default function PostDetail() {
         status: "HIDDEN",
         membershipType: detail?.membershipType,
       }),
-    onSuccess: () => router.push("/community"),
+    onSuccess: () => {
+      alert("게시글이 삭제되었습니다");
+      router.push("/community");
+    },
     onError: () => alert("삭제 실패."),
   });
 
