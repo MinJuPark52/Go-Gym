@@ -29,6 +29,7 @@ interface PostType {
   imageUrl1: string;
   imageUrl2: string;
   imageUrl3: string;
+  membershipType: string;
 }
 
 export default function PostDetail() {
@@ -73,14 +74,21 @@ export default function PostDetail() {
     mutationKey: ["delete"],
     mutationFn: async () =>
       await axiosInstance.put(`/api/posts/${id}`, {
-        ...detail,
+        title: detail?.title,
+        content: detail?.content,
+        expirationDate: detail?.expirationDate,
+        remainingSessions: detail,
+        amount: detail?.amount,
+        imageUrl1: detail?.imageUrl1,
+        imageUrl2: detail?.imageUrl2,
+        imageUrl3: detail?.imageUrl3,
+        postType: detail?.postType,
         status: "HIDDEN",
+        membershipType: detail?.membershipType,
       }),
     onSuccess: () => router.push("/community"),
     onError: () => alert("삭제 실패."),
   });
-
-  const handleDelete = () => {};
 
   const handleWishClick = () => {
     if (loginState) {
