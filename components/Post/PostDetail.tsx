@@ -69,6 +69,19 @@ export default function PostDetail() {
     onError: () => alert("찜 실패."),
   });
 
+  const { mutate: deletePost } = useMutation({
+    mutationKey: ["delete"],
+    mutationFn: async () =>
+      await axiosInstance.put(`/api/posts/${id}`, {
+        ...detail,
+        status: "HIDDEN",
+      }),
+    onSuccess: () => router.push("/community"),
+    onError: () => alert("삭제 실패."),
+  });
+
+  const handleDelete = () => {};
+
   const handleWishClick = () => {
     if (loginState) {
       try {
@@ -111,11 +124,19 @@ export default function PostDetail() {
               <div className="flex justify-between">
                 <p className="text-2xl font-bold">{detail.title}</p>
                 {user?.nickname === detail.authorNickname && (
-                  <Link href={`/community/modifiedpost/${id}`}>
-                    <button className="btn bg-blue-500 text-white hover:bg-blue-600">
-                      수정
+                  <div className="flex flex-col gap-2">
+                    <Link href={`/community/modifiedpost/${id}`}>
+                      <button className="btn bg-blue-500 text-white hover:bg-blue-600">
+                        수정
+                      </button>
+                    </Link>
+                    <button
+                      onClick={() => deletePost()}
+                      className="btn bg-red-500 text-white hover:bg-red-600"
+                    >
+                      삭제하기
                     </button>
-                  </Link>
+                  </div>
                 )}
               </div>
               <div className="badge border-none bg-blue-500 pb-3 pt-3 text-sm font-bold text-white">
