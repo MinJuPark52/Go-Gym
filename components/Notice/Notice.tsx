@@ -6,14 +6,6 @@ import axiosInstance from "@/api/axiosInstance";
 import useUserStore from "@/store/useUserStore";
 import { useQuery } from "@tanstack/react-query";
 
-interface Notification {
-  id: number;
-  message: string;
-  isRead: boolean;
-  type: "POST_ADD_WISH" | "REPORT" | string;
-  timestamp: string;
-}
-
 interface content {
   notificationId: number;
   type: string;
@@ -24,7 +16,6 @@ interface content {
 export default function Notice() {
   const { loginState, token } = useLoginStore();
   const { user } = useUserStore();
-  const [error, setError] = useState<string | null>(null);
   const [page, setPage] = useState(0);
 
   const pageSize = 10;
@@ -43,7 +34,6 @@ export default function Notice() {
 
       eventSource.onopen = () => {
         console.log("SSE connected");
-        setError(null);
       };
 
       eventSource.addEventListener("dummy", (event) => {
@@ -58,7 +48,6 @@ export default function Notice() {
 
       eventSource.onerror = () => {
         console.error("SSE connection error");
-        setError("SSE connection error");
 
         if (eventSource) {
           eventSource.close();
