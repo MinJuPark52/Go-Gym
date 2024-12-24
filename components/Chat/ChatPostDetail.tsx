@@ -41,10 +41,8 @@ export default function ChatPostDetail({
       await axiosInstance.post(`/api/chatrooms/${chatRoomId}/safe-payments`, {
         amount: +payAmount.replace(/,/g, ""),
       }),
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    onSuccess: (data: any) => {
+    onSuccess: () => {
       alert("결제를 요청했습니다.");
-      localStorage.setItem("safePaymentId", data.safePaymentId);
     },
   });
 
