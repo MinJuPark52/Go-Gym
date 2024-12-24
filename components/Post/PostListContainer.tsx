@@ -73,7 +73,7 @@ export default function PostListContainer() {
 
   //tanstack-query에서 캐싱해서 처리
   const { data } = useQuery({
-    queryKey: ["filterPost", query, token],
+    queryKey: ["filterPost", query, token, page],
     queryFn: async () => {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const response: any = await axiosInstance.get(
