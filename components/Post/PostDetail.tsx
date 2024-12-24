@@ -126,7 +126,7 @@ export default function PostDetail() {
                 {user?.nickname === detail.authorNickname && (
                   <div className="flex flex-col gap-2">
                     <Link href={`/community/modifiedpost/${id}`}>
-                      <button className="btn bg-blue-500 text-white hover:bg-blue-600">
+                      <button className="btn w-full bg-blue-500 text-white hover:bg-blue-600">
                         수정
                       </button>
                     </Link>
@@ -134,7 +134,7 @@ export default function PostDetail() {
                       onClick={() => deletePost()}
                       className="btn bg-red-500 text-white hover:bg-red-600"
                     >
-                      삭제하기
+                      삭제
                     </button>
                   </div>
                 )}
