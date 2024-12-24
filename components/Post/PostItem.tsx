@@ -51,7 +51,7 @@ export default function PostItem({
 
   return (
     <Link href={`/community/${postId}`}>
-      <div className="h-80 w-80 cursor-pointer rounded-lg border border-[#ccc] shadow">
+      <div className="mb-10 h-80 w-80 cursor-pointer rounded-lg border border-[#ccc] shadow">
         <div>
           <div className="m-2 flex justify-between">
             <div>
