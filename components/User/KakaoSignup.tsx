@@ -275,7 +275,7 @@ export default function KaKaoSignupPage() {
 
         try {
           const response = await axios.post<Signup[]>(
-            "https://go-gym.site/api/auth/sign-up",
+            "https://go-gym.site/api/auth/sign-up/kakao",
             {
               name: signupFormData.name,
               email: signupFormData.email,

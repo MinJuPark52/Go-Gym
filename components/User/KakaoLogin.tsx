@@ -48,7 +48,7 @@ export default function KakaoLogin() {
 
           if (response.data.existingUser === false) {
             alert("회원 등록이 필요합니다. 회원가입 페이지로 이동합니다.");
-            router.push("/signup"); // 회원가입 페이지로 리다이렉트
+            router.push("/kakaoSignup"); // 회원가입 페이지로 리다이렉트
           } else {
             const authHeader = response.headers["authorization"];
             if (authHeader) {
