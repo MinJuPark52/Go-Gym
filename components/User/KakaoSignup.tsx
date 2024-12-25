@@ -2,12 +2,13 @@
 
 import { ChangeEvent, useState, useRef } from "react";
 // import axiosInstance from "@/api/axiosInstance";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import Image from "next/image";
 import form from "../../public/form.png";
 import { useMutation } from "@tanstack/react-query";
 import S3ImageUrl from "@/hooks/S3ImageUrl";
 import axios from "axios";
+import { useEffect } from "react";
 
 interface Signup {
   email: string;
@@ -25,6 +26,7 @@ interface InputProps {
   value: string;
   onChange: (e: ChangeEvent<HTMLInputElement>) => void;
   errorMessage?: string;
+  disabled?: boolean;
 }
 
 interface SignupErrors {
@@ -79,12 +81,12 @@ const regions: { id: string; name: string }[] = [
 ];
 
 export default function KaKaoSignupPage() {
+  const query = useSearchParams();
+  const [email, setEmail] = useState<string>("");
   const [loading, setLoading] = useState(false);
   const router = useRouter();
   const [preview, setPreview] = useState<File | null>(null);
-  const [isEmailAvailable, setIsEmailAvailable] = useState(false);
   const [isNicknameAvailable, setIsNicknameAvailable] = useState(false);
-
   const [subRegion1, setSubRegion1] = useState<{ id: string; name: string }[]>(
     [],
   );
@@ -180,42 +182,25 @@ export default function KaKaoSignupPage() {
   };
 
   // 이메일 입력
-  const checkEmail = useMutation({
-    mutationFn: async (email: string) => {
-      if (!email) {
-        throw new Error("이메일을 입력해주세요.");
-      }
-
-      const emailRegex = /\S+@\S+\.\S+/;
-      if (!emailRegex.test(email)) {
-        throw new Error("이메일 주소에 '@'을 포함해주세요.");
-      }
-
-      // 이메일 중복확인
-
-      const response = await axios.get<Signup[]>(
-        "https://go-gym.site/api/auth/check-email",
-        {
-          params: { email },
-        },
-      );
-
-      console.log(response);
-      if (response.status === 200) {
-        return true;
-      } else {
-        throw new Error("이메일 이미 존재합니다.");
-      }
-    },
-    onSuccess: () => {
-      setIsEmailAvailable(true);
-      alert("이메일 사용 가능합니다.");
-    },
-    onError: (error) => {
-      setIsEmailAvailable(false);
-      alert(error.message);
-    },
-  });
+  useEffect(() => {
+    const code = query.get("code");
+    if (code) {
+      const checkEmail = async () => {
+        try {
+          const response = await axios.get(
+            `https://go-gym.site/api/kakao/sign-in?code=${code}`,
+          );
+          if (response && response.data) {
+            const userEmail = response.data.email;
+            setEmail(userEmail);
+          }
+        } catch (error) {
+          console.error("Error fetching email:", error);
+        }
+      };
+      checkEmail();
+    }
+  }, [query]);
 
   // 닉네임
   const checkNickname = useMutation<boolean, Error, string>({
@@ -267,7 +252,7 @@ export default function KaKaoSignupPage() {
   // 회원가입
   const handleSignupSubmit = useMutation({
     mutationFn: async () => {
-      if (!isEmailAvailable || !isNicknameAvailable) {
+      if (!isNicknameAvailable) {
         throw new Error("중복확인을 해주세요.");
       }
 
@@ -297,15 +282,8 @@ export default function KaKaoSignupPage() {
             );
 
             if (emailResponse.status === 200) {
-              alert(
-                "이메일 인증 링크가 전송되었습니다. 이메일을 통해 인증해주세요",
-              );
               router.push("/login");
-            } else {
-              throw new Error("링크 전송 X");
             }
-          } else {
-            throw new Error("회원가입 실패");
           }
         } catch (error) {
           console.error("Error:", error);
@@ -487,19 +465,11 @@ export default function KaKaoSignupPage() {
               <SignupInput
                 type="text"
                 placeholder="이메일"
-                value={signupFormData.email}
+                value={email || signupFormData.email}
                 onChange={handleSignupChange("email")}
-                errorMessage={signupErrors.email}
+                disabled={email ? true : false}
               />
             </div>
-            <button
-              type="button"
-              onClick={() => checkEmail.mutate(signupFormData.email)}
-              className="rounded-md bg-blue-500 px-4 py-2 text-white focus:outline-none"
-              disabled={isEmailAvailable}
-            >
-              {isEmailAvailable ? "사용 가능" : "중복확인"}
-            </button>
           </div>
 
           <div className="flex items-center space-x-2">
