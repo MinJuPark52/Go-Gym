@@ -22,6 +22,7 @@ interface PostType {
   postType: string;
   expirationDate: string;
   status: string;
+  remainingSessions: string;
   title: string;
   wishCount: number;
   isWished: boolean;
@@ -29,6 +30,7 @@ interface PostType {
   imageUrl1: string;
   imageUrl2: string;
   imageUrl3: string;
+  membershipType: string;
 }
 
 export default function PostDetail() {
@@ -73,14 +75,24 @@ export default function PostDetail() {
     mutationKey: ["delete"],
     mutationFn: async () =>
       await axiosInstance.put(`/api/posts/${id}`, {
-        ...detail,
+        title: detail?.title,
+        content: detail?.content,
+        expirationDate: detail?.expirationDate,
+        remainingSessions: detail?.remainingSessions,
+        amount: detail?.amount,
+        imageUrl1: detail?.imageUrl1,
+        imageUrl2: detail?.imageUrl2,
+        imageUrl3: detail?.imageUrl3,
+        postType: detail?.postType,
         status: "HIDDEN",
+        membershipType: detail?.membershipType,
       }),
-    onSuccess: () => router.push("/community"),
+    onSuccess: () => {
+      alert("게시글이 삭제되었습니다");
+      router.push("/community");
+    },
     onError: () => alert("삭제 실패."),
   });
-
-  const handleDelete = () => {};
 
   const handleWishClick = () => {
     if (loginState) {
@@ -126,7 +138,7 @@ export default function PostDetail() {
                 {user?.nickname === detail.authorNickname && (
                   <div className="flex flex-col gap-2">
                     <Link href={`/community/modifiedpost/${id}`}>
-                      <button className="btn bg-blue-500 text-white hover:bg-blue-600">
+                      <button className="btn w-full bg-blue-500 text-white hover:bg-blue-600">
                         수정
                       </button>
                     </Link>
@@ -134,7 +146,7 @@ export default function PostDetail() {
                       onClick={() => deletePost()}
                       className="btn bg-red-500 text-white hover:bg-red-600"
                     >
-                      삭제하기
+                      삭제
                     </button>
                   </div>
                 )}
