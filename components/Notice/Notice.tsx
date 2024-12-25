@@ -4,7 +4,9 @@ import useLoginStore from "@/store/useLoginStore";
 import { EventSourcePolyfill } from "event-source-polyfill";
 import axiosInstance from "@/api/axiosInstance";
 import useUserStore from "@/store/useUserStore";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useMutation } from "@tanstack/react-query";
+import { useRouter } from "next/navigation";
+import { FaRegTrashAlt } from "react-icons/fa";
 
 interface content {
   notificationId: number;
@@ -16,8 +18,10 @@ interface content {
 export default function Notice() {
   const { loginState, token } = useLoginStore();
   const { user } = useUserStore();
-
+  const router = useRouter();
   const pageSize = 10;
+  const [notification, setNotification] = useState<content | null>(null);
+  const [animationClass, setAnimationClass] = useState("translate-x-full");
 
   // 3. 구독 SSE
   useEffect(() => {
@@ -43,6 +47,18 @@ export default function Notice() {
       eventSource.addEventListener("notification", (event) => {
         console.log("1");
         console.log(event);
+
+        const newNotification: content = JSON.parse(event.data);
+        setNotification(newNotification);
+
+        setAnimationClass("translate-x-0");
+
+        setTimeout(() => {
+          setAnimationClass("translate-x-full");
+          setTimeout(() => {
+            setNotification(null);
+          }, 500);
+        }, 5000);
       });
 
       eventSource.onerror = () => {
@@ -66,43 +82,34 @@ export default function Notice() {
         eventSource.close();
       }
     };
-  }, [loginState, token, user]);
+  }, [loginState, token, user, notification]);
 
   // 1. 전체 알림 목록 조회
   const { data } = useQuery({
     queryKey: ["notification"],
     queryFn: async () => {
       const response: { content: content[] } = await axiosInstance.get(
-        `/api/notifications?page=0&size=${pageSize}`,
+        `https://go-gym.site/api/notifications?page=0&size=${pageSize}`,
       );
       return response.content;
     },
     staleTime: 0,
   });
 
-  // useEffect(() => {
-  // const fetchNotifications = async () => {
-  //   setLoading(true);
-  //   try {
-  //     const response: { content: content[] } = await axiosInstance.get(
-  //       `/api/notifications?page=${page}&size=${pageSize}`,
-  //     );
-  //     console.log("Fetched notifications:", response);
-  //     const { content } = response;
-  //   } catch (error) {
-  //     console.error("알림을 불러오는 중 오류 발생:", error);
-  //   } finally {
-  //     setLoading(false);
-  //   }
-  // };
-  // fetchNotifications();
-  // }, [page]);
+  // 알림 목록
+  const handleReadNotification = (notificationId: number) => {
+    mutate(notificationId);
+  };
 
-  // const loadMoreNotifications = () => {
-  //   if (hasNext && !loading) {
-  //     setPage((prevPage) => prevPage + 1);
-  //   }
-  // };
+  const { mutate } = useMutation({
+    mutationKey: ["read"],
+    mutationFn: async (notificationId: number) =>
+      await axiosInstance.put(`/api/notifications/${notificationId}/read`),
+    onSuccess: () => {
+      router.refresh();
+    },
+  });
+
   return (
     <div
       className="absolute right-[-120px] z-10 h-72 w-80 overflow-y-auto rounded-md border border-gray-300 bg-white shadow-lg scrollbar-hide"
@@ -127,6 +134,13 @@ export default function Notice() {
                 className={`mb-2 cursor-pointer border bg-white p-2`}
               >
                 <p>{notification.content}</p>
+                <FaRegTrashAlt
+                  className="ml-auto cursor-pointer text-xl text-red-400"
+                  onClick={handleReadNotification.bind(
+                    null,
+                    notification.notificationId,
+                  )}
+                />
                 <p className="text-sm text-gray-500">
                   {new Date(notification.createdAt).toLocaleString()}
                 </p>
@@ -134,16 +148,17 @@ export default function Notice() {
             ))}
         </div>
       )}
-      {/* {hasNext && !loading && (
-        <div className="text-center">
-          <button
-            onClick={loadMoreNotifications}
-            className="text-sm text-blue-500"
-          >
-            더보기
-          </button>
+
+      {notification && (
+        <div
+          className={`fixed bottom-10 right-10 z-20 mb-2 transform border border-blue-400 bg-white p-4 transition-transform duration-500 ease-in-out ${animationClass}`}
+        >
+          <p>{notification.content}</p>
+          <p className="text-sm text-gray-500">
+            {new Date(notification.createdAt).toLocaleString()}
+          </p>
         </div>
-      )} */}
+      )}
     </div>
   );
 }
