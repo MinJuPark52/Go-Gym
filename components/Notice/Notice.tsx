@@ -44,7 +44,8 @@ export default function Notice() {
         console.log(event);
       });
 
-      eventSource.addEventListener("notification", (event) => {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      eventSource.addEventListener("notification", (event: any) => {
         console.log("1");
         console.log(event);
 
