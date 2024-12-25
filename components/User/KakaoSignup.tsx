@@ -192,6 +192,7 @@ export default function KaKaoSignupPage() {
       }
 
       // 이메일 중복확인
+
       const response = await axios.get<Signup[]>(
         "https://go-gym.site/api/auth/check-email",
         {
@@ -494,10 +495,10 @@ export default function KaKaoSignupPage() {
             <button
               type="button"
               onClick={() => checkEmail.mutate(signupFormData.email)}
-              className="rounded-md bg-gray-400 px-4 py-2 text-white focus:outline-none"
-              disabled={true}
+              className="rounded-md bg-blue-500 px-4 py-2 text-white focus:outline-none"
+              disabled={isEmailAvailable}
             >
-              중복확인
+              {isEmailAvailable ? "사용 가능" : "중복확인"}
             </button>
           </div>
 
