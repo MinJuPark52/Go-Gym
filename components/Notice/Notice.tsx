@@ -6,7 +6,7 @@ import axiosInstance from "@/api/axiosInstance";
 import useUserStore from "@/store/useUserStore";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
-import { IoTrashBinOutline } from "react-icons/io5";
+import { FaRegTrashAlt } from "react-icons/fa";
 
 interface content {
   notificationId: number;
@@ -19,10 +19,9 @@ export default function Notice() {
   const { loginState, token } = useLoginStore();
   const { user } = useUserStore();
   const router = useRouter();
-
   const pageSize = 10;
-
-  const [toast, setToast] = useState<string | null>(null);
+  const [notification, setNotification] = useState<content | null>(null);
+  const [animationClass, setAnimationClass] = useState("translate-x-full");
 
   // 3. 구독 SSE
   useEffect(() => {
@@ -49,18 +48,17 @@ export default function Notice() {
         console.log("1");
         console.log(event);
 
-        try {
-          const notificationData = JSON.parse(event.data);
-          console.log("Notification received:", notificationData);
+        const newNotification: content = JSON.parse(event.data);
+        setNotification(newNotification);
 
-          setToast(notificationData.content);
+        setAnimationClass("translate-x-0");
 
+        setTimeout(() => {
+          setAnimationClass("translate-x-full");
           setTimeout(() => {
-            setToast(null);
-          }, 5000);
-        } catch (error) {
-          console.error("Error parsing notification data:", error);
-        }
+            setNotification(null);
+          }, 500);
+        }, 5000);
       });
 
       eventSource.onerror = () => {
@@ -84,7 +82,7 @@ export default function Notice() {
         eventSource.close();
       }
     };
-  }, [loginState, token, user]);
+  }, [loginState, token, user, notification]);
 
   // 1. 전체 알림 목록 조회
   const { data } = useQuery({
@@ -99,70 +97,68 @@ export default function Notice() {
   });
 
   // 알림 목록
-  const handleRead = () => {
-    mutate();
+  const handleReadNotification = (notificationId: number) => {
+    mutate(notificationId);
   };
 
   const { mutate } = useMutation({
-    mutationKey: ["chatList"],
-    mutationFn: async () =>
-      await axiosInstance.put(
-        `https://go-gym.site/api/notifications/{notification-id}/read`,
-      ),
+    mutationKey: ["read"],
+    mutationFn: async (notificationId: number) =>
+      await axiosInstance.put(`/api/notifications/${notificationId}/read`),
     onSuccess: () => {
       router.refresh();
     },
   });
 
   return (
-    <div>
-      {/*
-      {toast && (
-        <div>
-        <p>{toast}</p>
+    <div
+      className="absolute right-[-120px] z-10 h-72 w-80 overflow-y-auto rounded-md border border-gray-300 bg-white shadow-lg scrollbar-hide"
+      role="menu"
+    >
+      <div className="flex items-center justify-between p-2">
+        <strong className="text-md font-medium uppercase text-gray-700">
+          알림📢
+        </strong>
+      </div>
+      <hr />
+      {data && data.length === 0 ? (
+        <div className="flex h-full items-center justify-center">
+          <p className="mb-10 text-sm text-gray-700">새로운 알림이 없습니다.</p>
+        </div>
+      ) : (
+        <div className="h-48 overflow-y-auto">
+          {data &&
+            data.map((notification) => (
+              <div
+                key={notification.notificationId}
+                className={`mb-2 cursor-pointer border bg-white p-2`}
+              >
+                <p>{notification.content}</p>
+                <FaRegTrashAlt
+                  className="ml-auto cursor-pointer text-xl text-red-400"
+                  onClick={handleReadNotification.bind(
+                    null,
+                    notification.notificationId,
+                  )}
+                />
+                <p className="text-sm text-gray-500">
+                  {new Date(notification.createdAt).toLocaleString()}
+                </p>
+              </div>
+            ))}
         </div>
       )}
-      */}
-      <p>{toast}</p>
-      <div
-        className="absolute right-[-120px] z-10 h-72 w-80 overflow-y-auto rounded-md border border-gray-300 bg-white shadow-lg scrollbar-hide"
-        role="menu"
-      >
-        <div className="flex items-center justify-between p-2">
-          <strong className="text-md font-medium uppercase text-gray-700">
-            알림📢
-          </strong>
-          <div className="flex h-[20%] flex-col justify-center pl-2 pr-2 transition-all hover:bg-gray-200">
-            <IoTrashBinOutline
-              className="ml-auto cursor-pointer text-xl text-red-400 transition-all hover:text-3xl"
-              onClick={handleRead}
-            />
-          </div>
+
+      {notification && (
+        <div
+          className={`fixed bottom-10 right-10 z-20 mb-2 transform border border-blue-400 bg-white p-4 transition-transform duration-500 ease-in-out ${animationClass}`}
+        >
+          <p>{notification.content}</p>
+          <p className="text-sm text-gray-500">
+            {new Date(notification.createdAt).toLocaleString()}
+          </p>
         </div>
-        <hr />
-        {data && data.length === 0 ? (
-          <div className="flex h-full items-center justify-center">
-            <p className="mb-10 text-sm text-gray-700">
-              새로운 알림이 없습니다.
-            </p>
-          </div>
-        ) : (
-          <div className="h-48 overflow-y-auto">
-            {data &&
-              data.map((notification) => (
-                <div
-                  key={notification.notificationId}
-                  className={`mb-2 cursor-pointer border bg-white p-2`}
-                >
-                  <p>{notification.content}</p>
-                  <p className="text-sm text-gray-500">
-                    {new Date(notification.createdAt).toLocaleString()}
-                  </p>
-                </div>
-              ))}
-          </div>
-        )}
-      </div>
+      )}
     </div>
   );
 }
