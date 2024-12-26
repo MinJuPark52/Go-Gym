@@ -4,8 +4,8 @@ import useLoginStore from "@/store/useLoginStore";
 import { EventSourcePolyfill } from "event-source-polyfill";
 import axiosInstance from "@/api/axiosInstance";
 import useUserStore from "@/store/useUserStore";
-import { useQuery, useMutation } from "@tanstack/react-query";
-import { useRouter } from "next/navigation";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+// import { useRouter } from "next/navigation";
 import { FaRegTrashAlt } from "react-icons/fa";
 
 interface content {
@@ -16,9 +16,10 @@ interface content {
 }
 
 export default function Notice() {
+  const queryClient = useQueryClient();
   const { loginState, token } = useLoginStore();
   const { user } = useUserStore();
-  const router = useRouter();
+  // const router = useRouter();
   const pageSize = 10;
   const [notification, setNotification] = useState<content | null>(null);
   const [animationClass, setAnimationClass] = useState("translate-x-full");
@@ -98,16 +99,17 @@ export default function Notice() {
   });
 
   // 알림 목록
-  const handleReadNotification = (notificationId: number) => {
+  const handleDeleteNotification = (notificationId: number) => {
     mutate(notificationId);
   };
 
   const { mutate } = useMutation({
-    mutationKey: ["read"],
+    mutationKey: ["delete"],
     mutationFn: async (notificationId: number) =>
       await axiosInstance.put(`/api/notifications/${notificationId}/read`),
+
     onSuccess: () => {
-      router.refresh();
+      queryClient.invalidateQueries<any>(["notification"]);
     },
   });
 
@@ -137,10 +139,9 @@ export default function Notice() {
                 <p>{notification.content}</p>
                 <FaRegTrashAlt
                   className="ml-auto cursor-pointer text-xl text-red-400"
-                  onClick={handleReadNotification.bind(
-                    null,
-                    notification.notificationId,
-                  )}
+                  onClick={() =>
+                    handleDeleteNotification(notification.notificationId)
+                  }
                 />
                 <p className="text-sm text-gray-500">
                   {new Date(notification.createdAt).toLocaleString()}
