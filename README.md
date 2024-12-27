@@ -3,12 +3,12 @@ FrontEnd
 ---
 
 # Go-GYM
----
+
 ![](https://velog.velcdn.com/images/mari0000/post/d91d634f-2ae1-41e2-8e0e-78f40a369b76/image.png)
 
 
 # notion
----
+
 
 **notion Link**: https://www.notion.so/Demo-GO-GYM-4e4ee9335d3a439888c0ca80a831677f?pvs=4
 
@@ -16,12 +16,12 @@ FrontEnd
 
 
 # Go-Gym 프로젝트 소개
----
+
 > **제로베이스 프론트엔드 스쿨 28기**
 **개발기간**: 2024.11.18 - 2024.12.26 (총 6주)
 
 # 프론트엔드 개발팀
----
+
 <img src="https://velog.velcdn.com/images/mari0000/post/50f1553b-2695-48d6-8827-f7fc5eef6a9b/image.jpg" width="150"/>
 
 > 전민혁 : 가천대학교 컴퓨터공학과 4학년, 제로베이스 프론트엔드 스쿨 28기
@@ -31,7 +31,7 @@ FrontEnd
 > 박민주: 제로베이스 프론트엔드 스쿨 28기
 
 # 프로젝트 소개
----
+
 **헬스장 중고거래 플랫폼**으로 
 - 커뮤니티 기능
 - 안전결제 기능
@@ -46,5 +46,5 @@ FrontEnd
 
 
 ## Front-end Skills
----
+
 
