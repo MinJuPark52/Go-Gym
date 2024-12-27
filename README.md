@@ -4,7 +4,7 @@ FrontEnd
 
 # 프로젝트: Go-GYM
 
-![](https://velog.velcdn.com/images/mari0000/post/d91d634f-2ae1-41e2-8e0e-78f40a369b76/image.png)
+<img src="https://velog.velcdn.com/images/mari0000/post/d91d634f-2ae1-41e2-8e0e-78f40a369b76/image.png" width="300"/>
 
 
 # notion
