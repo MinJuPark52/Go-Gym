@@ -61,7 +61,7 @@ FrontEnd
   <img src="https://img.shields.io/badge/Next.js-black?style=for-the-badge&logo=next.js&logoColor=white">
   <br>
   <img src="https://img.shields.io/badge/tailwindcss-06B6D4?style=for-the-badge&logo=tailwindcss&logoColor=white">
-  <img src="https://img.shields.io/badge/daisyui-#1AD1A5?style=for-the-badge&logo=Daisyui&logoColor=white">
+  <img src="https://img.shields.io/badge/daisyui-#1AD1A5?style=for-the-badge&logo=daisyui&logoColor=white">
   <br>
   <img src="https://img.shields.io/badge/github-181717?style=for-the-badge&logo=github&logoColor=white">
   <img src="https://img.shields.io/badge/git-F05032?style=for-the-badge&logo=git&logoColor=white">
