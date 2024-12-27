@@ -1,6 +1,3 @@
-FrontEnd
-
----
 
 # 프로젝트: 💪Go-GYM
 
