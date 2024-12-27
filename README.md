@@ -2,6 +2,19 @@ FrontEnd
 
 ---
 
+# Go-GYM
+---
+![](https://velog.velcdn.com/images/mari0000/post/d91d634f-2ae1-41e2-8e0e-78f40a369b76/image.png)
+
+
+# notion
+---
+
+**notion Link**: https://www.notion.so/Demo-GO-GYM-4e4ee9335d3a439888c0ca80a831677f?pvs=4
+
+노션 링크에서 자세한 프로젝트 소개와 시연영상을 볼  수 있습니다.
+
+
 # Go-Gym 프로젝트 소개
 ---
 > **제로베이스 프론트엔드 스쿨 28기**
