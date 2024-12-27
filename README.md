@@ -2,12 +2,12 @@ FrontEnd
 
 ---
 
-# 프로젝트: Go-GYM
+# 프로젝트: 💪Go-GYM
 
 
 <img src="https://velog.velcdn.com/images/mari0000/post/d91d634f-2ae1-41e2-8e0e-78f40a369b76/image.png" width="300"/>
 
-# notion
+# 📒notion
 
 
 **notion Link**: https://www.notion.so/Demo-GO-GYM-4e4ee9335d3a439888c0ca80a831677f?pvs=4
@@ -15,12 +15,12 @@ FrontEnd
 노션 링크에서 자세한 프로젝트 소개와 시연영상을 볼  수 있습니다.
 
 
-# Go-Gym 프로젝트 소개
+# 💪Go-Gym 프로젝트 소개
 
 > **제로베이스 프론트엔드 스쿨 28기**
 **개발기간**: 2024.11.18 - 2024.12.26 (총 6주)
 
-# 프론트엔드 개발팀
+# 🚀프론트엔드 개발팀
 
 <table>
   <tbody>
@@ -36,7 +36,7 @@ FrontEnd
 
 > 박민주: 제로베이스 프론트엔드 스쿨 28기
 
-# 프로젝트 소개
+# 🚀프로젝트 소개
 
 **헬스장 중고거래 플랫폼**으로 
 - 커뮤니티 기능
@@ -52,7 +52,7 @@ FrontEnd
 
 
 ## 📚Front-end Skills
-<img src="https://img.shields.io/badge/html5-E34F26?style=for-the-badge&logo=html5&logoColor=white">
+
 <div align=center> 
   <img src="https://img.shields.io/badge/html5-E34F26?style=for-the-badge&logo=html5&logoColor=white"> 
   <img src="https://img.shields.io/badge/css-1572B6?style=for-the-badge&logo=css3&logoColor=white"> 
@@ -61,10 +61,10 @@ FrontEnd
   <img src="https://img.shields.io/badge/Next.js-black?style=for-the-badge&logo=next.js&logoColor=white">
   <img src="https://img.shields.io/badge/Reactquery-FF4154?style=for-the-badge&logo=reactquery&logoColor=white">
   <img src="https://img.shields.io/badge/Axios-5A29E4?style=for-the-badge&logo=axios&logoColor=white">
+  <img src="https://img.shields.io/badge/vercel-000000?style=for-the-badge&logo=vercel&logoColor=white">
   <br>
   <img src="https://img.shields.io/badge/Tailwindcss-06B6D4?style=for-the-badge&logo=tailwindcss&logoColor=white">
   <img src="https://img.shields.io/badge/Daisyui-1AD1A5?style=for-the-badge&logo=daisyui&logoColor=white">
-  <br>
   <img src="https://img.shields.io/badge/github-181717?style=for-the-badge&logo=github&logoColor=white">
   <img src="https://img.shields.io/badge/git-F05032?style=for-the-badge&logo=git&logoColor=white">
   <br>
