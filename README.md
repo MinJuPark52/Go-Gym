@@ -1,5 +1,5 @@
 ## 💪 Go-GYM
-<img src="https://velog.velcdn.com/images/mari0000/post/d91d634f-2ae1-41e2-8e0e-78f40a369b76/image.png" width="250"/> <br /> 배포 링크 : https://gogym-eight.vercel.app/
+<img src="https://velog.velcdn.com/images/mari0000/post/d91d634f-2ae1-41e2-8e0e-78f40a369b76/image.png" width="250"/>
 
 <br />
 
